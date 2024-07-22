@@ -1,0 +1,17 @@
+{
+  "name": "cs-546-project-team3",
+  "version": "1.0.0",
+  "description": "My Database for Daycare Organization",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Feruz Karimov 20016147",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongodb": "^6.7.0"
+  }
+}
