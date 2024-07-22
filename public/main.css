@@ -1,0 +1,23 @@
+#col-1 {
+  background-color: black;
+}
+
+#col-2 {
+  background-color: red;
+}
+
+#col-3 {
+  background-color: purple;
+}
+
+.image-container {
+  width: 100%;
+  height: 600px; /* Example height */
+  overflow: hidden;
+  position: relative;
+}
+.image-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
