@@ -1,0 +1,41 @@
+.image-container {
+  height: 40rem;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  background-image: url("../public/images/landing_page_bg.png");
+  background-size: cover;
+  background-position: 25% 70%;
+  background-repeat: no-repeat;
+  align-items: center;
+}
+
+.image-container h1 {
+  font-family: "Bubblegum Sans", sans-serif;
+  color: white;
+  text-shadow: 2px 2px 2px rgba(1, 96, 116, 1), -2px 2px 2px rgba(1, 96, 116, 1),
+    2px -2px 2px rgba(1, 96, 116, 1), -2px -2px 2px rgba(1, 96, 116, 1);
+  font-size: 100px;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
+#infoBox1,
+#infoBox2,
+#infoBox3 {
+  color: black;
+  border: 1px solid red;
+  height: 10rem;
+}
+
+#footer {
+  color: black;
+  border: 1px solid red;
+  height: 5rem;
+}
+
+.nav-link {
+  font-family: "Bubblegum Sans", sans-serif;
+}
