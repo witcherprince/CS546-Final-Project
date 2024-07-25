@@ -1,72 +1,47 @@
 <head>
   <title>My Site</title>
-  <link rel="stylesheet" href="../public/main.css" />
+  <link rel="stylesheet" href="../public/landingPage.css" />
 </head>
-
-{{! <img
-      class="img-fluid"
-      alt="Responsive image"
-      src="../public/images/landing_page_bg.png"
-    /> }}
 
 <div class="container-fluid">
   <nav
     class="navbar navbar-expand-lg navbar-light"
     style="background-color: #2a89d5;"
   >
-    <a class="navbar-brand" href="#">Navbar w/ text</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarText"
-      aria-controls="navbarText"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
     <div class="collapse navbar-collapse" id="navbarText">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home
-            <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/">Home
+            <span class="sr-only"></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link" href="/login/userLogin">Login User</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
+          <a class="nav-link" href="/login/orgLogin">Login Organization</a>
         </li>
       </ul>
-      <span class="navbar-text">
-        Navbar text with an inline element
-      </span>
     </div>
   </nav>
   <div class="image-container">
     <h1>Daycare Finder</h1>
   </div>
-  <div class="row" id="test">
-    <div class="col-12" id="test">
-      <p>test col</p>
+  <div class="row">
+    <div class="col-12" id="infoBox1">
+      <p>Add info about the site</p>
     </div>
-
+  </div>
+  <div class="row">
+    <div class="col-6" id="infoBox2">
+      <p>Add info about benefits</p>
+    </div>
+    <div class="col-6" id="infoBox3">
+      <p>Add info about misc stuff like pricing</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12" id="footer">
+      <p>Add footer info including social media icons with aref links</p>
+    </div>
   </div>
 </div>
-{{! <div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <div class="image-container">
-        <img
-          src="../public/images/crayons.jpg"
-          class="image-cover"
-          alt="Cover image"
-          width="200"
-          height="200"
-        />
-        <p>This is a paragraph</p>
-      </div>
-    </div>
-  </div>
-</div> }}

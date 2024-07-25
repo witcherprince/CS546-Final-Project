@@ -22,18 +22,20 @@
   padding: 0;
 }
 
-#test {
+#infoBox1,
+#infoBox2,
+#infoBox3 {
   color: black;
   border: 1px solid red;
+  height: 10rem;
 }
 
-/* .image-container img {
-  width: 50%;
-  height: auto;
-} */
-/* .image-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-} */
+#footer {
+  color: black;
+  border: 1px solid red;
+  height: 5rem;
+}
+
+.nav-link {
+  font-family: "Bubblegum Sans", sans-serif;
+}
