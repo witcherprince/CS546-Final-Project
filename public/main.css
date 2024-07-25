@@ -1,23 +1,39 @@
-#col-1 {
-  background-color: black;
-}
-
-#col-2 {
-  background-color: red;
-}
-
-#col-3 {
-  background-color: purple;
-}
-
 .image-container {
-  width: 100%;
-  height: 600px; /* Example height */
-  overflow: hidden;
-  position: relative;
+  height: 40rem;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  background-image: url("../public/images/landing_page_bg.png");
+  background-size: cover;
+  background-position: 25% 70%;
+  background-repeat: no-repeat;
+  align-items: center;
 }
-.image-cover {
+
+.image-container h1 {
+  font-family: "Bubblegum Sans", sans-serif;
+  color: white;
+  text-shadow: 2px 2px 2px rgba(1, 96, 116, 1), -2px 2px 2px rgba(1, 96, 116, 1),
+    2px -2px 2px rgba(1, 96, 116, 1), -2px -2px 2px rgba(1, 96, 116, 1);
+  font-size: 100px;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
+#test {
+  color: black;
+  border: 1px solid red;
+}
+
+/* .image-container img {
+  width: 50%;
+  height: auto;
+} */
+/* .image-cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
+  display: block;
+} */
