@@ -6,7 +6,11 @@ router.route("/").get(async (req, res) => {
 });
 
 router.route("/userLogin").get(async (req, res) => {
-  return res.json("Login page for users");
+  res.render("users/login");
+});
+
+router.route("/userSignup").get(async (req, res) => {
+  res.render("users/signup");
 });
 
 router.route("/orgLogin").get(async (req, res) => {

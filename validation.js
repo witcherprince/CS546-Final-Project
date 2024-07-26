@@ -26,7 +26,6 @@ checkString(val, valName) {
 
 },
 
-
 //According to daycares.js, I add following validation functions:
 //1. State checking:
 checkState(state) {
