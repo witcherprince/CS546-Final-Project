@@ -22,6 +22,11 @@ const hash = await bcrypt.hash(password, 10);
 
 const userCollection = await users();
 
+const existingUser = await userCollection.findOne({ email: email });
+    if (existingUser) {
+        throw 'User already exists';
+    }
+
 // Create new user
 const newUser = {
     firstName: firstname,
@@ -162,7 +167,6 @@ if (updateInfo.modifiedCount === 0) {
   }
 
 return newKidInfo;
-
 
 },
 
