@@ -14,8 +14,8 @@ async createUser (firstname,
 ) {
 
 // Checking
-firstname = validation.checkString(firstname, 'First name');
-lastname = validation.checkString(lastname, 'First name');
+firstname = validation.checkString(firstname, 'First name').trim();
+lastname = validation.checkString(lastname, 'First name').trim();
 
 // Lets hash the password entered
 const hash = await bcrypt.hash(password, 10);

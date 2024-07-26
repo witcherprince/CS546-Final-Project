@@ -16,8 +16,5 @@ const getCollectionFn = (collection) => {
 };
 
 /* Now, you can list your collections here: */
-<<<<<<< Updated upstream
-=======
 export const daycares = getCollectionFn('daycares');
->>>>>>> Stashed changes
 export const users = getCollectionFn('users');
