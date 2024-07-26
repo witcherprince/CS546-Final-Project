@@ -41,19 +41,21 @@ export const addDaycare = async(
     }
 
     if (yearsInBusiness) {
-
+        yearsInBusiness = validation.checkNumber(yearsInBusiness, 'yearsInBusiness');
     } else {
         yearsInBusiness = NULL;
     }
 
     if (availability) {
-
+        availability = validation.checkBoolean(availability, 'availability')
     } else {
         availability = NULL;
     }
 
     if (lunchChoices) {
-        
+        for (let i = 0; i < lunchChoices.length; i++) {
+            lunchChoices[i] = validation.checkString(lunchChoices[i], 'lunchChoices');
+        }
     } else {
         lunchChoices = NULL;
     }
