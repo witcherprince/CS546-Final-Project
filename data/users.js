@@ -14,8 +14,8 @@ async createUser (firstname,
 ) {
 
 // Checking
-firstname = validation.checkString(firstname);
-lastname = validation.checkString(lastname);
+firstname = validation.checkString(firstname, 'First name');
+lastname = validation.checkString(lastname, 'First name');
 
 // Lets hash the password entered
 const hash = await bcrypt.hash(password, 10);
@@ -48,13 +48,70 @@ return prod;
 },
 
 // Delete user
-
 async deleteuser (id) {
+
+id = id.toString();
+id = validation.checkId(id);
+
+const userCollection = await users();
+const deletion = await userCollection.findOneAndDelete({_id: new ObjectId(id)});
+
+if (!deletion) {
+    throw 'Could not delete user with specified ID.'
+}
+
+return `${deletion.firstName} has been successfully deleted!`;
 
 },
 
 // Change user information
-async changeInfo () {
+async changeInfo (id, userInfo) {
+
+id = validation.checkId(id);
+
+if (userInfo.firstName) {
+    userInfo.firstName = validation.checkString(
+        userInfo.firstname, 'First name'
+    )
+}
+
+if (userInfo.lastName) {
+    userInfo.lastName = validation.checkString(
+        userInfo.lastName, 'Last name'
+    )
+}
+
+if (userInfo.email) {
+    userInfo.email = validation.checkEmail(
+        userInfo.email, 'Email'
+    )
+}
+
+if (userInfo.password) {
+
+}
+
+// might need to do a deeper search?
+if (userInfo.location.town) {
+    userInfo.location.town = validation.checkString(
+        userInfo.location.town, "Town"
+    )
+}
+
+if (userInfo.location.zipcode) {
+    userInfo.location.zipcode = validation.checkZipcode(
+        userInfo.location.zipcode, "Zipcode"
+    )
+
+}
+
+const userCollection = await users();
+const updateInfo = await userCollection.findOneAndUpdate({_id: new ObjectId(id)});
+if (!updateInfo) {
+    throw 'Error: Update failed, could not find user with specified ID.'
+}
+
+return updateInfo;
 
 },
 
@@ -99,26 +156,27 @@ const newKidInfo = {
     age: age
 }
 
-let kidArray = [];
-
-kidArray.push(newKidInfo);
-
-const newKid = {
-    kids: kidArray
-}
-
-const updateInfo = await usersCollection.updateOne({_id: new ObjectId(id)}, {$set: newKid});
+const updateInfo = await usersCollection.updateOne({_id: new ObjectId(id)}, {$push: {kids: newKidInfo}});
 if (updateInfo.modifiedCount === 0) {
     throw 'Could not add child.';
   }
 
-return newKid;
+return newKidInfo;
 
 
 },
 
 // If they want to remove a child
-async removeChild (name) {
+async removeChild (id, name) {
+
+const userCollection = await users();
+const byeChild = await userCollection.updateOne({_id: new ObjectId(id)}, {$pull: {kids: {firstName: name}}});
+
+if (byeChild.modifiedCount === 0) {
+    throw 'Child could not be found or removed'
+ }
+
+return `${byeChild.firstName} has been successfully deleted!`;
 
 },
 
