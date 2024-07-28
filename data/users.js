@@ -16,9 +16,14 @@ async createUser (firstname,
 // Checking
 firstname = validation.checkString(firstname, 'First name').trim();
 lastname = validation.checkString(lastname, 'First name').trim();
+firstname = validation.checkNames(firstname, 'First name');
+lastname = validation.checkNames(lastname, 'Last name');
 
 // Lets hash the password entered
-const hash = await bcrypt.hash(password, 10);
+const hash = await bcrypt.hash(password, 16);
+
+// Make sure emails are lowercased when entered into the database and before performing the check
+email = email.toLowerCase();
 
 const userCollection = await users();
 

@@ -26,6 +26,19 @@ checkString(val, valName) {
 
 },
 
+checkNames(val, valName) {
+    if (val.length < 2) throw `${valName} should be at least 2 characters long`;
+    if (val.length > 25) throw `${valName} should not be greater than 25 characters long`;
+},
+
+checkPassword(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== 'string') throw `${valName} must be a string`;
+    val = val.trim();
+    if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
+    if (val.length < 8) throw `${valName} should be at least 8 characters long.`;
+},
+
 //According to daycares.js, I add following validation functions:
 //1. State checking:
 checkState(state) {
@@ -100,7 +113,7 @@ checkNumber(num, numName) {
     num = num.trim();
     let number = Number(num);
     if (!Number.isInteger(number) || number < 0) {
-        throw '${numName} has to be a positive integer!';
+        throw `${numName} has to be a positive integer!`;
     }
     return num;
 },
@@ -109,7 +122,7 @@ checkNumber(num, numName) {
 checkBoolean (input, inputName) {
     input = input.trim().toLowerCase();
     if (input !== 'true' || input !== 'false') {
-        throw '${inputName} has to be true or false!';
+        throw `${inputName} has to be true or false!`;
     }
     return input;
 }
