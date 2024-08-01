@@ -83,6 +83,19 @@ export const addDaycare = async(
         duration: duration
     }
 
+    // Inserting daycare into database
+    const dayCaresCollection = await daycares();
+
+    const insertInfo = await dayCaresCollection.insertOne(newDaycare);
+    if (!insertInfo.acknowledged || !insertInfo.insertedId) {
+        throw 'Could not add day care organization';
+    }
+
+    const newId = insertInfo.insertedId.toString();
+    const dayCare = await getOrg(newId);
+    dayCare._id = dayCare._id.toString();
+    return dayCare;
+
 }
 
 //2. Deletion:
@@ -110,3 +123,52 @@ export const removeDaycare = async(
 export const updateDaycare = async() => {
     
 }
+
+// 4. Get all daycares from database
+export const getAll = async () => {
+
+    const dayCaresCollection = await daycares();
+    let dayCareList = await dayCaresCollection.find({}).toArray();
+  
+    if (!dayCareList) {
+      throw 'Could not get all daycares';
+    } 
+    dayCareList = dayCareList.map((elem) => {
+      elem._id = elem._id.toString();
+      return elem;
+      });
+  
+    return dayCareList;
+  };
+
+// 5. Get daycare by name from database
+export const getOrg = async (name) => {
+
+    if (!name) {
+      throw 'You must provide an name of day organization to search for'
+    };
+  
+    if (typeof name !== 'string') {
+      throw 'Id must be a string';
+    } 
+  
+    if (name.trim().length === 0) {
+      throw 'Name of day organization cannot be an empty string or just spaces';
+    }
+  
+    name = name.trim();
+  
+    const dayCaresCollection = await daycares();
+    const dayCare = await dayCaresCollection.findOne({ name: name });
+  
+    if (dayCare === null) {
+      throw 'No day organization with that name';
+    }
+  
+    dayCare._id = dayCare._id.toString();
+  
+    return dayCare;
+  
+  };
+
+
