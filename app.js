@@ -34,14 +34,11 @@ app.use("/login", (req, res, next) => {
   // const expiresAt = new Date();
   // expiresAt.setHours(expiresAt.getHours() + 1);
   // res.cookie("loginCookie", "testValue", { expires: expiresAt });
-  console.log("hitting login middleware");
   if (req.session.user) {
     console.log("GOING TO USERS");
-    return res.redirect("/users");
-  } else {
-    // req.method = "POST";
-    next();
+    return res.redirect("/users/userPage");
   }
+  next();
 });
 
 configRoutesFunction(app);
