@@ -21,7 +21,6 @@ router.route("/userSignup").get(async (req, res) => {
     }
 
     try {
-
     const newUser = await userData.createUser(userInfo.firstnameInput, userInfo.lastnameInput, userInfo.emailaddress, userInfo.passwordInput, 
         userInfo.townInput, userInfo.zipcodeInput);
     return res.redirect("/login/userLogin");
@@ -35,4 +34,5 @@ router.route("/userSignup").get(async (req, res) => {
 router.route("/orgLogin").get(async (req, res) => {
   return res.json("Login page for orgs");
 });
+
 export default router;
