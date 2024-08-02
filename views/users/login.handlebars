@@ -1,17 +1,27 @@
-<link rel="stylesheet" href="../public/users.css"/>
+<link rel="stylesheet" href="../public/users.css" />
 
 <div class="form-box">
-<form id="login" method="POST" action="/login/userLogin">
+  <form id="login" method="POST" action="/users/userPage">
     <h2>Login Page</h2>
     <div>
-        <input type="email" name="emailaddress" id="emailaddress" placeholder="Email">
+      <input
+        type="email"
+        name="emailaddress"
+        id="emailaddress"
+        placeholder="Email"
+      />
     </div>
     <div>
-        <input type="password" name="passwordInput" id="passwordInput" placeholder="Password">
+      <input
+        type="password"
+        name="passwordInput"
+        id="passwordInput"
+        placeholder="Password"
+      />
     </div>
     <div>
-        <button type="button">Log In</button>
-        <button type="button" id="registerButton">New User? Register Here</button>
+      <input type="submit" value="Login" /><br />
+      <button type="button" id="registerButton">New User? Register Here</button>
     </div>
-</form>
+  </form>
 </div>
