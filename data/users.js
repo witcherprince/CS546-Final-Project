@@ -1,5 +1,6 @@
 import {ObjectId} from 'mongodb';
 import {users} from '../config/mongoCollections.js';
+import {daycares} from '../config/mongoCollections.js';
 import validation from '../validation.js'
 import bcrypt from 'bcrypt';
 
@@ -14,15 +15,17 @@ async createUser (firstname,
 ) {
 
 // Checking
-firstname = validation.checkString(firstname, 'First name').trim();
-lastname = validation.checkString(lastname, 'First name').trim();
+firstname = validation.checkString(firstname, 'First name');
+lastname = validation.checkString(lastname, 'Last name');
 firstname = validation.checkNames(firstname, 'First name');
 lastname = validation.checkNames(lastname, 'Last name');
 
-// Lets hash the password entered
+// Check password and then hash it
+password = password.checkPassword(password, 'Password');
 const hash = await bcrypt.hash(password, 16);
 
-// Make sure emails are lowercased when entered into the database and before performing the check
+// Check email
+email = email.checkEmail(email, 'Email');
 email = email.toLowerCase();
 
 const userCollection = await users();
@@ -41,7 +44,8 @@ const newUser = {
     location: {town: town, zipcode: zipcode},
     kids: [],
     favorites: [],
-    reviews: []
+    reviews: [],
+    role: 'user'
 }
 
 // Insert info into db
@@ -51,9 +55,9 @@ if (!insertInfo.acknowledged || !insertInfo.insertedId) {
 }
 
 const newId = insertInfo.insertedId.toString();
-const prod = await this.getUserById(newId);
+const user = await this.getUserById(newId);
 
-return prod;
+return user;
 
 },
 
@@ -190,7 +194,46 @@ return `${byeChild.firstName} has been successfully deleted!`;
 },
 
 // Add favorite daycare
-async addFavDaycare () {
+// When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
+async addFavDaycare (userId, daycareId) {
+
+// Check IDs
+userId = validation.checkId(userId);
+daycareId = validation.checkId(daycareId);
+
+const userCollection = await users();
+const daycareCollection = await daycares();
+
+// First, lets find the user who is doing the search
+const user = await userCollection.findOne({_id: new ObjectId(userId)});
+if (!user) {
+    throw 'User not found.';
+}
+
+// Now we want to search for the daycare id to see if it even exists
+const daycare = await daycareCollection.findOne({_id: new ObjectId(daycareId)});
+if (!daycare) {
+    throw 'Daycare not found.';
+}
+
+// Now, lets check if this user already has this daycare in their favorites list. If not, it will be added
+const isFavorite = await userCollection.findOne({favorites: daycare})
+if (isFavorite) {
+    throw "Daycare already exists in user's favorites list";
+}
+
+// If we got to this point, user does not have daycare in their list. Now we can add it
+const addFavorite = userCollection.updateOne({_id: new ObjectId(userId)}, {$push: {favorites: new ObjectId(daycareId)}});
+if (addFavorite.modifiedCount === 0) {
+    throw 'Daycare could not be found or removed';
+ }
+
+return addFavorite;
+
+},
+
+// Get favorite daycares of user
+async getFavDayCare (id) {
 
 },
 
