@@ -4,8 +4,6 @@ const exportedMethods = {
 
 // Check ID
 checkId(id) {
-    if (!id) throw 'You must provide an id';
-    if (typeof id !== 'string') throw 'ID must be a string';
     id = id.trim();
     if (id.length === 0) {
         throw 'Id cannot be an empty string or just spaces';
@@ -18,7 +16,7 @@ checkId(id) {
 checkString(val, valName) {
     if (!val) throw `You must provide a ${valName}`;
     if (typeof val !== 'string') throw `${valName} must be a string`;
-    //val = val.trim(); When I use checkString for introduction, I can't accept trim() result.
+    val = val.trim(); 
     if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
     if (!isNaN(val)) throw `${val} is not a valid value for ${valName} as it only contains digits`
 
@@ -125,6 +123,17 @@ checkBoolean (input, inputName) {
         throw `${inputName} has to be true or false!`;
     }
     return input;
+},
+
+//9. For reviews.js, rating has to be 1 decimal number between 0 - 5
+checkRating (rate) {
+    rate = rate.toString().trim();
+
+    const rateForm = /^(0|[1-5])(\.[0-9])?$/;
+    if (!rateForm.test(rate)) {
+      throw 'Rating is between 0 to 5 with no more than one decimal place.';
+    }
+    return rate;
 }
 
 
