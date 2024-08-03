@@ -78,54 +78,51 @@ return `${deletion.firstName} has been successfully deleted!`;
 
 },
 
-// Change user information
+// Change user information -- only generic info
 async changeInfo (id, userInfo) {
 
+id = id.toString();
+
+// Checking stuff
 id = validation.checkId(id);
+userInfo = validation.isValidObject(userInfo);
+
+const updateUser = {};
 
 if (userInfo.firstName) {
-    userInfo.firstName = validation.checkString(
-        userInfo.firstname, 'First name'
-    )
+    updateUser.firstName = validation.checkString(userInfo.firstname, 'First name');
 }
 
 if (userInfo.lastName) {
-    userInfo.lastName = validation.checkString(
-        userInfo.lastName, 'Last name'
-    )
+    updateUser.lastName = validation.checkString(userInfo.lastName, 'Last name');
 }
 
 if (userInfo.email) {
-    userInfo.email = validation.checkEmail(
-        userInfo.email, 'Email'
-    )
+    updateUser.email = validation.checkEmail(userInfo.email, 'Email');
 }
 
-if (userInfo.password) {
-
-}
+// No change password here, because change password should have its own function
 
 // might need to do a deeper search?
-if (userInfo.location.town) {
-    userInfo.location.town = validation.checkString(
-        userInfo.location.town, "Town"
-    )
+if (userInfo.location.town && typeof userInfo.location === 'object') {
+    updateUser.location.town = validation.checkString(userInfo.location.town, "Town")
 }
 
-if (userInfo.location.zipcode) {
-    userInfo.location.zipcode = validation.checkZipcode(
-        userInfo.location.zipcode, "Zipcode"
-    )
-
+if (userInfo.location.zipcode && typeof userInfo.location === 'object') {
+    updateUser.location.zipcode = validation.checkZipcode(userInfo.location.zipcode, "Zipcode")
 }
 
 const userCollection = await users();
-const updateInfo = await userCollection.findOneAndUpdate({_id: new ObjectId(id)});
+const updateInfo = await userCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: updateuser});
 if (!updateInfo) {
     throw 'Error: Update failed, could not find user with specified ID.'
 }
 
 return updateInfo;
+
+},
+
+async changePassword () {
 
 },
 
