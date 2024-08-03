@@ -3,8 +3,7 @@ import { ObjectId } from "mongodb";
 const exportedMethods = {
   // Check ID
   checkId(id) {
-    if (!id) throw "You must provide an id";
-    if (typeof id !== "string") throw "ID must be a string";
+    if (!id) throw "You must provide an ID.";
     id = id.trim();
     if (id.length === 0) {
       throw "Id cannot be an empty string or just spaces";
@@ -17,7 +16,18 @@ const exportedMethods = {
   checkString(val, valName) {
     if (!val) throw `You must provide a ${valName}`;
     if (typeof val !== "string") throw `${valName} must be a string`;
-    //val = val.trim(); When I use checkString for introduction, I can't accept trim() result.
+    val = val.trim();
+    if (val.length === 0)
+      throw `${valName} cannot be an empty string or just spaces`;
+    if (!isNaN(val))
+      throw `${val} is not a valid value for ${valName} as it only contains digits`;
+
+    return val;
+  },
+
+  checkIntroduction(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "string") throw `${valName} must be a string`;
     if (val.length === 0)
       throw `${valName} cannot be an empty string or just spaces`;
     if (!isNaN(val))
@@ -30,6 +40,8 @@ const exportedMethods = {
     if (val.length < 2) throw `${valName} should be at least 2 characters long`;
     if (val.length > 25)
       throw `${valName} should not be greater than 25 characters long`;
+
+    return val;
   },
 
   checkPassword(val, valName) {
@@ -40,6 +52,8 @@ const exportedMethods = {
       throw `${valName} cannot be an empty string or just spaces`;
     if (val.length < 8)
       throw `${valName} should be at least 8 characters long.`;
+
+    return val;
   },
 
   //According to daycares.js, I add following validation functions:
@@ -118,7 +132,12 @@ const exportedMethods = {
 
   //3. Business Hour checking:
   checkBusinessHour(time) {
-    const timeForm =
+    if (typeof time !== "string") {
+      throw "Error: Business hours must be a string!";
+    }
+
+    // corrected timeForm to timeRangeRegex
+    const timeRangeRegex =
       /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
     if (timeRangeRegex.test(time)) {
@@ -141,7 +160,7 @@ const exportedMethods = {
   checkPhone(num) {
     const phoneForm = /^(1-)?\d{3}-\d{3}-\d{4}$/;
     num = num.trim();
-    if (phoneForm.test(num)) {
+    if (!phoneForm.test(num)) {
       throw "Error: Not a valid phone number!";
     }
     return num;
@@ -151,7 +170,7 @@ const exportedMethods = {
   checkWebsite(web) {
     const webForm = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
     web = web.trim();
-    if (webForm.test(url)) {
+    if (!webForm.test(web)) {
       throw "Error: Not a valid website!";
     }
     return web;
@@ -159,7 +178,7 @@ const exportedMethods = {
 
   //7. Number checking: checking if the input is an integer and >= 0
   checkNumber(num, numName) {
-    num = num.trim();
+    // num = num.trim(); cannot trim type of number
     let number = Number(num);
     if (!Number.isInteger(number) || number < 0) {
       throw `${numName} has to be a positive integer!`;
@@ -170,17 +189,29 @@ const exportedMethods = {
   //8. Boolean checking (Assume input is a string):
   checkBoolean(input, inputName) {
     input = input.trim().toLowerCase();
-    if (input !== "true" || input !== "false") {
+    if (input !== "true" && input !== "false") {
       throw `${inputName} has to be true or false!`;
     }
     return input;
   },
-  validateEmail(email) {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
+
+  isValidObject(obj) {
+    if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+      throw "provide input object";
+    }
+
+    return obj;
+  },
+
+  //9. For reviews.js, rating has to be 1 decimal number between 0 - 5
+  checkRating(rate) {
+    rate = rate.toString().trim();
+
+    const rateForm = /^(0|[1-5])(\.[0-9])?$/;
+    if (!rateForm.test(rate)) {
+      throw "Rating is between 0 to 5 with no more than one decimal place.";
+    }
+    return rate;
   },
 };
 export default exportedMethods;

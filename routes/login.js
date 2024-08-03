@@ -70,4 +70,5 @@ router
 router.route("/orgLogin").get(async (req, res) => {
   return res.json("Login page for orgs");
 });
+
 export default router;

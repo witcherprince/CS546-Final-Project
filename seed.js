@@ -1,5 +1,7 @@
 import {dbConnection, closeConnection} from './config/mongoConnection.js';
-import users from './data/users.js';
+import {userData} from './data/index.js';
+import {dayCareData} from './data/index.js'; 
+
 
 const db = await dbConnection();
 await db.dropDatabase();
@@ -8,23 +10,72 @@ let one;
 let two;
 let childOne;
 let childTwo;
+let addFav;
 
-one = await users.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
+// create user works !!
+one = await userData.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
 console.log(one);
 
-two = await users.createUser("Ren", "Kozaki", 'loserLuck@yahoo.com', 'bringMeHome@44449', 'manhattan', 1002);
+two = await userData.createUser("Ren", "Kozaki", 'loserLuck@yahoo.com', 'bringMeHome@44449', 'manhattan', 1002);
 console.log(two);
 
-childOne = await users.addChild(one._id, "Lebron", "James", 5);
+// Add child works !!
+childOne = await userData.addChild(one._id, "Lebron", "James", 5);
 console.log(childOne);
 
+// remove user works!!
 //const removeOne = await users.deleteuser(one._id);
 //console.log(removeOne);
 
-childTwo = await users.addChild(one._id, "Cloud", "Strife", 2);
+childTwo = await userData.addChild(one._id, "Cloud", "Strife", 2);
 console.log(childTwo);
 
-const removeChild = await users.removeChild(one._id, "Lebron");
-console.log(removeChild);
+// remove child works!!
+//const removeChild = await users.removeChild(one._id, "Lebron");
+//console.log(removeChild);
+
+const firstDaycare = await dayCareData.addDaycare(
+    'Happy Kids',
+    'A great place for kids.',
+    '123 Happy St',
+    'Hppyville',
+    'NY',
+    '12345',
+    '9am - 5pm',
+    'contact@happykids.com',
+    '123-456-7890',
+    'https://www.happykids.com',
+    '5',
+    'true',
+    'Vegetarian, Non-Vegetarian',
+    'Full day, Half day',
+    '2000-5000'
+  );
+
+// It works!
+try {
+addFav = await userData.addFavDaycare(one._id, firstDaycare._id);
+console.log(addFav);
+}
+catch (e) {
+  console.log(e)
+}
+
+try {
+let getFav = await userData.getFavDayCare(firstDaycare._id);
+console.log(getFav);
+}
+catch (e) {
+  console.log(e)
+}
+
+try {
+let delFav = await userData.removeFavDaycare(one._id, firstDaycare._id);
+console.log(delFav);
+}
+catch (e) {
+  console.log(e)
+}
+
 
 await closeConnection();

@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import { users } from "../config/mongoCollections.js";
+import { daycares } from "../config/mongoCollections.js";
 import validation from "../validation.js";
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 
 // First, we want to create a user
 const exportMethod = {
@@ -12,13 +13,19 @@ const exportMethod = {
     firstname = validation.checkNames(firstname, "First name");
     lastname = validation.checkNames(lastname, "Last name");
 
-    // Lets hash the password entered
-    const hash = await bcrypt.hash(password, 16);
+    // Checking
+    firstname = validation.checkString(firstname, "First name");
+    lastname = validation.checkString(lastname, "Last name");
+    firstname = validation.checkNames(firstname, "First name");
+    lastname = validation.checkNames(lastname, "Last name");
 
-    // Make sure emails are lowercased when entered into the database and before performing the check
+    // Check password and then hash it
+    password = validation.checkPassword(password, "Password");
+    const hash = await bcryptjs.hash(password, 16);
+
+    // Check email
+    email = validation.checkEmail(email, "Email");
     email = email.toLowerCase();
-
-    const userCollection = await users();
 
     const existingUser = await userCollection.findOne({ email: email });
     if (existingUser) {
@@ -35,6 +42,7 @@ const exportMethod = {
       kids: [],
       favorites: [],
       reviews: [],
+      role: "user",
     };
 
     // Insert info into db
@@ -44,9 +52,9 @@ const exportMethod = {
     }
 
     const newId = insertInfo.insertedId.toString();
-    const prod = await this.getUserById(newId);
+    const user = await this.getUserById(newId);
 
-    return prod;
+    return user;
   },
 
   // Delete user
@@ -131,7 +139,120 @@ const exportMethod = {
       throw "Error: User not found.";
     }
 
-    return user;
+    const newId = insertInfo.insertedId.toString();
+    const prod = await this.getUserById(newId);
+
+    return prod;
+  },
+
+  // Delete user
+  async deleteuser(id) {
+    id = id.toString();
+    id = validation.checkId(id);
+
+    const userCollection = await users();
+    const deletion = await userCollection.findOneAndDelete({
+      _id: new ObjectId(id),
+    });
+
+    if (!deletion) {
+      throw "Could not delete user with specified ID.";
+    }
+
+    return `${deletion.firstName} has been successfully deleted!`;
+  },
+  // Add favorite daycare
+  // When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
+  async addFavDaycare(userId, daycareId) {
+    userId = userId.toString();
+    daycareId - daycareId.toString();
+
+    // Check IDs
+    userId = validation.checkId(userId);
+    daycareId = validation.checkId(daycareId);
+
+    const userCollection = await users();
+    const daycareCollection = await daycares();
+
+    // First, lets find the user who is doing the search
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      throw "User not found.";
+    }
+
+    // Now we want to search for the daycare id to see if it even exists
+    const daycare = await daycareCollection.findOne({
+      _id: new ObjectId(daycareId),
+    });
+    if (!daycare) {
+      throw "Daycare not found.";
+    }
+
+    // Now, lets check if this user already has this daycare in their favorites list. If not, it will be added
+    const isFavorite = await userCollection.findOne({ favorites: daycare });
+    if (isFavorite) {
+      throw "Daycare already exists in user's favorites list";
+    }
+
+    // If we got to this point, user does not have daycare in their list. Now we can add it
+    const addFavorite = userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $push: { favorites: new ObjectId(daycareId) } }
+    );
+    if (addFavorite.modifiedCount === 0) {
+      throw "Daycare could not be found or removed";
+    }
+
+    const newId = daycareId.toString();
+    const favDaycare = await this.getFavDayCare(newId);
+
+    return favDaycare;
+  },
+
+  // Get user by their username
+  async getUser(username) {},
+
+  // Get favorite daycares of user
+  async getFavDayCare(id) {
+    id = id.toString();
+
+    // Check ID
+    id = validation.checkId(id);
+
+    // Find the daycare through given ID
+    const usersCollection = await users();
+    const favDaycare = await usersCollection.findOne({
+      favorites: new ObjectId(id),
+    });
+
+    if (!favDaycare) {
+      throw "Error: Daycare not found.";
+    }
+
+    return favDaycare;
+  },
+
+  // Remove daycare
+  async removeFavDaycare(userId, daycareId) {
+    userId = userId.toString();
+    daycareId = daycareId.toString();
+
+    // Check ID
+    userId = validation.checkId(userId);
+    daycareId = validation.checkId(daycareId);
+
+    // Time to remove
+    const usersCollection = await users();
+    const delDaycare = await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $pull: { favorites: new ObjectId(daycareId) } }
+    );
+
+    if (delDaycare.modifiedCount === 0) {
+      throw "Error: Could not remove daycare from favorites.";
+    }
+
+    return "Successfully deleted daycare!!";
   },
 
   // If they want to add a child
