@@ -22,6 +22,13 @@ const exportedMethods = {
     if (!isNaN(val))
       throw `${val} is not a valid value for ${valName} as it only contains digits`;
 
+    // Other types of checks
+    if (!/[A-Z]/.test(val)) throw `${valName} should have at least one uppercase letter.`;
+
+    if (!/[0-9]/.test(val)) throw `${valName} should have at least one number.`;
+
+    if (!/[^a-zA-Z0-9]/.test(val)) throw `${valName} should have at least one special character.`;
+
     return val;
   },
 
