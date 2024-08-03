@@ -280,7 +280,7 @@ const exportedMethods = {
   },
 
 // 5. Get daycare by name from database
-export const getOrg = async (id) => {
+async getOrg (id) {
 
     if (!id) {
       throw 'You must provide id of day organization to search for'
@@ -306,4 +306,7 @@ export const getOrg = async (id) => {
     dayCare._id = dayCare._id.toString();
   
     return dayCare;
-  };
+  }
+}
+
+export default exportedMethods;
