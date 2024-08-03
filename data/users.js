@@ -119,7 +119,7 @@ const exportMethod = {
     const userCollection = await users();
     const updateInfo = await userCollection.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: updateuser }
+      { $set: updateUser }
     );
     if (!updateInfo) {
       throw "Error: Update failed, could not find user with specified ID.";
@@ -296,11 +296,42 @@ const exportMethod = {
     return "Successfully deleted daycare!!";
   },
 
-  // Add review
-  async addReview() {},
+  async loginUser(email, password) {
+    if (!email) {
+      throw new Error("Must provide an email.");
+    }
+    if (!password) {
+      throw new Error("Must provide a password.");
+    }
+    if (!validation.validateEmail(email)) {
+      throw new Error("Invalid email provided.");
+    }
 
-  // Delete review
-  async deleteReview() {},
+    const formattedEmail = email.trim().toLowerCase();
+    const userCollection = await users();
+    const resp = await userCollection.findOne({ email: formattedEmail });
+
+    if (!resp) {
+      throw new Error("Either the email address or password is invalid");
+    } else {
+      const dbPassword = resp["password"];
+
+      let passwordCompare = false;
+
+      passwordCompare = await bcryptjs.compare(password, dbPassword);
+
+      if (passwordCompare) {
+        const respObj = {};
+        respObj["firstName"] = resp["firstName"];
+        respObj["lastName"] = resp["lastName"];
+        respObj["emailAddress"] = resp["emailAddress"];
+        respObj["role"] = resp["role"];
+        return respObj;
+      } else {
+        throw new Error("Either the email address or password is invalid");
+      }
+    }
+  },
 };
 
 export default exportMethod;
