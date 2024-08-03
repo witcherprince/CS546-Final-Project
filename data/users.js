@@ -27,6 +27,7 @@ const exportMethod = {
     email = validation.checkEmail(email, "Email");
     email = email.toLowerCase();
 
+    const userCollection = await users();
     const existingUser = await userCollection.findOne({ email: email });
     if (existingUser) {
       throw "User already exists";
@@ -139,10 +140,7 @@ const exportMethod = {
       throw "Error: User not found.";
     }
 
-    const newId = insertInfo.insertedId.toString();
-    const prod = await this.getUserById(newId);
-
-    return prod;
+    return user;
   },
 
   // Delete user
