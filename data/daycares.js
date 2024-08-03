@@ -1,7 +1,7 @@
 //database of daycares: insert, delete and update
 import {daycares} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js';
+import validation from '../validation.js';
 
 //1. Insertion:
 const exportedMethods = {
@@ -104,8 +104,7 @@ const exportedMethods = {
     }
 
     const newId = insertInfo.insertedId.toString();
-    //const dayCare = await getOrg(newId);
-    const dayCare = await getOrg(name);
+    const dayCare = await this.getOrg(newId);
     dayCare._id = dayCare._id.toString();
     return dayCare;
 

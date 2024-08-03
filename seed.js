@@ -47,20 +47,35 @@ const firstDaycare = await dayCareData.addDaycare(
     'https://www.happykids.com',
     '5',
     'true',
-    ['Vegetarian', 'Non-Vegetarian'],
-    ['Full day', 'Half day'],
-    2000
+    'Vegetarian, Non-Vegetarian',
+    'Full day, Half day',
+    '2000-5000'
   );
 
-// It works!!
+// It works!
+try {
 addFav = await userData.addFavDaycare(one._id, firstDaycare._id);
 console.log(addFav);
+}
+catch (e) {
+  console.log(e)
+}
 
+try {
 let getFav = await userData.getFavDayCare(firstDaycare._id);
 console.log(getFav);
+}
+catch (e) {
+  console.log(e)
+}
 
-let delFav = await userData.delFav(one._id, firstDaycare._id);
+try {
+let delFav = await userData.removeFavDaycare(one._id, firstDaycare._id);
 console.log(delFav);
+}
+catch (e) {
+  console.log(e)
+}
 
 
 await closeConnection();

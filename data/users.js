@@ -231,7 +231,10 @@ if (addFavorite.modifiedCount === 0) {
     throw 'Daycare could not be found or removed';
  }
 
-return addFavorite;
+const newId = daycareId.toString();
+const favDaycare = await this.getFavDayCare(newId);
+
+return favDaycare;
 
 },
 
@@ -245,7 +248,7 @@ id = validation.checkId(id);
 
 // Find the daycare through given ID
 const usersCollection = await users();
-const favDaycare = await usersCollection.findOne({ favorites: id});
+const favDaycare = await usersCollection.findOne({ favorites: new ObjectId(id)});
     
 if (!favDaycare) {
     throw 'Error: Daycare not found.';
@@ -267,11 +270,13 @@ daycareId = validation.checkId(daycareId);
 
 // Time to remove
 const usersCollection = await users();
-const delDaycare = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$pull: {favorites: daycareId}});
+const delDaycare = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$pull: {favorites: new ObjectId(daycareId)}});
 
 if (delDaycare.modifiedCount === 0) {
     throw 'Error: Could not remove daycare from favorites.';
 }
+
+return 'Successfully deleted daycare!!';
 
 },
 
