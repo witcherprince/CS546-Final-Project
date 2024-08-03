@@ -1,6 +1,7 @@
 import {dbConnection, closeConnection} from './config/mongoConnection.js';
-import { dayCareData } from './data/index.js'; 
-import users from './data/users.js';
+import {userData} from './data/index.js';
+import {dayCareData} from './data/index.js'; 
+
 
 const db = await dbConnection();
 await db.dropDatabase();
@@ -12,21 +13,21 @@ let childTwo;
 let addFav;
 
 // create user works !!
-one = await users.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
+one = await userData.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
 console.log(one);
 
-two = await users.createUser("Ren", "Kozaki", 'loserLuck@yahoo.com', 'bringMeHome@44449', 'manhattan', 1002);
+two = await userData.createUser("Ren", "Kozaki", 'loserLuck@yahoo.com', 'bringMeHome@44449', 'manhattan', 1002);
 console.log(two);
 
 // Add child works !!
-childOne = await users.addChild(one._id, "Lebron", "James", 5);
+childOne = await userData.addChild(one._id, "Lebron", "James", 5);
 console.log(childOne);
 
 // remove user works!!
 //const removeOne = await users.deleteuser(one._id);
 //console.log(removeOne);
 
-childTwo = await users.addChild(one._id, "Cloud", "Strife", 2);
+childTwo = await userData.addChild(one._id, "Cloud", "Strife", 2);
 console.log(childTwo);
 
 // remove child works!!
@@ -45,13 +46,21 @@ const firstDaycare = await dayCareData.addDaycare(
     '123-456-7890',
     'https://www.happykids.com',
     '5',
-    true,
+    'true',
     ['Vegetarian', 'Non-Vegetarian'],
     ['Full day', 'Half day'],
     2000
   );
 
-addFav = await users.addFavDaycare(one._id, firstDaycare._id);
+// It works!!
+addFav = await userData.addFavDaycare(one._id, firstDaycare._id);
+console.log(addFav);
+
+let getFav = await userData.getFavDayCare(firstDaycare._id);
+console.log(getFav);
+
+let delFav = await userData.delFav(one._id, firstDaycare._id);
+console.log(delFav);
 
 
 await closeConnection();

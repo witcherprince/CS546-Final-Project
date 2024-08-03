@@ -238,9 +238,40 @@ return addFavorite;
 // Get favorite daycares of user
 async getFavDayCare (id) {
 
+id = id.toString();
+
+// Check ID
+id = validation.checkId(id);
+
+// Find the daycare through given ID
+const usersCollection = await users();
+const favDaycare = await usersCollection.findOne({ favorites: id});
+    
+if (!favDaycare) {
+    throw 'Error: Daycare not found.';
+    }
+
+return favDaycare;
+
 },
 
-async removeFavDaycare () {
+// Remove daycare
+async removeFavDaycare (userId, daycareId) {
+
+userId = userId.toString();
+daycareId = daycareId.toString();
+
+// Check ID
+userId = validation.checkId(userId);
+daycareId = validation.checkId(daycareId);
+
+// Time to remove
+const usersCollection = await users();
+const delDaycare = await usersCollection.updateOne({_id: new ObjectId(userId)}, {$pull: {favorites: daycareId}});
+
+if (delDaycare.modifiedCount === 0) {
+    throw 'Error: Could not remove daycare from favorites.';
+}
 
 },
 

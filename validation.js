@@ -4,6 +4,7 @@ const exportedMethods = {
 
 // Check ID
 checkId(id) {
+    if (!id) throw 'You must provide an ID.';
     id = id.trim();
     if (id.length === 0) {
         throw 'Id cannot be an empty string or just spaces';
