@@ -1,4 +1,5 @@
 import {dbConnection, closeConnection} from './config/mongoConnection.js';
+import { dayCareData } from './data/index.js'; 
 import users from './data/users.js';
 
 const db = await dbConnection();
@@ -8,6 +9,7 @@ let one;
 let two;
 let childOne;
 let childTwo;
+let addFav;
 
 // create user works !!
 one = await users.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
@@ -28,7 +30,28 @@ childTwo = await users.addChild(one._id, "Cloud", "Strife", 2);
 console.log(childTwo);
 
 // remove child works!!
-const removeChild = await users.removeChild(one._id, "Lebron");
-console.log(removeChild);
+//const removeChild = await users.removeChild(one._id, "Lebron");
+//console.log(removeChild);
+
+const firstDaycare = await dayCareData.addDaycare(
+    'Happy Kids',
+    'A great place for kids.',
+    '123 Happy St',
+    'Hppyville',
+    'NY',
+    '12345',
+    '9am - 5pm',
+    'contact@happykids.com',
+    '123-456-7890',
+    'https://www.happykids.com',
+    '5',
+    true,
+    ['Vegetarian', 'Non-Vegetarian'],
+    ['Full day', 'Half day'],
+    2000
+  );
+
+addFav = await users.addFavDaycare(one._id, firstDaycare._id);
+
 
 await closeConnection();

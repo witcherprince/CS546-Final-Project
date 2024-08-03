@@ -104,7 +104,8 @@ const exportedMethods = {
     }
 
     const newId = insertInfo.insertedId.toString();
-    const dayCare = await getOrg(newId);
+    //const dayCare = await getOrg(newId);
+    const dayCare = await getOrg(name);
     dayCare._id = dayCare._id.toString();
     return dayCare;
 
@@ -299,7 +300,7 @@ const exportedMethods = {
     const dayCare = await dayCaresCollection.findOne({ name: name });
   
     if (dayCare === null) {
-      throw 'No day organization with that name';
+      throw 'No daycare organization with that name';
     }
   
     dayCare._id = dayCare._id.toString();

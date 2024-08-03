@@ -37,6 +37,8 @@ checkIntroduction(val, valName) {
 checkNames(val, valName) {
     if (val.length < 2) throw `${valName} should be at least 2 characters long`;
     if (val.length > 25) throw `${valName} should not be greater than 25 characters long`;
+
+    return val;
 },
 
 checkPassword(val, valName) {
@@ -45,6 +47,8 @@ checkPassword(val, valName) {
     val = val.trim();
     if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
     if (val.length < 8) throw `${valName} should be at least 8 characters long.`;
+
+    return val;
 },
 
 //According to daycares.js, I add following validation functions:
@@ -80,7 +84,7 @@ checkZipcode(zipcode) {
 checkBusinessHour(time) {
     const timeForm = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
-    if (timeRangeRegex.test(time)) {
+    if (timeForm.test(time)) {
         throw 'Error: Not valid business hour!'
     }
     return time;
@@ -100,7 +104,7 @@ checkEmail(email) {
 checkPhone(num) {
     const phoneForm = /^(1-)?\d{3}-\d{3}-\d{4}$/;
     num = num.trim();
-    if (phoneForm.test(num)) {
+    if (!phoneForm.test(num)) {
         throw 'Error: Not a valid phone number!'
     }
     return num;
@@ -110,7 +114,7 @@ checkPhone(num) {
 checkWebsite(web) {
     const webForm = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
     web = web.trim();
-    if (webForm.test(url)) {
+    if (!webForm.test(web)) {
         throw 'Error: Not a valid website!'
     }
     return web;
@@ -128,8 +132,8 @@ checkNumber(num, numName) {
 
 //8. Boolean checking (Assume input is a string):
 checkBoolean (input, inputName) {
-    input = input.trim().toLowerCase();
-    if (input !== 'true' || input !== 'false') {
+    input = String(input).trim().toLowerCase();
+    if (input !== 'true' && input !== 'false') {
         throw `${inputName} has to be true or false!`;
     }
     return input;
