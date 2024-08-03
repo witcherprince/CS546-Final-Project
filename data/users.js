@@ -54,6 +54,23 @@ const exportMethod = {
     return user;
   },
 
+  // Delete user
+  async deleteuser(id) {
+    id = id.toString();
+    id = validation.checkId(id);
+
+    const userCollection = await users();
+    const deletion = await userCollection.findOneAndDelete({
+      _id: new ObjectId(id),
+    });
+
+    if (!deletion) {
+      throw "Could not delete user with specified ID.";
+    }
+
+    return `${deletion.firstName} has been successfully deleted!`;
+  },
+
   // Change user information -- only generic info
   async changeInfo(id, userInfo) {
     id = id.toString();
@@ -278,6 +295,12 @@ const exportMethod = {
 
     return "Successfully deleted daycare!!";
   },
+
+  // Add review
+  async addReview() {},
+
+  // Delete review
+  async deleteReview() {},
 };
 
 export default exportMethod;
