@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "seed": "node ./seed.js",
+    "seed-org": "node ./seedOrg.js",
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,7 +21,6 @@
   },
   "homepage": "https://github.com/witcherprince/CS546-Final-Project#readme",
   "dependencies": {
-    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
     "express": "^4.19.2",

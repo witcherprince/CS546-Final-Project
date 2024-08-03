@@ -19,14 +19,13 @@ export const addDaycare = async(
     yearsInBusiness, //not-requied
     availability, //not-requied, but recommend
     lunchChoices, //not-requied
-
     duration, //not-requied 
     tuitionRange //not-requied, but recommend
 ) => {
     //input checking: ...
     name = validation.checkString(name, 'name');
     introduction = validation.checkIntroduction(introduction, 'introduction');
-    address = validation.checkString(validation, 'validation');
+    address = validation.checkString(address, 'address');
     town = validation.checkString(town, 'town')
     state = validation.checkState(state);
     zipcode = validation.checkZipcode(zipcode);
@@ -92,7 +91,8 @@ export const addDaycare = async(
     }
 
     const newId = insertInfo.insertedId.toString();
-    const dayCare = await getOrg(newId);
+    //const dayCare = await getOrg(newId);
+    const dayCare = await getOrg(name);
     dayCare._id = dayCare._id.toString();
     return dayCare;
 
@@ -162,7 +162,7 @@ export const getOrg = async (name) => {
     const dayCare = await dayCaresCollection.findOne({ name: name });
   
     if (dayCare === null) {
-      throw 'No day organization with that name';
+      throw 'No daycare organization with that name';
     }
   
     dayCare._id = dayCare._id.toString();

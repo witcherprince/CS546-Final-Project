@@ -1,10 +1,10 @@
-import { dbConnection, closeConnection } from '../config/mongoConnection.js';
-import { dayCareData } from '../data/index.js'; 
+import { dbConnection, closeConnection } from './config/mongoConnection.js';
+import { dayCareData } from './data/index.js'; 
 const db = await dbConnection();
 await db.dropDatabase(); 
 
 // Seed data for daycares
-const firstDaycare = await dayCareData.addOrg(
+const firstDaycare = await dayCareData.addDaycare(
   'Happy Kids',
   { address: '123 Happy St', town: 'Happyville', zipcode: '12345' },
   '9am - 5pm',
@@ -19,7 +19,7 @@ const firstDaycare = await dayCareData.addOrg(
   2000
 );
 
-const secondDaycare = await dayCareData.addOrg(
+const secondDaycare = await dayCareData.addDaycare(
   'Bright Future',
   { address: '456 Bright Rd', town: 'Sunnyvale', zipcode: '67890' },
   '8am - 4pm',
@@ -34,7 +34,7 @@ const secondDaycare = await dayCareData.addOrg(
   2500
 );
 
-const thirdDaycare = await dayCareData.addOrg(
+const thirdDaycare = await dayCareData.addDaycare(
   'Little Learners',
   { address: '789 Little Lane', town: 'Springfield', zipcode: '54321' },
   '7am - 6pm',
@@ -49,7 +49,7 @@ const thirdDaycare = await dayCareData.addOrg(
   2200
 );
 
-const fourthDaycare = await dayCareData.addOrg(
+const fourthDaycare = await dayCareData.addDaycare(
   'Sunshine Academy',
   { address: '101 Sunshine Blvd', town: 'Greenwich', zipcode: '11223' },
   '9am - 5pm',
@@ -64,7 +64,7 @@ const fourthDaycare = await dayCareData.addOrg(
   3000
 );
 
-const fifthDaycare = await dayCareData.addOrg(
+const fifthDaycare = await dayCareData.addDaycare(
   'Happy Feet',
   { address: '202 Happy St', town: 'Lakeside', zipcode: '67890' },
   '8am - 5pm',
@@ -79,7 +79,7 @@ const fifthDaycare = await dayCareData.addOrg(
   2100
 );
 
-const sixthDaycare = await dayCareData.addOrg(
+const sixthDaycare = await dayCareData.addDaycare(
   'Rainbow Kids',
   { address: '303 Rainbow Ave', town: 'Pleasantville', zipcode: '98765' },
   '9am - 4pm',
@@ -94,7 +94,7 @@ const sixthDaycare = await dayCareData.addOrg(
   2300
 );
 
-const seventhDaycare = await dayCareData.addOrg(
+const seventhDaycare = await dayCareData.addDaycare(
   'Early Steps',
   { address: '404 Early St', town: 'Brighton', zipcode: '34567' },
   '7:30am - 6:30pm',
@@ -109,7 +109,7 @@ const seventhDaycare = await dayCareData.addOrg(
   2400
 );
 
-const eighthDaycare = await dayCareData.addOrg(
+const eighthDaycare = await dayCareData.addDaycare(
   'Learning Tree',
   { address: '505 Learning Rd', town: 'Mapleton', zipcode: '45678' },
   '8am - 4pm',
@@ -124,7 +124,7 @@ const eighthDaycare = await dayCareData.addOrg(
   2500
 );
 
-const ninthDaycare = await dayCareData.addOrg(
+const ninthDaycare = await dayCareData.addDaycare(
   'Kids Kingdom',
   { address: '606 Kingdom Blvd', town: 'Royal City', zipcode: '56789' },
   '9am - 5pm',
@@ -139,7 +139,7 @@ const ninthDaycare = await dayCareData.addOrg(
   2600
 );
 
-const tenthDaycare = await dayCareData.addOrg(
+const tenthDaycare = await dayCareData.addDaycare(
   'Creative Minds',
   { address: '707 Creative Dr', town: 'Artville', zipcode: '67890' },
   '9am - 3pm',

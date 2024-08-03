@@ -2,7 +2,7 @@ import {ObjectId} from 'mongodb';
 import {users} from '../config/mongoCollections.js';
 import {daycares} from '../config/mongoCollections.js';
 import validation from '../validation.js'
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 
 // First, we want to create a user
 const exportMethod = {
@@ -21,11 +21,11 @@ firstname = validation.checkNames(firstname, 'First name');
 lastname = validation.checkNames(lastname, 'Last name');
 
 // Check password and then hash it
-password = password.checkPassword(password, 'Password');
-const hash = await bcrypt.hash(password, 16);
+password = validation.checkPassword(password, 'Password');
+const hash = await bcryptjs.hash(password, 16);
 
 // Check email
-email = email.checkEmail(email, 'Email');
+email = validation.checkEmail(email, 'Email');
 email = email.toLowerCase();
 
 const userCollection = await users();
@@ -196,6 +196,9 @@ return `${byeChild.firstName} has been successfully deleted!`;
 // Add favorite daycare
 // When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
 async addFavDaycare (userId, daycareId) {
+
+userId = userId.toString();
+daycareId - daycareId.toString();
 
 // Check IDs
 userId = validation.checkId(userId);
