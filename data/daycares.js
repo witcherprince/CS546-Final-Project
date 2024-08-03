@@ -113,7 +113,7 @@ const exportedMethods = {
 
 //2. Deletion:
   async removeDaycare (id)  {
-    if (!id instanceof ObjectId) {
+    if (!(id instanceof ObjectId)) {
         id = validation.checkId(id);
         id = new ObjectId(id);
     }
@@ -134,7 +134,7 @@ const exportedMethods = {
 //a. update everything:
   async updateDaycare (id, updatedInfor) {
     //Data checking:
-    if (!id instanceof ObjectId) {
+    if (!(id instanceof ObjectId)) {
         id = validation.checkId(id);
         id = new ObjectId(id);
     }
@@ -239,7 +239,7 @@ const exportedMethods = {
 
 // b. only update the availability:
   async updateAvailability (id, availability) {
-    if (!id instanceof ObjectId) {
+    if (!(id instanceof ObjectId)) {
         id = validation.checkId(id);
         id = new ObjectId(id);
     }
