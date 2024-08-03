@@ -90,7 +90,7 @@ checkBusinessHour(time) {
     // corrected timeForm to timeRangeRegex
     const timeRangeRegex = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
-    if (timeForm.test(time)) {
+    if (timeRangeRegex.test(time)) {
         throw 'Error: Not valid business hour!'
     }
     return time;
