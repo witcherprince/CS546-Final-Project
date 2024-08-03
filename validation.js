@@ -70,7 +70,12 @@ checkZipcode(zipcode) {
 
 //3. Business Hour checking:
 checkBusinessHour(time) {
-    const timeForm = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
+    if (typeof time !== 'string') {
+        throw 'Error: Business hours must be a string!';
+    }
+
+    // corrected timeForm to timeRangeRegex
+    const timeRangeRegex = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
     if (timeRangeRegex.test(time)) {
         throw 'Error: Not valid business hour!'
@@ -92,8 +97,9 @@ checkEmail (email) {
 checkPhone(num) {
     const phoneForm = /^(1-)?\d{3}-\d{3}-\d{4}$/;
     num = num.trim();
-    if (phoneForm.test(num)) {
-        throw 'Error: Not a valid phone number!'
+    
+    if (!phoneForm.test(num)) {
+        throw 'Error: Not a valid phone number!';
     }
     return num;
 },
@@ -102,7 +108,8 @@ checkPhone(num) {
 checkWebsite(web) {
     const webForm = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
     web = web.trim();
-    if (webForm.test(url)) {
+    // corrected web instead of url, if not match throw error
+    if (!webForm.test(web)) {
         throw 'Error: Not a valid website!'
     }
     return web;
@@ -110,7 +117,7 @@ checkWebsite(web) {
 
 //7. Number checking: checking if the input is an integer and >= 0
 checkNumber(num, numName) {
-    num = num.trim();
+    // num = num.trim(); cannot trim type of number
     let number = Number(num);
     if (!Number.isInteger(number) || number < 0) {
         throw `${numName} has to be a positive integer!`;
@@ -121,10 +128,20 @@ checkNumber(num, numName) {
 //8. Boolean checking (Assume input is a string):
 checkBoolean (input, inputName) {
     input = input.trim().toLowerCase();
-    if (input !== 'true' || input !== 'false') {
+    if (input !== 'true' && input !== 'false') {
         throw `${inputName} has to be true or false!`;
     }
     return input;
+},
+
+// added to check object
+isValidObject(obj) {
+
+    if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+        throw 'provide input object'
+    }
+
+    return obj;
 }
 
 
