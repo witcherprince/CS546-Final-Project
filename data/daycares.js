@@ -24,7 +24,7 @@ const exportedMethods = {
 )  {
     //input checking: ...
     name = validation.checkString(name, 'name');
-    introduction = validation.checkString(introduction, 'introduction');
+    introduction = validation.checkIntroduction(introduction, 'introduction');
     address = validation.checkString(address, 'Address');
     town = validation.checkString(town, 'town');
     state = validation.checkState(state);

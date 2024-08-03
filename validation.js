@@ -16,7 +16,17 @@ checkId(id) {
 checkString(val, valName) {
     if (!val) throw `You must provide a ${valName}`;
     if (typeof val !== 'string') throw `${valName} must be a string`;
-    val = val.trim(); 
+    val = val.trim()
+    if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
+    if (!isNaN(val)) throw `${val} is not a valid value for ${valName} as it only contains digits`
+
+    return val;
+
+},
+
+checkIntroduction(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== 'string') throw `${valName} must be a string`;
     if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
     if (!isNaN(val)) throw `${val} is not a valid value for ${valName} as it only contains digits`
 
@@ -77,7 +87,7 @@ checkBusinessHour(time) {
 },
 
 //4. Email checking:
-checkEmail (email) {
+checkEmail(email) {
     const emailForm = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     email = email.trim();
     if (!emailForm.test(email)) {
