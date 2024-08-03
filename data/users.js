@@ -328,7 +328,7 @@ const exportMethod = {
 
       let passwordCompare = false;
 
-      passwordCompare = await bcrypt.compare(password, dbPassword);
+      passwordCompare = await bcryptjs.compare(password, dbPassword);
 
       if (passwordCompare) {
         const respObj = {};
