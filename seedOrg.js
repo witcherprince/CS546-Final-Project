@@ -1,5 +1,5 @@
 import { dbConnection, closeConnection } from './config/mongoConnection.js';
-import * as dayCareData from './data/daycares.js'; 
+import { dayCareData } from './data/index.js'; 
 const db = await dbConnection();
 await db.dropDatabase(); 
 

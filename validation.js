@@ -4,8 +4,6 @@ const exportedMethods = {
 
 // Check ID
 checkId(id) {
-    if (!id) throw 'You must provide an id';
-    if (typeof id !== 'string') throw 'ID must be a string';
     id = id.trim();
     if (id.length === 0) {
         throw 'Id cannot be an empty string or just spaces';
@@ -18,7 +16,17 @@ checkId(id) {
 checkString(val, valName) {
     if (!val) throw `You must provide a ${valName}`;
     if (typeof val !== 'string') throw `${valName} must be a string`;
-    //val = val.trim(); When I use checkString for introduction, I can't accept trim() result.
+    val = val.trim()
+    if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
+    if (!isNaN(val)) throw `${val} is not a valid value for ${valName} as it only contains digits`
+
+    return val;
+
+},
+
+checkIntroduction(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== 'string') throw `${valName} must be a string`;
     if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
     if (!isNaN(val)) throw `${val} is not a valid value for ${valName} as it only contains digits`
 
@@ -29,6 +37,8 @@ checkString(val, valName) {
 checkNames(val, valName) {
     if (val.length < 2) throw `${valName} should be at least 2 characters long`;
     if (val.length > 25) throw `${valName} should not be greater than 25 characters long`;
+
+    return val;
 },
 
 checkPassword(val, valName) {
@@ -37,6 +47,8 @@ checkPassword(val, valName) {
     val = val.trim();
     if (val.length === 0) throw `${valName} cannot be an empty string or just spaces`;
     if (val.length < 8) throw `${valName} should be at least 8 characters long.`;
+
+    return val;
 },
 
 //According to daycares.js, I add following validation functions:
@@ -77,14 +89,14 @@ checkBusinessHour(time) {
     // corrected timeForm to timeRangeRegex
     const timeRangeRegex = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
-    if (timeRangeRegex.test(time)) {
+    if (timeForm.test(time)) {
         throw 'Error: Not valid business hour!'
     }
     return time;
 },
 
 //4. Email checking:
-checkEmail (email) {
+checkEmail(email) {
     const emailForm = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     email = email.trim();
     if (!emailForm.test(email)) {
@@ -97,9 +109,8 @@ checkEmail (email) {
 checkPhone(num) {
     const phoneForm = /^(1-)?\d{3}-\d{3}-\d{4}$/;
     num = num.trim();
-    
     if (!phoneForm.test(num)) {
-        throw 'Error: Not a valid phone number!';
+        throw 'Error: Not a valid phone number!'
     }
     return num;
 },
@@ -108,7 +119,6 @@ checkPhone(num) {
 checkWebsite(web) {
     const webForm = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
     web = web.trim();
-    // corrected web instead of url, if not match throw error
     if (!webForm.test(web)) {
         throw 'Error: Not a valid website!'
     }
@@ -134,7 +144,6 @@ checkBoolean (input, inputName) {
     return input;
 },
 
-// added to check object
 isValidObject(obj) {
 
     if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
@@ -142,6 +151,17 @@ isValidObject(obj) {
     }
 
     return obj;
+},
+
+//9. For reviews.js, rating has to be 1 decimal number between 0 - 5
+checkRating (rate) {
+    rate = rate.toString().trim();
+
+    const rateForm = /^(0|[1-5])(\.[0-9])?$/;
+    if (!rateForm.test(rate)) {
+      throw 'Rating is between 0 to 5 with no more than one decimal place.';
+    }
+    return rate;
 }
 
 
