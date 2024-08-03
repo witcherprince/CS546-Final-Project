@@ -82,7 +82,12 @@ checkZipcode(zipcode) {
 
 //3. Business Hour checking:
 checkBusinessHour(time) {
-    const timeForm = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
+    if (typeof time !== 'string') {
+        throw 'Error: Business hours must be a string!';
+    }
+
+    // corrected timeForm to timeRangeRegex
+    const timeRangeRegex = /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
     time = time.trim();
     if (timeForm.test(time)) {
         throw 'Error: Not valid business hour!'
@@ -122,7 +127,7 @@ checkWebsite(web) {
 
 //7. Number checking: checking if the input is an integer and >= 0
 checkNumber(num, numName) {
-    num = num.trim();
+    // num = num.trim(); cannot trim type of number
     let number = Number(num);
     if (!Number.isInteger(number) || number < 0) {
         throw `${numName} has to be a positive integer!`;
@@ -132,11 +137,20 @@ checkNumber(num, numName) {
 
 //8. Boolean checking (Assume input is a string):
 checkBoolean (input, inputName) {
-    input = String(input).trim().toLowerCase();
+    input = input.trim().toLowerCase();
     if (input !== 'true' && input !== 'false') {
         throw `${inputName} has to be true or false!`;
     }
     return input;
+},
+
+isValidObject(obj) {
+
+    if (obj === null || typeof obj !== 'object' || Array.isArray(obj)) {
+        throw 'provide input object'
+    }
+
+    return obj;
 },
 
 //9. For reviews.js, rating has to be 1 decimal number between 0 - 5

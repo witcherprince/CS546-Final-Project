@@ -280,24 +280,24 @@ const exportedMethods = {
   },
 
 // 5. Get daycare by name from database
-  async getOrg(name) {
+export const getOrg = async (id) => {
 
-    if (!name) {
-      throw 'You must provide an name of day organization to search for'
+    if (!id) {
+      throw 'You must provide id of day organization to search for'
     };
   
-    if (typeof name !== 'string') {
+    if (typeof id !== 'string') {
       throw 'Id must be a string';
     } 
   
-    if (name.trim().length === 0) {
+    if (id.trim().length === 0) {
       throw 'Name of day organization cannot be an empty string or just spaces';
     }
   
-    name = name.trim();
+    id = id.trim();
   
     const dayCaresCollection = await daycares();
-    const dayCare = await dayCaresCollection.findOne({ name: name });
+    const dayCare = await dayCaresCollection.findOne({ _id: new ObjectId(id) });
   
     if (dayCare === null) {
       throw 'No daycare organization with that name';
@@ -306,8 +306,4 @@ const exportedMethods = {
     dayCare._id = dayCare._id.toString();
   
     return dayCare;
-  
-  }
-
-}; 
-export default exportedMethods;
+  };
