@@ -1,13 +1,13 @@
 import { ObjectId } from "mongodb";
 import { users } from "../config/mongoCollections.js";
 import { daycares } from "../config/mongoCollections.js";
+import { reviews } from "../config/mongoCollections.js";
 import validation from "../validation.js";
 import bcryptjs from "bcryptjs";
 
 // First, we want to create a user
 const exportMethod = {
   async createUser(firstname, lastname, email, password, town, zipcode) {
-    
     // Checking
     firstname = validation.checkString(firstname, "First name");
     lastname = validation.checkString(lastname, "Last name");
@@ -21,6 +21,8 @@ const exportMethod = {
     // Check email
     email = validation.checkEmail(email, "Email");
     email = email.toLowerCase();
+
+    const userCollection = await users();
 
     const existingUser = await userCollection.findOne({ email: email });
     if (existingUser) {
@@ -48,91 +50,120 @@ const exportMethod = {
 
     const newId = insertInfo.insertedId.toString();
     const user = await this.getUserById(newId);
-    
+
     return user;
+  },
 
-},
+  // Delete user
+  async deleteuser(id) {
+    id = id.toString();
+    id = validation.checkId(id);
 
-// Change user information -- only generic info
-async changeInfo (id, userInfo) {
-id = id.toString();
+    const userCollection = await users();
+    const deletion = await userCollection.findOneAndDelete({
+      _id: new ObjectId(id),
+    });
 
-// Checking stuff
-id = validation.checkId(id);
-userInfo = validation.isValidObject(userInfo);
-
-const updateUser = {};
-
-if (userInfo.firstName) {
-    updateUser.firstName = validation.checkString(userInfo.firstname, 'First name');
-}
-
-if (userInfo.lastName) {
-    updateUser.lastName = validation.checkString(userInfo.lastName, 'Last name');
-}
-
-if (userInfo.email) {
-    updateUser.email = validation.checkEmail(userInfo.email, 'Email');
-}
-
-// No change password here, because change password should have its own function
-
-// might need to do a deeper search?
-if (userInfo.location.town && typeof userInfo.location === 'object') {
-    updateUser.location.town = validation.checkString(userInfo.location.town, "Town")
-}
-
-if (userInfo.location.zipcode && typeof userInfo.location === 'object') {
-    updateUser.location.zipcode = validation.checkZipcode(userInfo.location.zipcode, "Zipcode")
-}
-
-const userCollection = await users();
-const updateInfo = await userCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: updateuser});
-if (!updateInfo) {
-    throw 'Error: Update failed, could not find user with specified ID.'
-}
-
-return updateInfo;
-
-},
-
-// Delete user
-async deleteuser (id) {
-id = id.toString();
-id = validation.checkId(id);
-
-const userCollection = await users();
-const deletion = await userCollection.findOneAndDelete({_id: new ObjectId(id)});
-
-if (!deletion) {
-    throw 'Could not delete user with specified ID.'
-}
-
-return `${deletion.firstName} has been successfully deleted!`;
-
-},
-
-async changePassword () {},
-
-// Get user by their username
-async getUser (username) {},
-
-// Get user by their ID
-async getUserById (id) {
-
-id = validation.checkId(id);
-
-const usersCollection = await users();
-const user = await usersCollection.findOne({_id: new ObjectId(id)});
-    
-if (!user) {
-    throw 'Error: User not found.';
+    if (!deletion) {
+      throw "Could not delete user with specified ID.";
     }
 
-return user;
+    return `${deletion.firstName} has been successfully deleted!`;
+  },
 
-},
-  
+  // Change user information -- only generic info
+  async changeInfo(id, userInfo) {
+    id = id.toString();
+
+    // Checking stuff
+    id = validation.checkId(id);
+    userInfo = validation.isValidObject(userInfo);
+
+    const updateUser = {};
+
+    if (userInfo.firstName) {
+      updateUser.firstName = validation.checkString(
+        userInfo.firstname,
+        "First name"
+      );
+    }
+
+    if (userInfo.lastName) {
+      updateUser.lastName = validation.checkString(
+        userInfo.lastName,
+        "Last name"
+      );
+    }
+
+    if (userInfo.email) {
+      updateUser.email = validation.checkEmail(userInfo.email, "Email");
+    }
+
+    // No change password here, because change password should have its own function
+
+    // might need to do a deeper search?
+    if (userInfo.location.town && typeof userInfo.location === "object") {
+      updateUser.location.town = validation.checkString(
+        userInfo.location.town,
+        "Town"
+      );
+    }
+
+    if (userInfo.location.zipcode && typeof userInfo.location === "object") {
+      updateUser.location.zipcode = validation.checkZipcode(
+        userInfo.location.zipcode,
+        "Zipcode"
+      );
+    }
+
+    const userCollection = await users();
+    const updateInfo = await userCollection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updateuser }
+    );
+    if (!updateInfo) {
+      throw "Error: Update failed, could not find user with specified ID.";
+    }
+
+    return updateInfo;
+  },
+
+  // Delete user
+  async deleteuser(id) {
+    id = id.toString();
+    id = validation.checkId(id);
+
+    const userCollection = await users();
+    const deletion = await userCollection.findOneAndDelete({
+      _id: new ObjectId(id),
+    });
+
+    if (!deletion) {
+      throw "Could not delete user with specified ID.";
+    }
+
+    return `${deletion.firstName} has been successfully deleted!`;
+  },
+
+  async changePassword() {},
+
+  // Get user by their username
+  async getUser(username) {},
+
+  // Get user by their ID
+  async getUserById(id) {
+    id = validation.checkId(id);
+
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!user) {
+      throw "Error: User not found.";
+    }
+
+    return user;
+  },
+
   // If they want to add a child
   async addChild(id, firstname, lastname, age) {
     id = id.toString();
@@ -172,9 +203,8 @@ return user;
     }
 
     return `${byeChild.firstName} has been successfully deleted!`;
-  },  
-  
-  
+  },
+
   // Add favorite daycare
   // When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
   async addFavDaycare(userId, daycareId) {
@@ -195,9 +225,11 @@ return user;
     }
 
     // Now we want to search for the daycare id to see if it even exists
-    const daycare = await daycareCollection.findOne({_id: new ObjectId(daycareId)});
+    const daycare = await daycareCollection.findOne({
+      _id: new ObjectId(daycareId),
+    });
     if (!daycare) {
-      throw 'Daycare not found.';
+      throw "Daycare not found.";
     }
 
     // Now, lets check if this user already has this daycare in their favorites list. If not, it will be added
@@ -269,43 +301,6 @@ return user;
 
   // Delete review
   async deleteReview() {},
-  
-  async loginUser(email, password) {
-    if (!email) {
-      throw new Error("Must provide an email.");
-    }
-    if (!password) {
-      throw new Error("Must provide a password.");
-    }
-    if (!validation.validateEmail(email)) {
-      throw new Error("Invalid email provided.");
-    }
-
-    const formattedEmail = email.trim().toLowerCase();
-    const userCollection = await users();
-    const resp = await userCollection.findOne({ email: formattedEmail });
-
-    if (!resp) {
-      throw new Error("Either the email address or password is invalid");
-    } else {
-      const dbPassword = resp["password"];
-
-      let passwordCompare = false;
-
-      passwordCompare = await bcryptjs.compare(password, dbPassword);
-
-      if (passwordCompare) {
-        const respObj = {};
-        respObj["firstName"] = resp["firstName"];
-        respObj["lastName"] = resp["lastName"];
-        respObj["emailAddress"] = resp["emailAddress"];
-        respObj["role"] = resp["role"];
-        return respObj;
-      } else {
-        throw new Error("Either the email address or password is invalid");
-      }
-    }
-  },
 };
 
 export default exportMethod;
