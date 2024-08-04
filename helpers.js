@@ -12,35 +12,35 @@ export function isValidString(str) {
 
 export function isValidArray(arr) {
     if (!Array.isArray(arr)) {
-        throw 'provide input array'
+        throw new Error('Provide input array');
     }
 
     if (arr.length === 0) {
-        throw 'array must have at least one element'
+        throw new Error('Array must have at least one element');
     }
 
-    let newArr = [];
-
-    arr.forEach(elem => {if (typeof (elem) === 'string') {newArr.push(elem)}})
-    if (arr.length !== newArr.length) {
-        throw ' One of the elements in the array is not string'
-    }
-
-    for (let i = 0; i < arr.length; i++) {
-
-        let elem = arr[i];
-    
-        let trimElem = elem.trim();
-    
-        if (trimElem.length === 0) {
-          throw 'one of the elements in the array has empty spaces';
+    let newArr = arr.map(elem => {
+        if (typeof elem !== 'string') {
+            throw new Error('One of the elements in the array is not a string');
         }
+        return elem.trim();
+    });
 
-        arr[i] = trimElem;
-    }
+    newArr.forEach(elem => {
+        if (elem.length === 0) {
+            throw new Error('One of the elements in the array has empty spaces');
+        }
+    });
 
+    newArr.forEach(elem => {
+        if (elem.includes(',')) {
+            throw new Error('Elements should not contain commas');
+        }
+    });
 
+    return newArr;
 }
+
 
 export function isProperId(id) {
     
@@ -121,6 +121,91 @@ export function isValidEmail(email) {
         throw 'provide valid email';
     }
 }
+
+export function checkState(state) {
+    const validState = new Set([
+      "AL",
+      "AK",
+      "AZ",
+      "AR",
+      "CA",
+      "CO",
+      "CT",
+      "DE",
+      "FL",
+      "GA",
+      "HI",
+      "ID",
+      "IL",
+      "IN",
+      "IA",
+      "KS",
+      "KY",
+      "LA",
+      "ME",
+      "MD",
+      "MA",
+      "MI",
+      "MN",
+      "MS",
+      "MO",
+      "MT",
+      "NE",
+      "NV",
+      "NH",
+      "NJ",
+      "NM",
+      "NY",
+      "NC",
+      "ND",
+      "OH",
+      "OK",
+      "OR",
+      "PA",
+      "RI",
+      "SC",
+      "SD",
+      "TN",
+      "TX",
+      "UT",
+      "VT",
+      "VA",
+      "WA",
+      "WV",
+      "WI",
+      "WY",
+    ]);
+
+    state = state.toUpperCase().trim();
+    if (!validState.has(state)) {
+      throw "Error: Not valid state!";
+    }
+
+    return state;
+  }
+
+  export function checkBusinessHour(time) {
+    if (typeof time !== "string") {
+      throw "Error: Business hours must be a string!";
+    }
+
+    // corrected timeForm to timeRangeRegex
+    const timeRangeRegex =
+      /^(1[0-2]|[1-9]):[0-5][0-9] (AM|PM) - (1[0-2]|[1-9]):[0-5][0-9] (AM|PM)$/;
+    time = time.trim();
+    if (timeRangeRegex.test(time)) {
+      throw "Error: Not valid business hour!";
+    }
+    return time;
+  }
+
+  export function checkBoolean(input, inputName) {
+    input = input.trim().toLowerCase();
+    if (input !== "true" && input !== "false") {
+      throw `${inputName} has to be true or false!`;
+    }
+    return input;
+  }
 
 
 
