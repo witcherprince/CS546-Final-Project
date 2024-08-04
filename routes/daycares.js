@@ -3,10 +3,15 @@ import daycareFun from "../data/daycares.js";
 import {
   isProperId,
   isValidString,
-  isValidObject,
-  isValidBoolean,
   isValidNumber,
   isValidArray,
+  checkState,
+  isValidZip,
+  isValidEmail,
+  isValidPhone,
+  isValidWebsite,
+  checkBusinessHour,
+  checkBoolean
 } from "../helpers.js";
 import express from "express";
 
@@ -21,10 +26,11 @@ router.route("/").get(async (req, res) => {
 });
 
 router
-  .get("/new", (req, res) => {
-    res.render("daycares/newDayCare");
+  .get("/addDayCare", (req, res) => {
+    res.render("daycares/addDayCare");
   })
-  .post(async (req, res) => {
+  .post("/addDayCare", async (req, res) => {
+    console.log("Request Body:", req.body);
     const dayCarePostData = req.body;
     if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
       return res
@@ -35,35 +41,42 @@ router
     try {
       isValidString(dayCarePostData.name);
       isValidString(dayCarePostData.introduction);
-      isValidObject(dayCarePostData.location);
-      isValidString(dayCarePostData.businessHours);
-      isValidObject(dayCarePostData.contactInfo);
-      isValidNumber(dayCarePostData.yearsInBusiness);
-      isValidNumber(dayCarePostData.ranking);
-      isValidBoolean(dayCarePostData.availability);
-      isValidArray(dayCarePostData.lunchOptions);
-      isValidArray(dayCarePostData.duration);
-      isValidNumber(dayCarePostData.tuitionRange);
+      isValidString(dayCarePostData.address);
+      isValidString(dayCarePostData.town);
+      checkState(dayCarePostData.state);
+      isValidZip(dayCarePostData.zipcode);
+      checkBusinessHour(dayCarePostData.businessHours);
+      isValidEmail(dayCarePostData.email);
+      isValidPhone(dayCarePostData.phone);
+      dayCarePostData.website = dayCarePostData.website ? isValidWebsite(dayCarePostData.website) : null;
+      dayCarePostData.yearsInBusiness = dayCarePostData.yearsInBusiness ? isValidNumber(dayCarePostData.yearsInBusiness) : null;
+      dayCarePostData.availability = dayCarePostData.availability ? checkBoolean(dayCarePostData.availability, "availability") : null;
+      dayCarePostData.lunchOptions = dayCarePostData.lunchOptions ? isValidArray(dayCarePostData.lunchOptions) : null;
+      dayCarePostData.duration = dayCarePostData.duration ? isValidArray(dayCarePostData.duration) : null;
+      dayCarePostData.tuitionRange = dayCarePostData.tuitionRange ? isValidString(dayCarePostData.tuitionRange) : null;
     } catch (e) {
       return res.status(400).render("error", { error: e });
     }
 
     try {
-      await daycareFun.addDayCare(
+      await daycareFun.addDaycare(
         dayCarePostData.name,
-        dayCarePostData.location,
+        dayCarePostData.introduction,
+        dayCarePostData.address,
+        dayCarePostData.town,
+        dayCarePostData.state,
+        dayCarePostData.zipcode,
         dayCarePostData.businessHours,
-        dayCarePostData.contactInfo,
+        dayCarePostData.email,
+        dayCarePostData.phone,
+        dayCarePostData.website,
         dayCarePostData.yearsInBusiness,
-        dayCarePostData.ranking,
         dayCarePostData.availability,
         dayCarePostData.lunchOptions,
-        dayCarePostData.description,
         dayCarePostData.duration,
-        dayCarePostData.parentReview,
         dayCarePostData.tuitionRange
       );
-      res.redirect("/daycares/new");
+      res.redirect("/daycares");
     } catch (e) {
       res.status(500).render("error", { error: e });
     }
@@ -81,13 +94,13 @@ router.get("/dayCareList", async (req, res) => {
 });
 
 router
-  .route("/daycares/:name")
+  .route("/daycares/id")
   .get(async (req, res) => {
     const { name } = req.params;
     try {
-      let validName = isValidString(name);
+      let validName = isValidString(id);
       validName = validName.trim();
-      const dayCare = await daycareFun.getOrg(validName);
+      const dayCare = await daycareFun.getOrg(id);
 
       if (!dayCare) {
         return res.status(404).render("error", { error: "Daycare not found" });
