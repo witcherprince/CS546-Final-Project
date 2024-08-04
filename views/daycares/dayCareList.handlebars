@@ -1,0 +1,25 @@
+<section>
+    <h2>List of Day Care Organizations</h2>
+    <ul>
+        {{#each dayCares}}
+            <li>
+                <h3>{{this.name}}</h3>
+                <p>Location:</p>
+                <ul>
+                    <li>Address: {{this.location.address}}</li>
+                    <li>Town: {{this.location.town}}</li>
+                    <li>State: {{this.location.state}}</li>
+                    <li>Zipcode: {{this.location.zipcode}}</li>
+                </ul>
+                <p>Ranking: {{this.ranking}}</p>
+                <p>Introduction: {{this.introduction}}</p>
+                <a href="/daycares/{{this._id}}" class="view-details-button">
+                    View Details
+                    <span class="arrow-icon">&#x2192;</span>
+                </a>
+            </li>
+        {{/each}}
+    </ul>
+</section>
+
+
