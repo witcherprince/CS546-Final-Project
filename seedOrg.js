@@ -7,76 +7,97 @@ try {
   console.log('Seeding database...');
 
   // Seed data
-  const firstDaycare = await dayCareData.addDayCare(
-    'Happy Kids',
-    'A great place for kids.',
-    { address: '123 Happy St', town: 'Happyville', state: 'NY', zipcode: '12345' },
-    { email: 'contact@happykids.com', phone: '1-123-456-7890', website: 'http://www.happykids.com' },
-    '9am - 5pm',
-    '2000-2500',
-    'true',
-    5,
-    ['Vegetarian', 'Non-Vegetarian'],
-    ['Full day', 'Half day']
+  const firstDaycare = await dayCareData.addDaycare(
+    'Happy Kids', // name
+    'A great place for kids.', // introduction
+    '123 Happy St', // address
+    'Happyville', // town
+    'NY', // state
+    '12345', // zipcode
+    '9am - 5pm', // businessHours
+    'contact@happykids.com', // email
+    '1-123-456-7890', // phone
+    'http://www.happykids.com', // website (optional, can be null or undefined if not provided)
+    5, // yearsInBusiness (optional, can be null or undefined if not provided)
+    'true', // availability (optional, can be null or undefined if not provided)
+    'Vegetarian, Non-Vegetarian', // lunchChoices (string, comma-separated)
+    'Full day, Half day', // duration (string, comma-separated)
+    '2000-2500' // tuitionRange (optional, can be null or undefined if not provided)
   );
-  console.log('First daycare added:', firstDaycare);
 
-  const secondDaycare = await dayCareData.addDayCare(
+  const secondDaycare = await dayCareData.addDaycare(
     'Bright Future',
     'Focused on early childhood development.',
-    { address: '456 Bright Rd', town: 'Sunnyvale', state: 'CA', zipcode: '67890' },
-    { email: 'info@brightfuture.com', phone: '1-987-654-3210', website: 'http://www.brightfuture.com' },
+    '456 Bright Rd',
+    'Sunnyvale',
+    'CA',
+    '67890',
     '8am - 4pm',
-    '2500-3000',
-    'true',
+    'info@brightfuture.com',
+    '1-987-654-3210',
+    'http://www.brightfuture.com',
     10,
-    ['Vegetarian'],
-    ['Full day']
+    'true',
+    'Vegetarian',
+    'Full day',
+    '2500-3000'
   );
-  console.log('Second daycare added:', secondDaycare);
-
-  const thirdDaycare = await dayCareData.addDayCare(
+  
+  const thirdDaycare = await dayCareData.addDaycare(
     'Little Learners',
     'Learning through play in a safe environment.',
-    { address: '789 Little Lane', town: 'Springfield', state: 'IL', zipcode: '54321' },
-    { email: 'contact@littlelearners.com', phone: '1-555-123-4567', website: 'http://www.littlelearners.com' },
+    '789 Little Lane',
+    'Springfield',
+    'IL',
+    '54321',
     '7am - 6pm',
-    '2200-2750',
-    'true',
+    'contact@littlelearners.com',
+    '1-555-123-4567',
+    'http://www.littlelearners.com',
     8,
-    ['Non-Vegetarian', 'Gluten-Free'],
-    ['Half day', 'Full day']
+    'true',
+    'Non-Vegetarian, Gluten-Free',
+    'Half day, Full day',
+    '2200-2750'
   );
-  console.log('Third daycare added:', thirdDaycare);
-
-  const fourthDaycare = await dayCareData.addDayCare(
+  
+  const fourthDaycare = await dayCareData.addDaycare(
     'Sunshine Academy',
     'Where sunshine meets learning!',
-    { address: '101 Sunshine Blvd', town: 'Greenwich', state: 'CT', zipcode: '11223' },
-    { email: 'support@sunshineacademy.com', phone: '1-444-555-6666', website: 'http://www.sunshineacademy.com' },
+    '101 Sunshine Blvd',
+    'Greenwich',
+    'CT',
+    '11223',
     '9am - 5pm',
-    '3000-3200',
-    'false',
+    'support@sunshineacademy.com',
+    '1-444-555-6666',
+    'http://www.sunshineacademy.com',
     7,
-    ['Vegetarian', 'Non-Vegetarian', 'Allergy-Free'],
-    ['Full day']
+    'false',
+    'Vegetarian, Non-Vegetarian, Allergy-Free',
+    'Full day',
+    '3000-3200'
   );
-  console.log('Fourth daycare added:', fourthDaycare);
 
-  const fifthDaycare = await dayCareData.addDayCare(
+  
+  const fifthDaycare = await dayCareData.addDaycare(
     'Happy Feet',
     'Nurturing and fun environment for all kids.',
-    { address: '202 Happy St', town: 'Lakeside', state: 'NV', zipcode: '67890' },
-    { email: 'contact@happyfeet.com', phone: '1-333-444-5555', website: 'http://www.happyfeet.com' },
+    '202 Happy St',
+    'Lakeside',
+    'NV',
+    '67890',
     '8am - 5pm',
-    '2100-2300',
-    'true',
+    'contact@happyfeet.com',
+    '1-333-444-5555',
+    'http://www.happyfeet.com',
     6,
-    ['Vegetarian'],
-    ['Full day', 'Half day']
+    'true',
+    'Vegetarian',
+    'Full day, Half day',
+    '2100-2300'
   );
-  console.log('Fifth daycare added:', fifthDaycare);
-
+ 
   console.log('Done seeding database');
 } catch (error) {
   console.error('Error during seeding:', error);
