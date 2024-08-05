@@ -322,6 +322,7 @@ const exportMethod = {
 
       if (passwordCompare) {
         const respObj = {};
+        respObj["id"] = resp["_id"];
         respObj["firstName"] = resp["firstName"];
         respObj["lastName"] = resp["lastName"];
         respObj["emailAddress"] = resp["emailAddress"];
