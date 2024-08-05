@@ -290,6 +290,11 @@ const exportedMethods = {
     return await dayCaresCollection.findOne({ _id: id });
   },
 
+  //c. Only update password
+  async updatePassword() {
+
+  },
+
   // 4. Get all daycares from database
   async getAll() {
     const dayCaresCollection = await daycares();
@@ -333,6 +338,13 @@ const exportedMethods = {
 
     return dayCare;
   },
+
+  //6. log in function
+  async loginDaycare(email, password) {
+
+  }
+
+
 };
 
 export default exportedMethods;

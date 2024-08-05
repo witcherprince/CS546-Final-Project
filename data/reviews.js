@@ -1,19 +1,17 @@
 //The id of reviews will be added into users and daycares, and the rating field of daycares will be updated
 //1. Add; 2. Get; 3. Update; 4. Remove
 
-import { reviews, users } from '../config/mongoCollections.js';
-import userData from './users.js';
-import daycareData from './daycares.js';
+import { daycares, reviews, users } from '../config/mongoCollections.js';
 import { ObjectId } from 'mongodb';
 import validation from '../validation.js';
 
 const exportedMethods = { 
 //1. Add a review, updating 'review[]' of users and daycares
   async addReview (
-    daycareId, //Required 
-    userId, //Required  
-    rating, //Required
-    review, //Required
+    daycareId, //Required, objectId or string
+    userId, //Required , objectId or string
+    rating, //Required, number or string, like '4.5', or 5
+    review, //Required, string
   ) { 
     if (!(daycareId instanceof ObjectId)) {
         daycareId = validation.checkId(daycareId);
@@ -23,30 +21,40 @@ const exportedMethods = {
         userId = validation.checkId(userId);
         userId = new ObjectId(userId);
     }
+    const usersCollection = await users(); //If this user already rated this daycare, throw:
+    const user = await usersCollection.findOne({ _id: userId});
+    const reviewsCollection = await reviews();
+    if (!user) {throw`Can't find the user!`;} 
+    if (user.reviews.length !== 0) {
+      for (let j = 0; j < user.reviews.length; j++) {
+        let userTemp = await reviewsCollection.findOne({_id: user.reviews[j]});
+        console.log(userTemp.daycareId);
+        if (userTemp.daycareId.equals(daycareId)) throw 'You have already rated this daycare!';
+      }
+    }
     rating = validation.checkRating(rating);
     review = validation.isString(review, 'Review');
 
     //Adding this new review into database:
     const createdAt = new Date().toISOString();
     let newReview = {
-        userId: userId,
         daycareId: daycareId,
+        userId: userId,
         rating: rating,
         review: review,
         createdAt: createdAt,
       };
-    const reviewsCollection = await reviews();
     const insertInfo = await reviewsCollection.insertOne(newReview);
     const newReviewId = insertInfo.insertedId;
     if (!newReviewId) throw 'Error: Insert failed!';
 
     //Updating daycares and users database:
     //Update daycares.reviews and calculate daycares.rating first:
-    const daycaresCollection = await daycareData.daycares();
+    const daycaresCollection = await daycares();
     const daycare = await daycaresCollection.findOne({ _id: daycareId});
     if (!daycare) {throw`Can't find the daycare!`;} 
 
-    if (daycare.rating === 0) {
+    if (daycare.rating == 0) {
         const updateReviews = await daycaresCollection.updateOne(
         { _id: daycareId },
         {
@@ -57,12 +65,16 @@ const exportedMethods = {
         if (updateReviews.modifiedCount === 0) {throw 'Could not update daycare reviews';}
     } else {
         let sum = rating;
+        console.log(sum + "\n");
         for (let i = 0; i < daycare.reviews.length; i++) {
           let newReview = await reviewsCollection.findOne({ _id: daycare.reviews[i]})
-          sum += newReview.rating;
+          let tempNum = parseFloat(newReview.rating);
+          sum += tempNum;
+          console.log ("for loop " + i + ": " + sum + ".\n")
         }
         let average = sum / (daycare.reviews.length + 1);
         average = Number(average.toFixed(1));
+        console.log(average);
         const updateReviews = await daycaresCollection.updateOne(
             { _id: daycareId },
             {
@@ -74,9 +86,6 @@ const exportedMethods = {
     }
   
       //Update the users.reviews:
-      const usersCollection = await userData.users();
-      const user = await usersCollection.findOne({ _id: userId});
-      if (!user) {throw`Can't find the user!`;} 
       const updateUser = await usersCollection.updateOne(
         { _id: userId },
         { $push: { reviews: newReviewId } }
@@ -127,17 +136,18 @@ const exportedMethods = {
     if (!reviewInfo) {throw 'Error: The updated review is not fond!';} 
     
     //Calculate and update the new average rating if needed:
-    let oldRating = reviewInfo.rating;
+    let oldRating = parseFloat(reviewInfo.rating);
     let average = rating;
     if (oldRating != rating) {// Need to upadate the average rating:
-        const daycaresCollection = await daycareData.daycares();
+        const daycaresCollection = await daycares();
         const daycare = await daycaresCollection.findOne({ _id: reviewInfo.daycareId});
 
         if (daycare.reviews.length > 1) {
             let sum = rating;
             for (let i = 0; i < daycare.reviews.length; i++) {
               let newReview = await reviewsCollection.findOne({ _id: daycare.reviews[i]})
-              sum += newReview.rating;
+              let tempRate = parseFloat(newReview.rating);
+              sum += tempRate;
             }
             sum = sum - oldRating;
             average = sum / daycare.reviews.length;
@@ -190,7 +200,7 @@ const exportedMethods = {
     }
 
     //Delete review from users:
-    const usersCollection = await userData.users();
+    const usersCollection = await users();
     const removeUser = await usersCollection.updateOne(
         { _id: review.userId },
         { $pull: { reviews: id } }
@@ -200,7 +210,7 @@ const exportedMethods = {
     } 
 
     //Delete review from daycares and update the rating:
-    const daycaresCollection = await daycareData.daycares();
+    const daycaresCollection = await daycares();
     const removeDaycare = await daycaresCollection.updateOne(
         { _id: review.daycareId },
         { $pull: { reviews: id } }
