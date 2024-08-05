@@ -2,6 +2,7 @@ import {dbConnection, closeConnection} from './config/mongoConnection.js';
 import { dayCareData } from './data/index.js'; 
 import users from './data/users.js';
 
+
 const db = await dbConnection();
 await db.dropDatabase();
 
@@ -10,6 +11,7 @@ let two;
 let childOne;
 let childTwo;
 let addFav;
+
 
 // create user works !!
 one = await users.createUser("Katherine", "Rijo", 'loveGenshin@gmail.com', 'Ilikecheese1', 'queens', 1111);
@@ -33,8 +35,16 @@ console.log(childTwo);
 //const removeChild = await users.removeChild(one._id, "Lebron");
 //console.log(removeChild);
 
-const firstDaycare = await dayCareData.addDaycare(
+
+//Daycares functions checking:
+let testOne;
+let testTwo;
+
+//addDaycare, and getOrg works!
+
+testOne = await dayCareData.addDaycare(
     'Happy Kids',
+    'thisCa72fe',
     'A great place for kids.',
     '123 Happy St',
     'Hppyville',
@@ -46,12 +56,17 @@ const firstDaycare = await dayCareData.addDaycare(
     'https://www.happykids.com',
     '5',
     true,
-    ['Vegetarian', 'Non-Vegetarian'],
-    ['Full day', 'Half day'],
-    2000
+    'Vegetarian, Non-Vegetarian', //The function will convert it into an array
+    'Full day, Half day',
+    '$2000'
   );
+console.log (testOne);
+
+
+//2. removeDaycare
+testTwo = await dayCareData.removeDaycare('66b037736157711d237f2fd7');
+console.log(testTwo);
+
 
 addFav = await users.addFavDaycare(one._id, firstDaycare._id);
-
-
 await closeConnection();

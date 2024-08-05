@@ -123,15 +123,15 @@ const exportedMethods = {
     review = validation.checkString(review, 'Review');
 
     const reviewsCollection = await reviews();
-    const review = await reviewsCollection.findOne({ _id: reviewId });  
-    if (!review) {throw 'Error: The updated review is not fond!';} 
+    const reviewInfo = await reviewsCollection.findOne({ _id: reviewId });  
+    if (!reviewInfo) {throw 'Error: The updated review is not fond!';} 
     
     //Calculate and update the new average rating if needed:
-    let oldRating = review.rating;
+    let oldRating = reviewInfo.rating;
     let average = rating;
     if (oldRating != rating) {// Need to upadate the average rating:
         const daycaresCollection = await daycareData.daycares();
-        const daycare = await daycaresCollection.findOne({ _id: review.daycareId});
+        const daycare = await daycaresCollection.findOne({ _id: reviewInfo.daycareId});
 
         if (daycare.reviews.length > 1) {
             let sum = rating;

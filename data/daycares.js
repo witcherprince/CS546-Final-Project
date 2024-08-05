@@ -1,29 +1,33 @@
 //database of daycares: insert, delete and update
 import {daycares} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
-import * as validation from '../validation.js';
+import bcryptjs from 'bcryptjs';
+import validation from '../validation.js';
 
 //1. Insertion:
 const exportedMethods = {
   async addDaycare (
-    name, //Required
-    introduction, //Required
-    address, //Required, street & apt number
-    town, //Required
-    state, //I add the state, required. Possible to be the selections?
-    zipcode, // Required
-    businessHours, //Required
-    email, //Required
-    phone, //Required
-    website, //not-Required
-    yearsInBusiness, //not-Required
-    availability, //not-Required, but recommend
-    lunchChoices, //not-Required, but input is a string, seperate all choices with ',': 'hot lunch, veggie-choice'
-    duration, //not-Required, same with lunchChoice, a string input seperate with ','
-    tuitionRange //not-Required, but recommend, a string input
+    name, //Required, string
+    password, //Required, string
+    introduction, //Required, string
+    address, //Required, street & apt number, string
+    town, //Required, string
+    state, //required. two letters string
+    zipcode, // Required, string
+    businessHours, //Required, string
+    email, //Required, string
+    phone, //Required, string
+    website, //not-Required, string
+    yearsInBusiness, //not-Required, string
+    availability, //not-Required, but recommend, boolean
+    lunchChoices, //not-Required, string, seperate all choices with ',' example: 'hot lunch, veggie-choice'
+    duration, //not-Required, string, seperate with ','
+    tuitionRange //not-Required, but recommend, string
 )  {
     //input checking: ...
     name = validation.checkString(name, 'name');
+    password = validation.checkPassword(password, 'Password');
+    const hashPassword = await bcryptjs.hash(password, 15);
     introduction = validation.checkIntroduction(introduction, 'introduction');
     address = validation.checkString(address, 'Address');
     town = validation.checkString(town, 'town');
@@ -73,6 +77,7 @@ const exportedMethods = {
     //Adding the daycare:
     let newDaycare = {
         name: name,
+        password: hashPassword,
         introduction: introduction,
         location:{
             address: address,
@@ -92,7 +97,8 @@ const exportedMethods = {
         lunchChoices: [lunchChoices],
         duration: duration,
         rating: 0,
-        reviews: []
+        reviews: [],
+        role: 'daycare'
     } //revews to store review's id, and rating is the average rating
 
     // Inserting daycare into database
@@ -103,12 +109,11 @@ const exportedMethods = {
         throw 'Could not add day care organization';
     }
 
-    const newId = insertInfo.insertedId.toString();
+    const newId = insertInfo.insertedId;
     //const dayCare = await getOrg(newId);
-    const dayCare = await getOrg(name);
+    const dayCare = await this.getOrg(name);
     dayCare._id = dayCare._id.toString();
     return dayCare;
-
   },
 
 //2. Deletion:
@@ -123,7 +128,7 @@ const exportedMethods = {
       _id: id
     })
 
-    if (deletionInfo.value == null) {
+    if (deletionInfo.value === null) {
         throw 'The daycare is not fond!';
     }
 

@@ -151,5 +151,5 @@ checkRating (rate) {
 }
 
 
-}
+};
 export default exportedMethods;
