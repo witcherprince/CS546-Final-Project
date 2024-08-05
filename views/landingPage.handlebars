@@ -20,6 +20,11 @@
         <li class="nav-item">
           <a class="nav-link" href="/login/orgLogin">Login Organization</a>
         </li>
+        {{#if user}}
+          <li class="nav-item">
+            <a class="nav-link" href="/users/userPage">Profile</a>
+          </li>
+        {{/if}}
       </ul>
     </div>
   </nav>
