@@ -115,7 +115,6 @@ const exportedMethods = {
     const newId = insertInfo.insertedId;
     //const dayCare = await getOrg(newId);
     const dayCare = await this.getOrg(name);
-
     dayCare._id = dayCare._id.toString();
     return dayCare;
   },

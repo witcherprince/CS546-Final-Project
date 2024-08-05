@@ -4,6 +4,7 @@ import {dayCareData} from './data/index.js';
 
 
 
+
 const db = await dbConnection();
 await db.dropDatabase();
 
@@ -63,7 +64,6 @@ testOne = await dayCareData.addDaycare(
   );
 console.log (testOne);
 
-
 //2. removeDaycare
 testTwo = await dayCareData.removeDaycare('66b037736157711d237f2fd7');
 console.log(testTwo);
@@ -93,5 +93,8 @@ catch (e) {
   console.log(e)
 }
 
+
+
+addFav = await users.addFavDaycare(one._id, firstDaycare._id);
 
 await closeConnection();

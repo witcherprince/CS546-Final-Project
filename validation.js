@@ -219,7 +219,6 @@ const exportedMethods = {
       throw "Rating is between 0 to 5 with no more than one decimal place.";
     }
     return rate;
-
   },
   validateEmail(email) {
     return String(email)
