@@ -29,6 +29,8 @@ table {
 }
 
 .table-form {
+  display: flex;
+  gap: 10px;
   width: 50%;
   border-collapse: separate;
   border-spacing: 0;
@@ -37,6 +39,28 @@ table {
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(45%);
+}
+
+.table-form .button-container {
+  display: flex;
+  gap: 5px;
+}
+
+.table-form2 {
+  gap: 10px;
+  width: 50%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(45%);
+}
+
+.table-form2 .button-container {
+  display: flex;
+  gap: 5px;
 }
 
 th,
@@ -52,4 +76,60 @@ th {
 
 td {
   background-color: #c3fac3;
+}
+
+.nav-test {
+  background-color: PaleGreen;
+  border-radius: 4px;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.055);
+  color: #888;
+  display: block;
+  margin: 8px 22px 8px 22px;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-test ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+}
+
+.nav-test li {
+  float: left;
+}
+
+.nav-test a {
+  display: inline-block;
+  color: #333;
+  padding: 14px 20px;
+  text-decoration: none;
+  border-radius: 15px;
+  list-style: none;
+}
+
+.nav-test a:hover {
+  background-color: #c3fac3;
+  color: black;
+}
+
+button {
+  border-radius: 15px;
+  border-style: none;
+}
+
+button:hover {
+  background-color: lightcoral;
+  color: white;
+}
+
+.nav-link {
+  text-decoration: none;
+}
+
+.table-form input {
+  border-style: none;
 }
