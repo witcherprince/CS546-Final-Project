@@ -42,9 +42,9 @@ console.log(childTwo);
 let testOne;
 let testTwo;
 
-//addDaycare, and getOrg works!
-
-testOne = await dayCareData.addDaycare(
+//addDaycare works!
+/*
+testOne = await dayCareData.addDaycare(//inputs are all strings
     'Happy Kids',
     'thisCa72fe',
     'A great place for kids.',
@@ -57,16 +57,45 @@ testOne = await dayCareData.addDaycare(
     '123-456-7890',
     'https://www.happykids.com',
     '5',
-    true,
+    'true',
     'Vegetarian, Non-Vegetarian', //The function will convert it into an array
     'Full day, Half day',
     '$2000'
   );
 console.log (testOne);
+*/
 
-//2. removeDaycare
-testTwo = await dayCareData.removeDaycare('66b037736157711d237f2fd7');
-console.log(testTwo);
+//2. removeDaycare works!
+//testTwo = await dayCareData.removeDaycare('66b04b2910b0b62f1fe973cc');
+//console.log(testTwo);
+
+//3a. updateDaycare works!
+/*
+let updateDaycare = {
+    name: 'Fun Kids',
+    introduction: 'A new school for kids.',
+    address: '10 Fun St',
+    town: 'Hppyville',
+    state: 'MA',
+    zipcode: '54321',
+    businessHours: '9am - 6pm',
+    email: 'contact@funkids.com',
+    phone: '123-456-7890',
+    website: 'https://www.happykids.com',
+    yearsInBusiness: '0',
+    availability: 'true',
+    lunchChoices: 'hot lunch, Non-Vegetarian', //The function will convert it into an array
+    duration: 'Half day',
+    tuitionRange: '$2000'
+}
+let testThree = await dayCareData.updateDaycare('66b04cc195f03a9741d8c710', updateDaycare);
+console.log(testThree);
+*/
+
+//3b. updateAvailability works!
+let testB = await dayCareData.updateAvailability('66b04c56f099742d48e9c225','false');
+console.log(testB);
+
 
 // It works!
 try {

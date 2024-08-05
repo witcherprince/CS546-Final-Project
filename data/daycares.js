@@ -19,18 +19,18 @@ const exportedMethods = {
     phone, //Required, string
     website, //not-Required, string
     yearsInBusiness, //not-Required, string
-    availability, //not-Required, but recommend, boolean
+    availability, //not-Required, but recommend, string ('true' or 'false')
     lunchChoices, //not-Required, string, seperate all choices with ',' example: 'hot lunch, veggie-choice'
     duration, //not-Required, string, seperate with ','
     tuitionRange //not-Required, but recommend, string
 )  {
     //input checking: ...
-    name = validation.checkString(name, 'name');
+    name = validation.isString(name, 'name');
     password = validation.checkPassword(password, 'Password');
     const hashPassword = await bcryptjs.hash(password, 15);
     introduction = validation.checkIntroduction(introduction, 'introduction');
-    address = validation.checkString(address, 'Address');
-    town = validation.checkString(town, 'town');
+    address = validation.isString(address, 'Address');
+    town = validation.isString(town, 'town');
     state = validation.checkState(state);
     zipcode = validation.checkZipcode(zipcode);
     businessHours = validation.checkBusinessHour(businessHours);
@@ -59,21 +59,21 @@ const exportedMethods = {
     }
 
     if (lunchChoices) {
-      lunchChoices = validation.checkString(lunchChoices, "lunch choices");
+      lunchChoices = validation.isString(lunchChoices, "lunch choices");
       lunchChoices = lunchChoices.split(",");
     } else {
       lunchChoices = [];
     }
 
     if (duration) {
-      duration = validation.checkString(duration, "duration");
+      duration = validation.isString(duration, "duration");
       duration = duration.split(",");
     } else {
       duration = [];
     }
 
     if (tuitionRange) {
-      tuitionRange = validation.checkString(tuitionRange, "tuition range");
+      tuitionRange = validation.isString(tuitionRange, "tuition range");
     } else {
       tuitionRange = null;
     }
@@ -113,9 +113,11 @@ const exportedMethods = {
     }
 
     const newId = insertInfo.insertedId;
-    //const dayCare = await getOrg(newId);
-    const dayCare = await this.getOrg(name);
-    dayCare._id = dayCare._id.toString();
+    const dayCare = await dayCaresCollection.findOne(
+      { _id: newId },
+      { projection: { password: 0 } }
+    );
+
     return dayCare;
   },
 
@@ -131,38 +133,39 @@ const exportedMethods = {
       _id: id,
     });
 
-    if (deletionInfo.value === null) {
+    if (!deletionInfo) {
         throw 'The daycare is not fond!';
     }
 
-    return { ...deletionInfo.value, deleted: true };
+    let name = deletionInfo.name;
+    return name + ' has been successfully deleted!';
   },
 
   //3. Update:
   //a. update everything:
-  async updateDaycare(id, updatedInfor) {
+  async updateDaycare(id, updatedInfo) {
     //Data checking:
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
       id = new ObjectId(id);
     }
-    let name = validation.checkString(updatedInfor.name, "name");
-    let introduction = validation.checkString(
-      updatedInfor.introduction,
+    let name = validation.isString(updatedInfo.name, "name");
+    let introduction = validation.isString(
+      updatedInfo.introduction,
       "introduction"
     );
-    let address = validation.checkString(
-      updatedInfor.location.adress,
+    let address = validation.isString(
+      updatedInfo.address,
       "Address"
     );
-    let town = validation.checkString(updatedInfor.location.town, "town");
-    let state = validation.checkState(updatedInfor.location.state);
-    let zipcode = validation.checkZipcode(updatedInfor.location.zipcode);
+    let town = validation.isString(updatedInfo.town, "town");
+    let state = validation.checkState(updatedInfo.state);
+    let zipcode = validation.checkZipcode(updatedInfo.zipcode);
     let businessHours = validation.checkBusinessHour(
-      updatedInfor.businessHours
+      updatedInfo.businessHours
     );
-    let email = validation.checkEmail(updatedInfor.contactInfo.email);
-    let phone = validation.checkPhone(updatedInfor.contactInfo.phone);
+    let email = validation.checkEmail(updatedInfo.email);
+    let phone = validation.checkPhone(updatedInfo.phone);
     let website;
     let yearsInBusiness;
     let availability;
@@ -170,49 +173,49 @@ const exportedMethods = {
     let duration;
     let tuitionRange;
 
-    if (updatedInfor.contactInfo.website) {
-      website = validation.checkWebsite(updatedInfor.contactInfo.website);
+    if (updatedInfo.website) {
+      website = validation.checkWebsite(updatedInfo.website);
     } else {
       website = null;
     }
 
-    if (updatedInfor.yearsInBusiness) {
+    if (updatedInfo.yearsInBusiness) {
       yearsInBusiness = validation.checkNumber(
-        updatedInfor.yearsInBusiness,
+        updatedInfo.yearsInBusiness,
         "yearsInBusiness"
       );
     } else {
       yearsInBusiness = null;
     }
 
-    if (updatedInfor.availability) {
+    if (updatedInfo.availability) {
       availability = validation.checkBoolean(
-        updatedInfor.availability,
+        updatedInfo.availability,
         "availability"
       );
     } else {
       availability = null;
     }
 
-    if (updatedInfor.lunchChoices) {
-      lunchChoices = updatedInfor.lunchChoices
+    if (updatedInfo.lunchChoices) {
+      lunchChoices = updatedInfo.lunchChoices
         .split(",")
-        .map((choice) => validation.checkString(choice.trim(), "lunch choice"));
+        .map((choice) => validation.isString(choice.trim(), "lunch choice"));
     } else {
       lunchChoices = [];
     }
 
-    if (updatedInfor.duration) {
-      duration = updatedInfor.duration
+    if (updatedInfo.duration) {
+      duration = updatedInfo.duration
         .split(",")
-        .map((dur) => validation.checkString(dur.trim(), "duration"));
+        .map((dur) => validation.isString(dur.trim(), "duration"));
     } else {
       duration = [];
     }
 
-    if (updatedInfor.tuitionRange) {
-      tuitionRange = validation.checkString(
-        updatedInfor.tuitionRange,
+    if (updatedInfo.tuitionRange) {
+      tuitionRange = validation.isString(
+        updatedInfo.tuitionRange,
         "tuition range"
       );
     } else {

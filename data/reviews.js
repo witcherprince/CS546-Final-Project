@@ -24,7 +24,7 @@ const exportedMethods = {
         userId = new ObjectId(userId);
     }
     rating = validation.checkRating(rating);
-    review = validation.checkString(review, 'Review');
+    review = validation.isString(review, 'Review');
 
     //Adding this new review into database:
     const createdAt = new Date().toISOString();
@@ -120,7 +120,7 @@ const exportedMethods = {
         reviewId = new ObjectId(reviewId);
     }
     rating = validation.checkRating(rating);
-    review = validation.checkString(review, 'Review');
+    review = validation.isString(review, 'Review');
 
     const reviewsCollection = await reviews();
     const reviewInfo = await reviewsCollection.findOne({ _id: reviewId });  
