@@ -1,13 +1,13 @@
 import {dbConnection, closeConnection} from './config/mongoConnection.js';
 import {userData} from './data/index.js';
 import {dayCareData} from './data/index.js'; 
-
+import {reviewData} from './data/index.js';
 
 
 
 const db = await dbConnection();
-await db.dropDatabase();
-
+//await db.dropDatabase();
+/*
 let one;
 let two;
 let childOne;
@@ -21,7 +21,7 @@ console.log(one);
 
 two = await userData.createUser("Ren", "Kozaki", 'loserLuck@yahoo.com', 'bringMeHome@44449', 'manhattan', 1002);
 console.log(two);
-
+/*
 // Add child works !!
 childOne = await userData.addChild(one._id, "Lebron", "James", 5);
 console.log(childOne);
@@ -37,13 +37,40 @@ console.log(childTwo);
 //const removeChild = await users.removeChild(one._id, "Lebron");
 //console.log(removeChild);
 
+// It works!
+try {
+addFav = await userData.addFavDaycare(one._id, firstDaycare._id);
+console.log(addFav);
+}
+catch (e) {
+  console.log(e)
+}
 
+try {
+let getFav = await userData.getFavDayCare(firstDaycare._id);
+console.log(getFav);
+}
+catch (e) {
+  console.log(e)
+}
+
+try {
+let delFav = await userData.removeFavDaycare(one._id, firstDaycare._id);
+console.log(delFav);
+}
+catch (e) {
+  console.log(e)
+}
+
+addFav = await users.addFavDaycare(one._id, firstDaycare._id);
+*/
+/*
 //Daycares functions checking:
 let testOne;
 let testTwo;
 
-//addDaycare works!
-/*
+//1. addDaycare works!
+
 testOne = await dayCareData.addDaycare(//inputs are all strings
     'Happy Kids',
     'thisCa72fe',
@@ -63,7 +90,7 @@ testOne = await dayCareData.addDaycare(//inputs are all strings
     '$2000'
   );
 console.log (testOne);
-*/
+
 
 //2. removeDaycare works!
 //testTwo = await dayCareData.removeDaycare('66b04b2910b0b62f1fe973cc');
@@ -91,39 +118,30 @@ let updateDaycare = {
 let testThree = await dayCareData.updateDaycare('66b04cc195f03a9741d8c710', updateDaycare);
 console.log(testThree);
 */
-
+/*
 //3b. updateAvailability works!
 let testB = await dayCareData.updateAvailability('66b04c56f099742d48e9c225','false');
 console.log(testB);
+*/
 
+//Reviews,js Checking:
+//1. addReview works!
+//let reviewAdd1 = await reviewData.addReview('66b0f2d0c2039b20c823fb73', '66b0f2c4c2039b20c823fb71', '4.6', 'Nice teachers');
+//console.log(reviewAdd1);
 
-// It works!
-try {
-addFav = await userData.addFavDaycare(one._id, firstDaycare._id);
-console.log(addFav);
-}
-catch (e) {
-  console.log(e)
-}
+//let reviewAdd2 = await reviewData.addReview('66b0f2d0c2039b20c823fb73', '66b0f2c4c2039b20c823fb71', 5, 'Nice place');
+//console.log(reviewAdd2);
 
-try {
-let getFav = await userData.getFavDayCare(firstDaycare._id);
-console.log(getFav);
-}
-catch (e) {
-  console.log(e)
-}
+//2. getReviewById works!
+//let reviewGet = await reviewData.getReviewById('66b0f4f6df5a0d42c6ede8cb');
+//console.log(reviewGet);
 
-try {
-let delFav = await userData.removeFavDaycare(one._id, firstDaycare._id);
-console.log(delFav);
-}
-catch (e) {
-  console.log(e)
-}
+//3. updateReview works!
+//let reviewUpdate = await reviewData.updateReview('66b0f4f6df5a0d42c6ede8cb', '4', 'Not bad');
+//console.log(reviewUpdate);
 
-
-
-addFav = await users.addFavDaycare(one._id, firstDaycare._id);
+//4. removeReview works!
+//let reviewRemove1 = await reviewData.removeReview('66b0f4f6df5a0d42c6ede8cb');
+//console.log(reviewRemove1)
 
 await closeConnection();
