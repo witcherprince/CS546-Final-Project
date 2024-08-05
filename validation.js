@@ -220,6 +220,19 @@ const exportedMethods = {
     }
     return rate;
   },
+  //10. Check if it is String:
+  isString(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "string") throw `${valName} must be a string`;
+    val = val.trim();
+    if (val.length === 0)
+      throw `${valName} cannot be an empty string or just spaces`;
+    if (!isNaN(val))
+      throw `${val} is not a valid value for ${valName} as it only contains digits`;
+
+    return val;
+  },
+
   validateEmail(email) {
     return String(email)
       .toLowerCase()
