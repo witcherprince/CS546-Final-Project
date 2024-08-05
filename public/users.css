@@ -1,22 +1,55 @@
 .form-box {
-    width: 90%;
-    max-width: 500px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 50px 60px 70px;
-    text-align: center;
-    border-radius: 10px;
-    border-style: solid;
-    border-width: 1px;
+  width: 90%;
+  max-width: 500px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 50px 60px 70px;
+  text-align: center;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 1px;
 }
 
 .form-box form div {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 h2 {
-    color: pink;
-    text-align: center;
+  color: pink;
+  text-align: center;
+}
+
+table {
+  border-radius: 15px;
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+
+.table-form {
+  width: 50%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(45%);
+}
+
+th,
+td {
+  border: 1px solid SeaShell;
+  padding: 8px;
+}
+
+th {
+  background-color: PaleGreen;
+  text-align: left;
+}
+
+td {
+  background-color: #c3fac3;
 }
