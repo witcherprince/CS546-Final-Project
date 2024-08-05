@@ -1,32 +1,36 @@
 //database of daycares: insert, delete and update
-import { daycares } from "../config/mongoCollections.js";
-import { ObjectId } from "mongodb";
-import validation from "../validation.js";
+import {daycares} from '../config/mongoCollections.js';
+import {ObjectId} from 'mongodb';
+import bcryptjs from 'bcryptjs';
+import validation from '../validation.js';
 
 //1. Insertion:
 const exportedMethods = {
-  async addDaycare(
-    name, //Required
-    introduction, //Required
-    address, //Required, street & apt number
-    town, //Required
-    state, //I add the state, required. Possible to be the selections?
-    zipcode, // Required
-    businessHours, //Required
-    email, //Required
-    phone, //Required
-    website, //not-Required
-    yearsInBusiness, //not-Required
-    availability, //not-Required, but recommend
-    lunchChoices, //not-Required, but input is a string, seperate all choices with ',': 'hot lunch, veggie-choice'
-    duration, //not-Required, same with lunchChoice, a string input seperate with ','
-    tuitionRange //not-Required, but recommend, a string input
-  ) {
+  async addDaycare (
+    name, //Required, string
+    password, //Required, string
+    introduction, //Required, string
+    address, //Required, street & apt number, string
+    town, //Required, string
+    state, //required. two letters string
+    zipcode, // Required, string
+    businessHours, //Required, string
+    email, //Required, string
+    phone, //Required, string
+    website, //not-Required, string
+    yearsInBusiness, //not-Required, string
+    availability, //not-Required, but recommend, string ('true' or 'false')
+    lunchChoices, //not-Required, string, seperate all choices with ',' example: 'hot lunch, veggie-choice'
+    duration, //not-Required, string, seperate with ','
+    tuitionRange //not-Required, but recommend, string
+)  {
     //input checking: ...
-    name = validation.checkString(name, "name");
-    introduction = validation.checkIntroduction(introduction, "introduction");
-    address = validation.checkString(address, "Address");
-    town = validation.checkString(town, "town");
+    name = validation.isString(name, 'name');
+    password = validation.checkPassword(password, 'Password');
+    const hashPassword = await bcryptjs.hash(password, 15);
+    introduction = validation.checkIntroduction(introduction, 'introduction');
+    address = validation.isString(address, 'Address');
+    town = validation.isString(town, 'town');
     state = validation.checkState(state);
     zipcode = validation.checkZipcode(zipcode);
     businessHours = validation.checkBusinessHour(businessHours);
@@ -55,48 +59,50 @@ const exportedMethods = {
     }
 
     if (lunchChoices) {
-      lunchChoices = validation.checkString(lunchChoices, "lunch choices");
+      lunchChoices = validation.isString(lunchChoices, "lunch choices");
       lunchChoices = lunchChoices.split(",");
     } else {
       lunchChoices = [];
     }
 
     if (duration) {
-      duration = validation.checkString(duration, "duration");
+      duration = validation.isString(duration, "duration");
       duration = duration.split(",");
     } else {
       duration = [];
     }
 
     if (tuitionRange) {
-      tuitionRange = validation.checkString(tuitionRange, "tuition range");
+      tuitionRange = validation.isString(tuitionRange, "tuition range");
     } else {
       tuitionRange = null;
     }
     //Adding the daycare:
     let newDaycare = {
-      name: name,
-      introduction: introduction,
-      location: {
-        address: address,
-        town: town,
-        state: state,
-        zipcode: zipcode,
-      },
-      contactInfo: {
-        email: email,
-        phone: phone,
-        website: website,
-      },
-      businessHours: businessHours,
-      tuitionRange: tuitionRange,
-      availability: availability,
-      yearsInBusiness: yearsInBusiness,
-      lunchChoices: [lunchChoices],
-      duration: duration,
-      rating: 0,
-      reviews: [],
-    }; //revews to store review's id, and rating is the average rating
+        name: name,
+        password: hashPassword,
+        introduction: introduction,
+        location:{
+            address: address,
+            town: town,
+            state: state,
+            zipcode: zipcode
+        },
+        contactInfo: {
+            email: email,
+            phone: phone,
+            website: website
+        },
+        businessHours: businessHours,
+        tuitionRange: tuitionRange,
+        availability: availability,
+        yearsInBusiness: yearsInBusiness,
+        lunchChoices: [lunchChoices],
+        duration: duration,
+        rating: 0,
+        reviews: [],
+        role: 'daycare'
+    } //revews to store review's id, and rating is the average rating
 
     // Inserting daycare into database
     const dayCaresCollection = await daycares();
@@ -106,9 +112,12 @@ const exportedMethods = {
       throw "Could not add day care organization";
     }
 
-    const newId = insertInfo.insertedId.toString();
-    const dayCare = await this.getOrg(newId);
-    dayCare._id = dayCare._id.toString();
+    const newId = insertInfo.insertedId;
+    const dayCare = await dayCaresCollection.findOne(
+      { _id: newId },
+      { projection: { password: 0 } }
+    );
+
     return dayCare;
   },
 
@@ -124,38 +133,39 @@ const exportedMethods = {
       _id: id,
     });
 
-    if (deletionInfo.value == null) {
-      throw "The daycare is not fond!";
+    if (!deletionInfo) {
+        throw 'The daycare is not fond!';
     }
 
-    return { ...deletionInfo.value, deleted: true };
+    let name = deletionInfo.name;
+    return name + ' has been successfully deleted!';
   },
 
   //3. Update:
   //a. update everything:
-  async updateDaycare(id, updatedInfor) {
+  async updateDaycare(id, updatedInfo) {
     //Data checking:
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
       id = new ObjectId(id);
     }
-    let name = validation.checkString(updatedInfor.name, "name");
-    let introduction = validation.checkString(
-      updatedInfor.introduction,
+    let name = validation.isString(updatedInfo.name, "name");
+    let introduction = validation.isString(
+      updatedInfo.introduction,
       "introduction"
     );
-    let address = validation.checkString(
-      updatedInfor.location.adress,
+    let address = validation.isString(
+      updatedInfo.address,
       "Address"
     );
-    let town = validation.checkString(updatedInfor.location.town, "town");
-    let state = validation.checkState(updatedInfor.location.state);
-    let zipcode = validation.checkZipcode(updatedInfor.location.zipcode);
+    let town = validation.isString(updatedInfo.town, "town");
+    let state = validation.checkState(updatedInfo.state);
+    let zipcode = validation.checkZipcode(updatedInfo.zipcode);
     let businessHours = validation.checkBusinessHour(
-      updatedInfor.businessHours
+      updatedInfo.businessHours
     );
-    let email = validation.checkEmail(updatedInfor.contactInfo.email);
-    let phone = validation.checkPhone(updatedInfor.contactInfo.phone);
+    let email = validation.checkEmail(updatedInfo.email);
+    let phone = validation.checkPhone(updatedInfo.phone);
     let website;
     let yearsInBusiness;
     let availability;
@@ -163,49 +173,49 @@ const exportedMethods = {
     let duration;
     let tuitionRange;
 
-    if (updatedInfor.contactInfo.website) {
-      website = validation.checkWebsite(updatedInfor.contactInfo.website);
+    if (updatedInfo.website) {
+      website = validation.checkWebsite(updatedInfo.website);
     } else {
       website = null;
     }
 
-    if (updatedInfor.yearsInBusiness) {
+    if (updatedInfo.yearsInBusiness) {
       yearsInBusiness = validation.checkNumber(
-        updatedInfor.yearsInBusiness,
+        updatedInfo.yearsInBusiness,
         "yearsInBusiness"
       );
     } else {
       yearsInBusiness = null;
     }
 
-    if (updatedInfor.availability) {
+    if (updatedInfo.availability) {
       availability = validation.checkBoolean(
-        updatedInfor.availability,
+        updatedInfo.availability,
         "availability"
       );
     } else {
       availability = null;
     }
 
-    if (updatedInfor.lunchChoices) {
-      lunchChoices = updatedInfor.lunchChoices
+    if (updatedInfo.lunchChoices) {
+      lunchChoices = updatedInfo.lunchChoices
         .split(",")
-        .map((choice) => validation.checkString(choice.trim(), "lunch choice"));
+        .map((choice) => validation.isString(choice.trim(), "lunch choice"));
     } else {
       lunchChoices = [];
     }
 
-    if (updatedInfor.duration) {
-      duration = updatedInfor.duration
+    if (updatedInfo.duration) {
+      duration = updatedInfo.duration
         .split(",")
-        .map((dur) => validation.checkString(dur.trim(), "duration"));
+        .map((dur) => validation.isString(dur.trim(), "duration"));
     } else {
       duration = [];
     }
 
-    if (updatedInfor.tuitionRange) {
-      tuitionRange = validation.checkString(
-        updatedInfor.tuitionRange,
+    if (updatedInfo.tuitionRange) {
+      tuitionRange = validation.isString(
+        updatedInfo.tuitionRange,
         "tuition range"
       );
     } else {
@@ -280,6 +290,11 @@ const exportedMethods = {
     return await dayCaresCollection.findOne({ _id: id });
   },
 
+  //c. Only update password
+  async updatePassword() {
+
+  },
+
   // 4. Get all daycares from database
   async getAll() {
     const dayCaresCollection = await daycares();
@@ -323,6 +338,13 @@ const exportedMethods = {
 
     return dayCare;
   },
+
+  //6. log in function
+  async loginDaycare(email, password) {
+
+  }
+
+
 };
 
 export default exportedMethods;

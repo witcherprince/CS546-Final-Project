@@ -27,11 +27,16 @@ router
     const password = req.body["passwordInput"];
 
     try {
-      await userValidations.loginUser(emailAddressFormatted, password);
+      const user = await userValidations.loginUser(
+        emailAddressFormatted,
+        password
+      );
       req.session.user = {
         emailAddress: emailAddressFormatted,
+        userId: user.id,
         loggedIn: true,
       };
+      console.log(req.session.user.userId);
       return res.redirect("/users/userPage");
     } catch ({ name, message }) {
       return res
@@ -66,6 +71,10 @@ router
       return res.status(400).render("error", { error: e });
     }
   });
+
+router.route("/logout").get(async (req, res) => {
+  return res.render("logout");
+});
 
 router.route("/orgLogin").get(async (req, res) => {
   return res.json("Login page for orgs");

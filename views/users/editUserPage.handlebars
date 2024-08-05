@@ -1,0 +1,67 @@
+<link rel="stylesheet" href="../public/users.css" />
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/">Search for Daycares</a></li>
+      <li><a href="/users/logout">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<title>User Profile</title>
+
+<div class="table-form2">
+  <form id="addChildForm" method="POST" action="/users/editUserPage">
+    <p>User Information</p>
+    <table>
+      <tr><th>First Name</th><td>
+          <input
+            type="text"
+            name="firstnameInput"
+            id="firstnameInput"
+            placeholder="First Name"
+          />
+        </td></tr>
+      <tr><th>Last Name</th><td>
+          <input
+            type="text"
+            name="lastnameInput"
+            id="lastnameInput"
+            placeholder="Last Name"
+          />
+        </td></tr>
+      <tr><th>Email</th><td>
+          <input
+            type="email"
+            name="emailaddress"
+            id="emailaddress"
+            placeholder="Email"
+          />
+        </td></tr>
+      <tr><th>Town</th><td>
+          <input
+            type="text"
+            name="townInput"
+            id="townInput"
+            placeholder="Hometown"
+          />
+        </td></tr>
+      <tr><th>Zipcode</th><td>
+          <input
+            type="text"
+            name="zipcodeInput"
+            id="zipcodeInput"
+            placeholder="Zipcode"
+          />
+        </td></tr>
+    </table>
+  </form>
+  <div class="button-container">
+    <a class="nav-link" href="/users/userPage">
+      <button>Go Back</button>
+    </a>
+    <button type="submit">Make Changes</button>
+  </div>
+</div>
