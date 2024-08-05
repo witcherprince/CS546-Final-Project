@@ -72,6 +72,10 @@ router
     }
   });
 
+router.route("/logout").get(async (req, res) => {
+  return res.render("logout");
+});
+
 router.route("/orgLogin").get(async (req, res) => {
   return res.json("Login page for orgs");
 });
