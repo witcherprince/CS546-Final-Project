@@ -347,6 +347,7 @@ const exportedMethods = {
   },
 
 
+
   // 6. Get daycares by state
   async getState(state) {
     state = validation.checkState(state);
