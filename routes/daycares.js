@@ -1,5 +1,6 @@
 // import { getAll, addDayCare, getOrg } from "../data/daycares.js";
 import daycareFun from "../data/daycares.js";
+import reviewUtils from "../data/reviews.js";
 import {
   isProperId,
   isValidString,
@@ -11,39 +12,25 @@ import {
   isValidPhone,
   isValidWebsite,
   checkBusinessHour,
-  checkBoolean
+  checkBoolean,
 } from "../helpers.js";
 import express from "express";
 
 const router = express.Router();
 
-
-router.route("/").get(async (req, res) => { //direct to login
+router.route("/").get(async (req, res) => {
   try {
     res.render("daycares/home");
   } catch (e) {
     res.status(500).render("error", { error: e });
   }
 });
-//log in
-route("/login")
-//more routes to finish:
-router.route("/daycare").get(async(req, res) => { //just for daycare role (update daycare, update available, update password, delete daycare)
 
-
-});
-
-//Add route '/login' (daycare role users login), link to register '/addDayCare'
-//add "/daycare" (after log in, show user's daycare, link of update information, update availability, update password and delete daycares)
-//if '/daycare' no data. link to register page
-
-//Chensi will do routes, and handlebars of update information and availability? Feruz do the rest
 router
-  .get("/addDayCare", (req, res) => {//register for 'daycare' role
+  .get("/addDayCare", (req, res) => {
     res.render("daycares/addDayCare");
   })
   .post("/addDayCare", async (req, res) => {
-    console.log("Request Body:", req.body);
     const dayCarePostData = req.body;
     if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
       return res
@@ -61,12 +48,24 @@ router
       checkBusinessHour(dayCarePostData.businessHours);
       isValidEmail(dayCarePostData.email);
       isValidPhone(dayCarePostData.phone);
-      dayCarePostData.website = dayCarePostData.website ? isValidWebsite(dayCarePostData.website) : null;
-      dayCarePostData.yearsInBusiness = dayCarePostData.yearsInBusiness ? isValidNumber(dayCarePostData.yearsInBusiness) : null;
-      dayCarePostData.availability = dayCarePostData.availability ? checkBoolean(dayCarePostData.availability, "availability") : null;
-      dayCarePostData.lunchOptions = dayCarePostData.lunchOptions ? isValidArray(dayCarePostData.lunchOptions) : null;
-      dayCarePostData.duration = dayCarePostData.duration ? isValidArray(dayCarePostData.duration) : null;
-      dayCarePostData.tuitionRange = dayCarePostData.tuitionRange ? isValidString(dayCarePostData.tuitionRange) : null;
+      dayCarePostData.website = dayCarePostData.website
+        ? isValidWebsite(dayCarePostData.website)
+        : null;
+      dayCarePostData.yearsInBusiness = dayCarePostData.yearsInBusiness
+        ? isValidNumber(dayCarePostData.yearsInBusiness)
+        : null;
+      dayCarePostData.availability = dayCarePostData.availability
+        ? checkBoolean(dayCarePostData.availability, "availability")
+        : null;
+      dayCarePostData.lunchOptions = dayCarePostData.lunchOptions
+        ? isValidArray(dayCarePostData.lunchOptions)
+        : null;
+      dayCarePostData.duration = dayCarePostData.duration
+        ? isValidArray(dayCarePostData.duration)
+        : null;
+      dayCarePostData.tuitionRange = dayCarePostData.tuitionRange
+        ? isValidString(dayCarePostData.tuitionRange)
+        : null;
     } catch (e) {
       return res.status(400).render("error", { error: e });
     }
@@ -95,24 +94,17 @@ router
     }
   });
 
-router.get("/dayCareList", async (req, res) => {//getState, return lists of daycare's name and _id (hopefully the _id can hide, when click on daycare's name, _id pass to datebase)
-
+router.get("/dayCareList", async (req, res) => {
   try {
-    console.log("Fetching all daycares...");
     const dayCares = await daycareFun.getAll();
-    console.log("Daycares fetched:", dayCares);
     res.render("daycares/dayCareList", { dayCares });
   } catch (e) {
     res.status(500).render("error", { error: e });
   }
 });
 
-
-
-router //This page is different from /daycare, it doesn't have any link to update or delete the daycare
-  .route("/daycares/id") // when user click a daycare, _id pass to this route and show details of clicked daycare.
-
-
+router
+  .route("/daycares/id")
   .get(async (req, res) => {
     const { name } = req.params;
     try {
@@ -141,6 +133,70 @@ router //This page is different from /daycare, it doesn't have any link to updat
       res.redirect("/daycares");
     } catch (e) {
       res.status(500).render("error", { error: e });
+    }
+  });
+
+router.route("/daycareReviews/:id").get(async (req, res) => {
+  const daycareId = req.params["id"];
+  const daycareInfo = await daycareFun.getOrg(daycareId);
+  const daycareName = daycareInfo["name"];
+  const daycareReviews = daycareInfo["reviews"];
+  const reviewsList = [];
+
+  for (const reviewId of daycareReviews) {
+    const fullReview = await reviewUtils.getReviewById(reviewId);
+    reviewsList.push(fullReview);
+    console.log(fullReview);
+  }
+  return res.render("daycares/daycareReviews", {
+    daycareId: daycareId,
+    daycareName: daycareName,
+    daycareReviews: reviewsList,
+  });
+});
+
+router
+  .route("/addDaycareReview/:id")
+  .get(async (req, res) => {
+    const daycareId = req.params["id"];
+    const daycareInfo = await daycareFun.getOrg(daycareId);
+    const daycareName = daycareInfo["name"];
+    console.log(daycareInfo);
+    return res.render("daycares/addDaycareReview", {
+      daycareId: daycareId,
+      daycareName: daycareName,
+    });
+  })
+  .post(async (req, res) => {
+    const reviewMappings = {
+      one_star: 1,
+      two_star: 2,
+      three_star: 3,
+      four_star: 4,
+      five_star: 5,
+    };
+
+    console.log(req.body);
+    console.log(req.session);
+    const daycareId = req.params["id"];
+    const userId = req.session.user["userId"];
+    const reviewStars = req.body["star"];
+    const reviewComment = req.body["review_comment"];
+    const reviewStarsToInt = reviewMappings[reviewStars];
+
+    try {
+      const postReview = await reviewUtils.addReview(
+        daycareId,
+        userId,
+        reviewStarsToInt,
+        reviewComment
+      );
+      console.log(postReview);
+      return res.json(
+        `Review to be posted\nYou gave it ${reviewStarsToInt} stars\nComment: ${reviewComment}`
+      );
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
     }
   });
 
