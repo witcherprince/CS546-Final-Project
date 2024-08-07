@@ -289,6 +289,7 @@ const exportedMethods = {
     return dayCare;
   },
 
+
   //c. Only update password 
   async updatePassword(id, password) {
     if (!(id instanceof ObjectId)) {

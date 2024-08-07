@@ -17,8 +17,9 @@ import express from "express";
 
 const router = express.Router();
 
+
 router.route("/").get(async (req, res) => { //direct to login
-try{
+  try {
     res.render("daycares/home");
   } catch (e) {
     res.status(500).render("error", { error: e });
@@ -31,8 +32,6 @@ router.route("/daycare").get(async(req, res) => { //just for daycare role (updat
 
 
 });
-
-
 
 //Add route '/login' (daycare role users login), link to register '/addDayCare'
 //add "/daycare" (after log in, show user's daycare, link of update information, update availability, update password and delete daycares)
@@ -97,6 +96,7 @@ router
   });
 
 router.get("/dayCareList", async (req, res) => {//getState, return lists of daycare's name and _id (hopefully the _id can hide, when click on daycare's name, _id pass to datebase)
+
   try {
     console.log("Fetching all daycares...");
     const dayCares = await daycareFun.getAll();
