@@ -339,7 +339,12 @@ const exportedMethods = {
     return dayCare;
   },
 
-  //6. log in function
+  //6. Get lists of dayare's name and _id of the input state:
+  async getByState(state) {
+
+  },
+
+  //7. log in function
   async loginDaycare(email, password) {
 
   }

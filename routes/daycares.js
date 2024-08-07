@@ -17,7 +17,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.route("/").get(async (req, res) => {
+router.route("/").get(async (req, res) => {//direct to /login
   try {
     res.render("daycares/home");
   } catch (e) {
@@ -25,8 +25,13 @@ router.route("/").get(async (req, res) => {
   }
 });
 
+//Add route '/login' (daycare role users login), link to register '/addDayCare'
+//add "/daycare" (after log in, show user's daycare, link of update information, update availability, update password and delete daycares)
+//if '/daycare' no data. link to register page
+
+//Chensi will do routes, and handlebars of update information and availability? Feruz do the rest
 router
-  .get("/addDayCare", (req, res) => {
+  .get("/addDayCare", (req, res) => {//register a daycare
     res.render("daycares/addDayCare");
   })
   .post("/addDayCare", async (req, res) => {
@@ -82,7 +87,7 @@ router
     }
   });
 
-router.get("/dayCareList", async (req, res) => {
+router.get("/dayCareList", async (req, res) => {// return getByState function, lists all daycares (hope the _id can be hiding)
   try {
     console.log("Fetching all daycares...");
     const dayCares = await daycareFun.getAll();
@@ -93,8 +98,8 @@ router.get("/dayCareList", async (req, res) => {
   }
 });
 
-router
-  .route("/daycares/id")
+router //This page is different from /daycare, it doesn't have any link to update or delete the daycare
+  .route("/daycares/id") // when user click a daycare, _id pass to this route and show details of clicked daycare.
   .get(async (req, res) => {
     const { name } = req.params;
     try {
