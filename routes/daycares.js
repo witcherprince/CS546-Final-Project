@@ -30,6 +30,7 @@ route("/login")
 //more routes to finish:
 router.route("/daycare").get(async(req, res) => { //just for daycare role (update daycare, update available, update password, delete daycare)
 
+
 });
 
 //Add route '/login' (daycare role users login), link to register '/addDayCare'
@@ -94,7 +95,6 @@ router
     }
   });
 
-
 router.get("/dayCareList", async (req, res) => {//getState, return lists of daycare's name and _id (hopefully the _id can hide, when click on daycare's name, _id pass to datebase)
 
   try {
@@ -107,8 +107,12 @@ router.get("/dayCareList", async (req, res) => {//getState, return lists of dayc
   }
 });
 
+
+
 router //This page is different from /daycare, it doesn't have any link to update or delete the daycare
   .route("/daycares/id") // when user click a daycare, _id pass to this route and show details of clicked daycare.
+
+
   .get(async (req, res) => {
     const { name } = req.params;
     try {

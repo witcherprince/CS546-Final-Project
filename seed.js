@@ -123,6 +123,30 @@ console.log(testThree);
 let testB = await dayCareData.updateAvailability('66b04c56f099742d48e9c225','false');
 console.log(testB);
 */
+/*
+//3c updatePassword works!
+let testC = await dayCareData.updatePassword('66b0f2d0c2039b20c823fb73', 'updatePass*27');
+console.log(testC);
+*/
+/*
+//4. getAll() works!
+let test4 = await dayCareData.getAll();
+console.log(test4);
+
+//5. getOrg() works!
+let test5 = await dayCareData.getOrg('66b0f2d0c2039b20c823fb73');
+console.log(test5);
+*/
+/*
+//6. getState works!
+let test6 = await dayCareData.getState('NY');
+console.log(test6);
+*/
+/*
+//7. loginDaycare works!
+let test7 = await dayCareData.loginDaycare('contact@happykids.com', 'updatePass*27');
+console.log(test7);
+*/
 
 //Reviews,js Checking:
 //1. addReview works!
