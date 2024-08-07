@@ -289,7 +289,7 @@ const exportedMethods = {
     return dayCare;
   },
 
-  //c. Only update password // Need check
+  //c. Only update password 
   async updatePassword(id, password) {
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
@@ -314,7 +314,10 @@ const exportedMethods = {
   // 4. Get all daycares from database
   async getAll() {
     const dayCaresCollection = await daycares();
-    let dayCareList = await dayCaresCollection.find({}).toArray();
+    let dayCareList = await dayCaresCollection.find(
+      {},
+      {projection: { password: 0 }}
+    ).toArray();
 
     if (!dayCareList) {
       throw "Could not get all daycares";
@@ -346,21 +349,33 @@ const exportedMethods = {
     return dayCare;
   },
 
-
-
   // 6. Get daycares by state
   async getState(state) {
     state = validation.checkState(state);
 
+    const dayCaresCollection = await daycares();
+    const daycareList = await dayCaresCollection.find(
+      {'location.state': state},
+      {projection: {name:1, _id: 1}}
+    ).toArray();
 
-
+    return daycareList;
   },
 
   //7. log in function
   async loginDaycare(email, password) {
+    email = validation.checkEmail(email);
+    password = validation.checkPassword(password, 'Password');
 
+    const dayCaresCollection = await daycares();
+    const daycare = await dayCaresCollection.findOne({ 'contactInfo.email': email });
+    if (!daycare) throw "Email not fond.";
+    
+    const passwordCheck = await bcryptjs.compare (password, daycare.password);
+    if (!passwordCheck) throw 'Invalid password!'
+
+    return this.getOrg(daycare._id);
   }
-
 
 };
 
