@@ -17,12 +17,19 @@ import express from "express";
 
 const router = express.Router();
 
-router.route("/").get(async (req, res) => {//direct to /login
+
+router.route("/").get(async (req, res) => { //direct to login
   try {
     res.render("daycares/home");
   } catch (e) {
     res.status(500).render("error", { error: e });
   }
+});
+//log in
+route("/login")
+//more routes to finish:
+router.route("/daycare").get(async(req, res) => { //just for daycare role (update daycare, update available, update password, delete daycare)
+
 });
 
 //Add route '/login' (daycare role users login), link to register '/addDayCare'
@@ -31,7 +38,7 @@ router.route("/").get(async (req, res) => {//direct to /login
 
 //Chensi will do routes, and handlebars of update information and availability? Feruz do the rest
 router
-  .get("/addDayCare", (req, res) => {//register a daycare
+  .get("/addDayCare", (req, res) => {//register for 'daycare' role
     res.render("daycares/addDayCare");
   })
   .post("/addDayCare", async (req, res) => {
@@ -87,7 +94,9 @@ router
     }
   });
 
-router.get("/dayCareList", async (req, res) => {// return getByState function, lists all daycares (hope the _id can be hiding)
+
+router.get("/dayCareList", async (req, res) => {//getState, return lists of daycare's name and _id (hopefully the _id can hide, when click on daycare's name, _id pass to datebase)
+
   try {
     console.log("Fetching all daycares...");
     const dayCares = await daycareFun.getAll();
