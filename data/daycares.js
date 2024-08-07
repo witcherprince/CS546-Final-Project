@@ -113,10 +113,7 @@ const exportedMethods = {
     }
 
     const newId = insertInfo.insertedId;
-    const dayCare = await dayCaresCollection.findOne(
-      { _id: newId },
-      { projection: { password: 0 } }
-    );
+    const dayCare = await this.getOrg(newId);
 
     return dayCare;
   },
@@ -262,7 +259,8 @@ const exportedMethods = {
       throw "Could not update it.";
     }
 
-    return await dayCaresCollection.findOne({ _id: id });
+    const dayCare = await this.getOrg(id);
+    return dayCare;
   },
 
   // b. only update the availability:
@@ -287,12 +285,30 @@ const exportedMethods = {
       throw "Could not update the availability. Please check if the provided ID is correct.";
     }
 
-    return await dayCaresCollection.findOne({ _id: id });
+    const dayCare = await this.getOrg(id);
+    return dayCare;
   },
 
-  //c. Only update password
-  async updatePassword() {
+  //c. Only update password // Need check
+  async updatePassword(id, password) {
+    if (!(id instanceof ObjectId)) {
+      id = validation.checkId(id);
+      id = new ObjectId(id);
+    }
+    password = validation.checkPassword(password, 'Password');
+    const hashPassword = await bcryptjs.hash(password, 15);
 
+    const dayCaresCollection = await daycares();
+    const updateResult = await dayCaresCollection.updateOne(
+      { _id: id },
+      { $set: { password: hashPassword } }
+    );
+
+    if (updateResult.modifiedCount === 0) {
+      throw "The new password must be different from the previous one.";
+    }
+
+    return "Password has been changed!";
   },
 
   // 4. Get all daycares from database
@@ -313,34 +329,29 @@ const exportedMethods = {
 
   // 5. Get daycare by name from database
   async getOrg(id) {
-    if (!id) {
-      throw "You must provide id of day organization to search for";
+    if (!(id instanceof ObjectId)) {
+      id = validation.checkId(id);
+      id = new ObjectId(id);
     }
-
-    if (typeof id !== "string") {
-      throw "Id must be a string";
-    }
-
-    if (id.trim().length === 0) {
-      throw "Name of day organization cannot be an empty string or just spaces";
-    }
-
-    id = id.trim();
-
     const dayCaresCollection = await daycares();
-    const dayCare = await dayCaresCollection.findOne({ _id: new ObjectId(id) });
+    const dayCare = await dayCaresCollection.findOne(
+      { _id: id },
+      { projection: { password: 0 } }
+    );
 
     if (dayCare === null) {
       throw "No daycare organization with that name";
     }
 
-    dayCare._id = dayCare._id.toString();
-
     return dayCare;
   },
 
-  //6. Get lists of dayare's name and _id of the input state:
-  async getByState(state) {
+
+  // 6. Get daycares by state
+  async getState(state) {
+    state = validation.checkState(state);
+
+
 
   },
 
