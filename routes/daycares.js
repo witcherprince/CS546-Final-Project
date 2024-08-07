@@ -1,21 +1,172 @@
-// import { getAll, addDayCare, getOrg } from "../data/daycares.js";
 import daycareFun from "../data/daycares.js";
-import {
-  isProperId,
-  isValidString,
-  isValidNumber,
-  isValidArray,
-  checkState,
-  isValidZip,
-  isValidEmail,
-  isValidPhone,
-  isValidWebsite,
-  checkBusinessHour,
-  checkBoolean
-} from "../helpers.js";
+import helpers from '../helpers.js';
 import express from "express";
 
 const router = express.Router();
+
+router.route('/').get(async (req, res) => {
+  
+  let timeStamp = new Date().toUTCString();
+  let reqMethod = req.method;
+  let reqRoute = req.originalUrl;
+  
+  let userAuthenticated;
+
+  if (req.session.user) {
+    userAuthenticated = 'Authenticated User';
+  } else {
+    userAuthenticated = 'Non-Authenticated User';
+  }
+
+  console.log(`[${timeStamp}]: ${reqMethod} ${reqRoute} (${userAuthenticated})`);
+
+  if (req.session.user) {
+    return res.redirect('daycareLogin');
+  } else {
+    return res.redirect('daycareLogin');
+  }
+});
+
+router
+  .route('/addDaycare')
+  .get(async (req, res) => {
+    
+    if (req.session.user) {
+      res.render('register');
+    } else {
+      res.status(500).render('register', { error: 'Internal Server Error. User could not be registered.' });
+    }
+  })
+  .post(async (req, res) => {
+    
+    let userInfo = req.body;
+
+    if (!userInfo.firstName || !userInfo.lastName || !userInfo.emailAddress || !userInfo.password || !userInfo.role) {
+      return res.status(400).render('register', { error: 'All fields are required' });
+    }
+
+    try {
+      isValidString(userInfo.firstName);
+      isValidString(userInfo.lastName);
+      isValidEmail(userInfo.emailAddress);
+      isValidPassword(userInfo.password);
+      isValidRole(userInfo.role);
+
+      if (userInfo.password !== userInfo.confirmPassword) {
+        return res.status(400).render('register', { error: 'Passwords do not match' });
+      }
+
+      const user = await registerUser(userInfo.firstName, userInfo.lastName, userInfo.emailAddress, userInfo.password, userInfo.role);
+
+      if (user.insertedUser) {
+        res.redirect('/login');
+      } else {
+        res.status(500).render('register', { error: 'Internal Server Error. User could not be registered.' });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      res.status(500).render('register', { error: 'Internal Server Error. Please try again later.' });
+    }
+  });
+
+router
+  .route('/login')
+  .get(async (req, res) => {
+    //code here for GET
+    if (req.session && req.session.user) {
+      return res.redirect(req.session.user.role === 'admin' ? '/admin' : '/protected');
+    }
+    
+    res.render('login', { error: 'Invalid email or password.'});
+  })
+  .post(async (req, res) => {
+    //code here for POST
+    let loginInfo = req.body;
+
+    try {
+      if (!loginInfo.emailAddress || !loginInfo.password) {
+        return res.status(400).render('login', { error: 'Email and password are required' });
+      }
+
+      isValidEmail(loginInfo.emailAddress);
+      isValidPassword(loginInfo.password);
+
+      const user = await loginUser(loginInfo.emailAddress, loginInfo.password);
+
+      req.session.user = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailAddress: user.emailAddress,
+        role: user.role
+      };
+
+      res.redirect('/');
+    } catch (error) {
+      console.error('Error during login:', error);
+      res.status(500).render('login', { error: 'Invalid email or password' });
+    }
+  });
+
+router.route('/protected').get(async (req, res) => {
+  //code here for GET
+  const { firstName, lastName, role } = req.session.user;
+  const currentTime = new Date().toLocaleString();
+  
+  try {
+    res.render('protected', {
+      firstName,
+      lastName,
+      currentTime,
+      role,
+      isAdmin: role === 'admin',
+    })
+  } catch (e) {
+    res.status(400);
+  }
+});
+
+router.route('/admin').get(async (req, res) => {
+  //code here for GET
+  const { firstName, lastName } = req.session.user;
+  const currentTime = new Date().toLocaleString();
+
+  res.render('admin', {
+    firstName,
+    lastName,
+    currentTime
+  });
+});
+
+router.route('/error').get(async (req, res) => {
+  //code here for GET
+  res.status(400).render('error', {
+    errorMessage: 'Error!',
+  });
+
+});
+
+router.route('/logout').get(async (req, res) => {
+  //code here for GET
+  res.clearCookie("AuthCookie");
+  req.session.destroy();
+  res.render('logout', { title: "Logout" })
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 router.route("/").get(async (req, res) => {
   try {
