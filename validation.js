@@ -220,6 +220,7 @@ const exportedMethods = {
     if (!rateForm.test(rate)) {
       throw "Rating is between 0 to 5 with no more than one decimal place.";
     }
+    rate = parseFloat(rate);
     return rate;
   },
   //10. Check if it is String:

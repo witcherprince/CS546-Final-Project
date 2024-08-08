@@ -1,118 +1,145 @@
-/*
-You will style your page using at least 10 CSS selectors for general CSS styling. You will place the CSS in its own file. 
-*/
- body {
-    background: #f0f1f1;
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
-  }
-  main {
-    max-width: 75%;
-    margin: auto;
-  }
-  header {
-    border-bottom: 5px solid #13abe7;
-    background-color: #d5f2f2
-  }
-  p {
-    font-size: 1rem;
-    line-height: 2;
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
-    padding: 15px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-  }
-  label {
-    font-weight: bold;
-  }
-  html, body {
-    font-size: 14pt;
-  }
-  h1 {
-    text-align: center;
-    font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
-  }
-  h1 {
-    font-size: 2rem;
-  }
-  
-  .prime {
-    color: #00ff00;
-  }
+body {
+  background: #f0f1f1;
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-  .not-prime {
-    color: #ff0000;
-  }
+main {
+  max-width: 75%;
+  margin: auto;
+  padding: 20px; 
+  flex: 1;
+}
 
-  .form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    margin: auto;
-  }
-  .form label {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #333;
-  }
-  .form input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  .form .button {
-    padding: 10px 20px;
-    background-color: #c909e2;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  .form .button:hover {
-    background-color: #0de74e;
-  }
-  .button {
-    font-size: 15px;
-    background-color: rgb(150, 155, 158);
-    border: 1px solid rgb(34, 150, 218);
-    text-align: center;
-    line-height: 2;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  footer {
-    background-color: #cae2e3;
-    color: rgb(5, 27, 194);
-    text-align: center;
-    padding: 10px;
-  }
+header {
+  border-bottom: 5px solid #13abe7;
+  background-color: #d5f2f2;
+}
 
-  .view-details-button {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
+p {
+  font-size: 1rem;
+  line-height: 2;
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  font-weight: bold;
+}
+
+html, body {
+  font-size: 14pt;
+}
+
+h1 {
+  text-align: center;
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  font-size: 2rem;
+  margin-top: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: auto;
+}
+
+.form label {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.form input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.form .button {
+  padding: 10px 20px;
+  background-color: #c909e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.form .button:hover {
+  background-color: #0de74e;
+}
+
+.button {
+  font-size: 15px;
+  background-color: rgb(150, 155, 158);
+  border: 1px solid rgb(34, 150, 218);
+  text-align: center;
+  line-height: 2;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+footer {
+  background-color: #cae2e3;
+  color: rgb(5, 27, 194);
+  text-align: center;
+  padding: 10px;
+}
+
+.view-details-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .view-details-button:hover {
-    background-color: #45a049;
+  background-color: #45a049;
 }
 
 .arrow-icon {
-    font-size: 16px;
-    margin-left: 10px;
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.login-link {
+  position: fixed; 
+  right: 20px;
+  top: 80px; 
+  background: #f8f9fa;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.login-link a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
 }

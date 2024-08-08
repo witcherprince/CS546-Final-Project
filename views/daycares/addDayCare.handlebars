@@ -1,20 +1,24 @@
+<link rel="stylesheet" href="../public/daycares.css" />
 <article class="daycare-org">
   <p>Welcome, here you can add your Daycare Organization! You can use this tool to add daycare organizations by name and other details. Please fill out the form below to add a new daycare organization.</p>
   <form action="/daycares/addDayCare" method="POST" class="form">
       <label for="name">Name:</label>
       <input name="name" id="name" type="text" placeholder="Enter daycare name" required>
 
+      <label for="password">Password:</label>
+      <input name="password" id="password" type="password" placeholder="Enter password" required>
+      
       <label for="introduction">Introduction:</label>
-      <textarea name="introduction" id="introduction" placeholder="Enter introduction"></textarea>
+      <textarea name="introduction" id="introduction" placeholder="Enter introduction" required></textarea>
       
       <label for="address">Address:</label>
-      <input name="address" id="address" type="text" placeholder="Enter address" required>
+      <input name="address" id="address" type="text" placeholder="Enter street & apt number" required>
       
       <label for="town">Town:</label>
       <input name="town" id="town" type="text" placeholder="Enter town" required>
       
       <label for="state">State:</label>
-      <input name="state" id="state" type="text" placeholder="Enter state" required>
+      <input name="state" id="state" type="text" placeholder="Enter state (2 letters)" required>
       
       <label for="zipcode">Zipcode:</label>
       <input name="zipcode" id="zipcode" type="text" placeholder="Enter zipcode" required>
@@ -35,13 +39,13 @@
       <input name="yearsInBusiness" id="yearsInBusiness" type="number" placeholder="Enter years in business">
       
       <label for="availability">Availability:</label>
-      <input name="availability" id="availability" type="text" placeholder="Enter availability">
+      <input name="availability" id="availability" type="text" placeholder="Enter availability ('true' or 'false')">
       
-      <label for="lunchOptions">Lunch Options:</label>
-      <input name="lunchOptions" id="lunchOptions" type="text" placeholder="Enter lunch options">
-            
+      <label for="lunchChoices">Lunch Choices:</label>
+      <input name="lunchChoices" id="lunchChoices" type="text" placeholder="Enter lunch options (e.g., hot lunch, veggie-choice)">
+      
       <label for="duration">Duration:</label>
-      <input name="duration" id="duration" type="text" placeholder="Enter duration">
+      <input name="duration" id="duration" type="text" placeholder="Enter duration (e.g., full-day, half-day)">
       
       <label for="tuitionRange">Tuition Range:</label>
       <input name="tuitionRange" id="tuitionRange" type="text" placeholder="Enter tuition range">
@@ -49,3 +53,4 @@
       <input class="button" type="submit" value="ADD DAYCARE">
   </form>
 </article>
+

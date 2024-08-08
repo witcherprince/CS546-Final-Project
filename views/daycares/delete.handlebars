@@ -1,0 +1,11 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+{{#if error}}
+      <p class="error">{{error}}</p>
+{{/if}}
+<p>Are you sure you want to delete your daycare? This action cannot be undone.</p>
+<form action="/daycares/delete" method="POST" class="form">
+    <input type="hidden" name="id" value="{{id}}">
+      <div>
+        <input class="button" type="submit" value="Delete Daycare">
+      </div>
+</form>

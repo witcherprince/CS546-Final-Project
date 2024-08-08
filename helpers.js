@@ -207,5 +207,25 @@ export function checkState(state) {
     return input;
   }
 
+  export function isValidPassword(input) {
+
+    if (typeof input != 'string') {
+        throw 'provide input string'
+    }
+
+    if (input.trim().length == 0) {
+        throw 'string should not have empty spaces'
+    }
+
+    if (input.length < 8) {
+        throw 'password should be at least 8 characters long'
+    }
+
+    let re = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':",.<>?/\\|`~]).{8,}$/;
+    if (!re.test(input)) {
+        throw 'provide at least one uppercase case, number and special charachter'
+    } 
+}
+
 
 
