@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares">Search for Daycares</a></li>
+    </ul>
+  </nav>
+</div>
+
+<title>Daycare Login</title>
+
+<p>Welcome to the Daycare Login Page! Please enter your credentials to log in.</p>
+<div class="table-form">
+  <form id="login-form" action="/daycares/login" method="POST" class="form">
+    <div>
+      <label for="emailAddressInput">Email Address:</label>
+      <input name="emailAddress" id="emailAddressInput" type="email" placeholder="Enter your email" required>
+    </div>
+    <div>
+      <label for="passwordInput">Password:</label>
+      <input name="password" id="passwordInput" type="password" placeholder="Enter your password" required>
+    </div>
+    <div>
+      <input class="button" type="submit" value="LOGIN">
+    </div>
+  </form>
+  <p>If you don't have an account, you can <a href="/daycares/addDayCare">register here</a>.</p>
+</div>
+
+
