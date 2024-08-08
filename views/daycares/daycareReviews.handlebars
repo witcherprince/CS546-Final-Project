@@ -1,0 +1,25 @@
+<h2>This is the daycare review page for {{daycareName}}</h2>
+<section>
+  <a href="/daycares/addDaycareReview/{{daycareId}}" class="btn btn-primary">Add
+    a review!</a>
+  {{#each daycareReviews}}
+    <div class="card text-center">
+      <div class="card-header">
+        <b>UserName:</b><br />
+        <h2>{{this.userName}}</h2>
+        <b>Rating:</b><br />
+        <h2>{{this.rating}} stars.</h2>
+
+      </div>
+      <div class="card-body">
+        <p>Reviewer Comment:</p>
+        <p>{{this.review}}</p>
+
+      </div>
+      <div class="card-footer text-body-secondary">
+        <b>Review Date:</b><br />
+        {{this.createdAt}}
+      </div>
+    </div><br />
+  {{/each}}
+</section>

@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="../public/users.css" />
+
+<div class="form-box">
+  <form
+    id="daycareReview"
+    method="POST"
+    action="/daycares/addDaycareReview/{{daycareId}}"
+    onsubmit="event.preventDefault(); addReviewValidation();"
+  >
+    <h2>Add a review for {{daycareName}}</h2>
+
+    <input type="radio" id="one_star" name="star" value="one_star" />
+    <label for="one_star">1 Star *</label><br />
+    <input type="radio" id="two_star" name="star" value="two_star" />
+    <label for="two_star">2 Star **</label><br />
+    <input type="radio" id="three_star" name="star" value="three_star" />
+    <label for="three_star">3 Star ***</label><br />
+    <input type="radio" id="four_star" name="star" value="four_star" />
+    <label for="four_star">4 Star ****</label><br />
+    <input type="radio" id="five_star" name="star" value="five_star" />
+    <label for="five_star">5 Star *****</label><br />
+    <label for="review_comment">Review Comment:</label><br />
+    <input type="text" id="review_comment" name="review_comment" /><br /><br />
+    <div>
+      <button type="submit">Add your review</button>
+    </div>
+  </form>
+</div>
+<script src="../../public/js/addReviews.js"></script>
