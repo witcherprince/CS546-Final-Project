@@ -123,16 +123,15 @@ const exportedMethods = {
     const usersCollection = await users(); //If this user already rated this daycare, throw:
     const userInfo = await usersCollection.findOne({ _id: userId });
     const userFirstName = userInfo["firstName"];
-    console.log(userInfo);
     if (review == null) {
       throw "Error: No review is fond!";
     }
-
     const reviewContent = {
       rating: review.rating,
       review: review.review,
       createdAt: review.createdAt,
       userName: userFirstName,
+      userId: userId,
     };
 
     return reviewContent;
