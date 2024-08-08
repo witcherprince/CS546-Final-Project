@@ -1,298 +1,158 @@
 import daycareFun from "../data/daycares.js";
-import helpers from '../helpers.js';
+import { isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean} from '../helpers.js';
 import express from "express";
+import authMiddleware from '../auth/auth.js';
 
 const router = express.Router();
 
-router.route('/').get(async (req, res) => {
-  
-  let timeStamp = new Date().toUTCString();
-  let reqMethod = req.method;
-  let reqRoute = req.originalUrl;
-  
-  let userAuthenticated;
+//just for daycare role (update daycare, update available, update password, delete daycare)
+// when user click a daycare, _id pass to this route and show details of clicked daycare.
 
-  if (req.session.user) {
-    userAuthenticated = 'Authenticated User';
-  } else {
-    userAuthenticated = 'Non-Authenticated User';
-  }
-
-  console.log(`[${timeStamp}]: ${reqMethod} ${reqRoute} (${userAuthenticated})`);
-
-  if (req.session.user) {
-    return res.redirect('daycareLogin');
-  } else {
-    return res.redirect('daycareLogin');
-  }
-});
-
-router
-  .route('/addDaycare')
-  .get(async (req, res) => {
-    
-    if (req.session.user) {
-      res.render('register');
-    } else {
-      res.status(500).render('register', { error: 'Internal Server Error. User could not be registered.' });
-    }
-  })
-  .post(async (req, res) => {
-    
-    let userInfo = req.body;
-
-    if (!userInfo.firstName || !userInfo.lastName || !userInfo.emailAddress || !userInfo.password || !userInfo.role) {
-      return res.status(400).render('register', { error: 'All fields are required' });
-    }
-
+router.route("/")
+  .get(async (req, res) => { 
     try {
-      isValidString(userInfo.firstName);
-      isValidString(userInfo.lastName);
-      isValidEmail(userInfo.emailAddress);
-      isValidPassword(userInfo.password);
-      isValidRole(userInfo.role);
-
-      if (userInfo.password !== userInfo.confirmPassword) {
-        return res.status(400).render('register', { error: 'Passwords do not match' });
-      }
-
-      const user = await registerUser(userInfo.firstName, userInfo.lastName, userInfo.emailAddress, userInfo.password, userInfo.role);
-
-      if (user.insertedUser) {
-        res.redirect('/login');
-      } else {
-        res.status(500).render('register', { error: 'Internal Server Error. User could not be registered.' });
-      }
-    } catch (error) {
-      console.error('Error during registration:', error);
-      res.status(500).render('register', { error: 'Internal Server Error. Please try again later.' });
+      res.render("daycares/home");
+    } catch (e) {
+      res.status(500).render("error", { error: e });
     }
   });
 
-router
-  .route('/login')
-  .get(async (req, res) => {
-    //code here for GET
-    if (req.session && req.session.user) {
-      return res.redirect(req.session.user.role === 'admin' ? '/admin' : '/protected');
+router.route('/login')
+  .get(async (req, res) => { 
+    try {
+      res.render('daycares/login'); 
+    } catch (e) {
+      res.status(500).render('daycares/error', { error: e });
     }
-    
-    res.render('login', { error: 'Invalid email or password.'});
   })
   .post(async (req, res) => {
-    //code here for POST
     let loginInfo = req.body;
 
     try {
       if (!loginInfo.emailAddress || !loginInfo.password) {
-        return res.status(400).render('login', { error: 'Email and password are required' });
+        return res.status(400).render('daycares/login', { error: 'Email and password are required' });
       }
 
       isValidEmail(loginInfo.emailAddress);
       isValidPassword(loginInfo.password);
 
-      const user = await loginUser(loginInfo.emailAddress, loginInfo.password);
+      const user = await daycareFun.loginDaycare(loginInfo.emailAddress, loginInfo.password);
 
-      req.session.user = {
-        firstName: user.firstName,
-        lastName: user.lastName,
-        emailAddress: user.emailAddress,
+      req.session.daycare = {
+        _id: user._id,
+        name: user.name,
+        emailAddress: user.contactInfo.email,
         role: user.role
       };
 
-      res.redirect('/');
+      res.render('daycares/welcome', { name: user.name });
     } catch (error) {
       console.error('Error during login:', error);
-      res.status(500).render('login', { error: 'Invalid email or password' });
+      res.status(500).render('daycares/login', { error: 'Invalid email or password' });
     }
   });
 
-router.route('/protected').get(async (req, res) => {
-  //code here for GET
-  const { firstName, lastName, role } = req.session.user;
-  const currentTime = new Date().toLocaleString();
+router.route('/addDaycare')
+  .get(async (req, res) => {
+    res.render('daycares/addDayCare');
+  })
+  .post(async (req, res) => {
+    const dayCarePostData = req.body;
+    if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
+      return res.status(400).render("error", { error: "There are no fields in the request body" });
+    }
+
+    try {
+      const {
+        name,
+        password,
+        introduction,
+        address,
+        town,
+        state,
+        zipcode,
+        businessHours,
+        email,
+        phone,
+        website,
+        yearsInBusiness,
+        availability,
+        lunchChoices,
+        duration,
+        tuitionRange
+      } = req.body;
   
-  try {
-    res.render('protected', {
-      firstName,
-      lastName,
-      currentTime,
-      role,
-      isAdmin: role === 'admin',
-    })
-  } catch (e) {
-    res.status(400);
-  }
-});
-
-router.route('/admin').get(async (req, res) => {
-  //code here for GET
-  const { firstName, lastName } = req.session.user;
-  const currentTime = new Date().toLocaleString();
-
-  res.render('admin', {
-    firstName,
-    lastName,
-    currentTime
+      const newDaycare = await daycareFun.addDaycare(
+        name,
+        password,
+        introduction,
+        address,
+        town,
+        state,
+        zipcode,
+        businessHours,
+        email,
+        phone,
+        website,
+        yearsInBusiness,
+        availability,
+        lunchChoices,
+        duration,
+        tuitionRange
+      );
+  
+      res.redirect('/daycares/welcome');
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while adding the daycare' });
+    }
   });
+
+router.get('/welcome', authMiddleware, (req, res) => {
+  res.render('daycares/welcome', { name: req.session.daycare.name }); 
 });
 
 router.route('/error').get(async (req, res) => {
-  //code here for GET
-  res.status(400).render('error', {
-    errorMessage: 'Error!',
-  });
-
+  res.status(400).render('daycares/error', { errorMessage: 'Error!',});
 });
 
 router.route('/logout').get(async (req, res) => {
-  //code here for GET
   res.clearCookie("AuthCookie");
   req.session.destroy();
-  res.render('logout', { title: "Logout" })
+  res.render('daycares/logout', { title: "Logout" });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-router.route("/").get(async (req, res) => { //direct to login
-  try {
-    res.render("daycares/home");
-  } catch (e) {
-    res.status(500).render("error", { error: e });
+router.get('/delete', async (req, res) => {
+  if (!req.session.daycare || !req.session.daycare._id) {
+    return res.status(403).render('daycares/error', { error: 'You must be logged in to delete your daycare.' });
   }
-});
-//log in
-route("/login")
-//more routes to finish:
-router.route("/daycare").get(async(req, res) => { //just for daycare role (update daycare, update available, update password, delete daycare)
-
-
-});
-
-//Add route '/login' (daycare role users login), link to register '/addDayCare'
-//add "/daycare" (after log in, show user's daycare, link of update information, update availability, update password and delete daycares)
-//if '/daycare' no data. link to register page
-
-//Chensi will do routes, and handlebars of update information and availability? Feruz do the rest
-router
-  .get("/addDayCare", (req, res) => {//register for 'daycare' role
-    res.render("daycares/addDayCare");
-  })
-  .post("/addDayCare", async (req, res) => {
-    console.log("Request Body:", req.body);
-    const dayCarePostData = req.body;
-    if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
-      return res
-        .status(400)
-        .render("error", { error: "There are no fields in the request body" });
-    }
-
-    try {
-      isValidString(dayCarePostData.name);
-      isValidString(dayCarePostData.introduction);
-      isValidString(dayCarePostData.address);
-      isValidString(dayCarePostData.town);
-      checkState(dayCarePostData.state);
-      isValidZip(dayCarePostData.zipcode);
-      checkBusinessHour(dayCarePostData.businessHours);
-      isValidEmail(dayCarePostData.email);
-      isValidPhone(dayCarePostData.phone);
-      dayCarePostData.website = dayCarePostData.website ? isValidWebsite(dayCarePostData.website) : null;
-      dayCarePostData.yearsInBusiness = dayCarePostData.yearsInBusiness ? isValidNumber(dayCarePostData.yearsInBusiness) : null;
-      dayCarePostData.availability = dayCarePostData.availability ? checkBoolean(dayCarePostData.availability, "availability") : null;
-      dayCarePostData.lunchOptions = dayCarePostData.lunchOptions ? isValidArray(dayCarePostData.lunchOptions) : null;
-      dayCarePostData.duration = dayCarePostData.duration ? isValidArray(dayCarePostData.duration) : null;
-      dayCarePostData.tuitionRange = dayCarePostData.tuitionRange ? isValidString(dayCarePostData.tuitionRange) : null;
-    } catch (e) {
-      return res.status(400).render("error", { error: e });
-    }
-
-    try {
-      await daycareFun.addDaycare(
-        dayCarePostData.name,
-        dayCarePostData.introduction,
-        dayCarePostData.address,
-        dayCarePostData.town,
-        dayCarePostData.state,
-        dayCarePostData.zipcode,
-        dayCarePostData.businessHours,
-        dayCarePostData.email,
-        dayCarePostData.phone,
-        dayCarePostData.website,
-        dayCarePostData.yearsInBusiness,
-        dayCarePostData.availability,
-        dayCarePostData.lunchOptions,
-        dayCarePostData.duration,
-        dayCarePostData.tuitionRange
-      );
-      res.redirect("/daycares");
-    } catch (e) {
-      res.status(500).render("error", { error: e });
-    }
-  });
-
-router.get("/dayCareList", async (req, res) => {//getState, return lists of daycare's name and _id (hopefully the _id can hide, when click on daycare's name, _id pass to datebase)
 
   try {
-    console.log("Fetching all daycares...");
-    const dayCares = await daycareFun.getAll();
-    console.log("Daycares fetched:", dayCares);
-    res.render("daycares/dayCareList", { dayCares });
+    res.render('daycares/delete', { id: req.session.daycare._id });
   } catch (e) {
-    res.status(500).render("error", { error: e });
+    res.status(500).render('daycares/error', { error: e });
   }
 });
 
+router.post('/delete', authMiddleware, async (req, res) => {
+  if (!req.session.daycare || !req.session.daycare._id) {
+    return res.status(403).render('daycares/error', { error: 'You must be logged in to delete your daycare.' });
+  }
 
+  const daycareId = req.session.daycare._id;
 
-router //This page is different from /daycare, it doesn't have any link to update or delete the daycare
-  .route("/daycares/id") // when user click a daycare, _id pass to this route and show details of clicked daycare.
-
-
-  .get(async (req, res) => {
-    const { name } = req.params;
-    try {
-      let validName = isValidString(id);
-      validName = validName.trim();
-      const dayCare = await daycareFun.getOrg(id);
-
-      if (!dayCare) {
-        return res.status(404).render("error", { error: "Daycare not found" });
+  try {
+    await daycareFun.removeDaycare(daycareId);
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).render('daycares/error', { error: 'Failed to log out after deleting daycare' });
       }
-
-      res.render("dayCareDetail", { dayCare });
-    } catch (e) {
-      return res.status(400).render("error", { error: e.message });
-    }
-  })
-  .delete(async (req, res) => {
-    try {
-      req.params.id = isProperId(req.params.id);
-    } catch (e) {
-      return res.status(400).render("error", { error: e.message });
-    }
-
-    try {
-      await dayCareData.remove(req.params.id);
-      res.redirect("/daycares");
-    } catch (e) {
-      res.status(500).render("error", { error: e });
-    }
-  });
+      res.redirect('/');
+    });
+  } catch (error) {
+    console.error('Error deleting daycare:', error);
+    res.status(500).render('daycares/delete', { error: 'Could not delete daycare.', id: daycareId });
+  }
+});
 
 export default router;
