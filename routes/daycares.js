@@ -1,23 +1,9 @@
 import daycareFun from "../data/daycares.js";
 
-import reviewUtils from "../data/reviews.js";
-import userUtils from "../data/users.js";
-import {
-  isProperId,
-  isValidString,
-  isValidNumber,
-  isValidArray,
-  checkState,
-  isValidZip,
-  isValidEmail,
-  isValidPhone,
-  isValidWebsite,
-  checkBusinessHour,
-  checkBoolean,
-  isValidPassword,
-} from "../helpers.js";
+import { checkNumber, checkWebsite, checkPhone, checkEmail, checkZipcode, isString, isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean, checkZipcode} from '../helpers.js';
 
 import express from "express";
+import authMiddleware from '../auth/auth.js';
 
 const router = express.Router();
 /*
@@ -31,13 +17,14 @@ function isAuthenticated(req, res, next) { //I don't know where to put middlewar
 //just for daycare role (update daycare, update available, update password, delete daycare)
 // when user click a daycare, _id pass to this route and show details of clicked daycare.
 
-router.route("/").get(async (req, res) => {
-  try {
-    return res.render("daycares/home");
-  } catch (e) {
-    return res.status(500).render("error", { error: e });
-  }
-});
+router.route("/")
+  .get(async (req, res) => { 
+    try {
+      res.render("daycares/home");
+    } catch (e) {
+      res.status(500).render("error", { error: e });
+    }
+  });
 
 router
   .route("/login")
@@ -49,7 +36,8 @@ router
     }
   })
   .post(async (req, res) => {
-    const loginInfo = req.body;
+    let loginInfo = req.body;
+
     try {
       if (!loginInfo.emailAddress || !loginInfo.password) {
         return res.status(400).render("daycares/login", {
@@ -65,6 +53,7 @@ router
         loginInfo.password
       );
 
+      req.session.daycare = { // You store daycare_id in session?
       req.session.daycare = { // You store daycare_id in session?
         _id: user._id,
         name: user.name,
@@ -179,7 +168,7 @@ router.get("/delete", async (req, res) => {
   }
 });
 
-router.post("/delete", async (req, res) => {
+router.post('/delete', authMiddleware, async (req, res) => {
   if (!req.session.daycare || !req.session.daycare._id) {
     return res.status(403).render("daycares/error", {
       error: "You must be logged in to delete your daycare.",
