@@ -9,7 +9,29 @@
     <h1>Welcome to Your Daycare Dashboard, {{name}}!!</h1>
   </header>
   <main>
-    <p>Manage your daycare operations from the following options:</p>
+  <!--I add this section, as the main page for the daycare user, they can see their daycare's details: -->
+    <section id="daycare-details">
+      <h2>Daycare information:</h2>
+      <p>Name: {{daycare.name}}</p>
+      <p>Introduction: {{daycare.introduction}}</p>
+      <p>Location: {{daycare.location.address}}, {{daycare.location.town}}, {{daycare.location.state}} {{daycare.location.zipcode}}</p>
+      <p>Contact Information: 
+        <ul>
+          <li>Email: {{daycare.contactInfo.email}}</li>
+          <li>Phone: {{daycare.contactInfo.phone}}</li>
+          {{#if daycare.contactInfo.website}}
+            <li>Website: <a href="{{daycare.contactInfo.website}}" target="_blank">{{daycare.contactInfo.website}}</a></li>
+          {{/if}}
+        </ul>
+      </p>
+      <p>Business Hours: {{daycare.businessHours}}</p>
+      <p>Tuition Range: {{daycare.tuitionRange}}</p>
+      <p>Availability: {{daycare.availability}}</p>
+      <p>Years in Business: {{daycare.yearsInBusiness}}</p>
+      <p>Lunch Choices: {{#each daycare.lunchChoices}}<span>{{this}}</span>{{#unless @last}}, {{/unless}}{{/each}}</p>
+      <p>Duration: {{daycare.duration}}</p>
+    </section>
+    <p>Not correct information? Manage your daycare from the following options:</p>
     <ul>
       <li><a href="/daycares/update">Update Daycare Information</a></li>
       <li><a href="/daycares/availability">Update Availability</a></li>

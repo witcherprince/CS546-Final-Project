@@ -1,10 +1,17 @@
 import daycareFun from "../data/daycares.js";
-import { isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean} from '../helpers.js';
+import { checkNumber, checkWebsite, checkPhone, checkEmail, checkZipcode, isString, isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean, checkZipcode} from '../helpers.js';
 import express from "express";
 import authMiddleware from '../auth/auth.js';
 
 const router = express.Router();
-
+/*
+function isAuthenticated(req, res, next) { //I don't know where to put middleware function
+  if (req.session.userId) {
+    return next();
+  }
+  res.redirect('/login');
+}
+*/
 //just for daycare role (update daycare, update available, update password, delete daycare)
 // when user click a daycare, _id pass to this route and show details of clicked daycare.
 
@@ -38,7 +45,7 @@ router.route('/login')
 
       const user = await daycareFun.loginDaycare(loginInfo.emailAddress, loginInfo.password);
 
-      req.session.daycare = {
+      req.session.daycare = { // You store daycare_id in session?
         _id: user._id,
         name: user.name,
         emailAddress: user.contactInfo.email,
@@ -155,4 +162,147 @@ router.post('/delete', authMiddleware, async (req, res) => {
   }
 });
 
+//Do we render the error to errorDaycare? so we can redirect in errorDaycare to give user the second chance
+//update the daycare
+router.route('/update')
+  .get(async (req, res) =>{
+    if (!req.session.daycare || !req.session.daycare._id) {
+      return res.status(403).render('daycares/errorDaycare', { error: 'Log in to update your daycare.' });
+    }
+  
+    try {
+      res.render('daycares/updateDaycare');
+    } catch (e) {
+      res.status(500).render('daycares/errorDaycare', { error: e });
+    }
+  })
+  .put(async (req, res) => {
+    const daycareData = req.body;
+    if (!daycareData || Object.keys(daycareData).length === 0) {
+      return res.redirect('/welcome'); 
+    }
+
+    try{
+      const name = isString(daycareData.name, 'Name');
+      const introduction = isString(daycareData.introduction, 'Introduction');
+      const address = isString(daycareData.address, 'Address');
+      const town = isString(daycareData.town, 'Town');
+      const state = checkState(daycareData.state);
+      const zipcode = checkZipcode(daycareData.zipcode);
+      const businessHours = checkBusinessHour(daycareData.businessHours);
+      const email = checkEmail(daycareData.email);
+      const phone = checkPhone(daycareData.phone);
+      let website;
+      let yearsInBusiness;
+      let availability;
+      let lunchChoices;
+      let duration;
+      let tuitionRange;
+
+      if (daycareData.website) {
+        website = checkWebsite(daycareData.website);
+      } else {
+        website = null;
+      }
+  
+      if (daycareData.yearsInBusiness) {
+        yearsInBusiness = checkNumber(
+          daycareData.yearsInBusiness,
+          "years in business"
+        );
+      } else {
+        yearsInBusiness = null;
+      }
+  
+      if (daycareData.availability) {
+        availability = checkBoolean(
+          daycareData.availability,
+          "availability"
+        );
+      } else {
+        availability = null;
+      }
+  
+      if (daycareData.lunchChoices) {
+        lunchChoices = daycareData.lunchChoices
+          .split(",")
+          .map((choice) => isString(choice.trim(), "lunch choice"));
+      } else {
+        lunchChoices = [];
+      }
+  
+      if (daycareData.duration) {
+        duration = daycareData.duration
+          .split(",")
+          .map((dur) => isString(dur.trim(), "duration"));
+      } else {
+        duration = [];
+      }
+  
+      if (daycareData.tuitionRange) {
+        tuitionRange = isString(
+          daycareData.tuitionRange,
+          "tuition range"
+        );
+      } else {
+        tuitionRange = null;
+      }
+      
+      const newDaycare = {
+        name,
+        introduction,
+        address,
+        town,
+        state,
+        zipcode,
+        email,
+        phone,
+        website,
+        businessHours,
+        tuitionRange,
+        availability,
+        yearsInBusiness,
+        lunchChoices,
+        duration
+      };
+      
+      const result = await daycareFun.updateDaycare(req.session.daycare._id, newDaycare);
+      res.render('daycares/welcome', { result });
+    } catch (e) {
+      res.status(400).render('daycares/error', { error: e.message });
+    }
+
+  })
+
+//Update the availability
+router.route('/availability')
+  .get(async (req, res) => {
+    if (!req.session.daycare || !req.session.daycare._id) {
+      return res.status(403).render('daycares/errorDaycare', { error: 'Log in to update your daycare.' });
+    }
+    try {
+      res.render('daycares/availability');
+    } catch (e) {
+      res.status(500).render('daycares/errorDaycare', { error: e });
+    }
+  })
+  .patch(async (req, res) => {
+
+  })
+
+//Update the password:
+router.route('/password')
+  .get(async (req, res) => {
+    if (!req.session.daycare || !req.session.daycare._id) {
+      return res.status(403).render('daycares/errorDaycare', { error: 'Log in to update your daycare.' });
+    }
+    try {
+      res.render('daycares/password');
+    } catch (e) {
+      res.status(500).render('daycares/errorDaycare', { error: e });
+    }
+  })
+  .patch(async (req, res) => {
+
+  })
 export default router;
