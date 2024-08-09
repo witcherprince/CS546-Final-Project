@@ -1,0 +1,72 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+<title>{{daycare.name}} - Details</title>
+
+<header>
+    <h1>{{daycare.name}}</h1>
+    <nav>
+      <ul>
+        <li><a href="/daycares">Daycares Page</a></li>
+        <li><a href="/">Home</a></li>
+      </ul>
+    </nav>
+  </header>
+
+<section>
+    <h2>Introduction</h2>
+    <p>{{daycare.introduction}}</p>
+
+    <h2>Location</h2>
+    <div class="location-container">
+        <p>
+    <strong>Address:</strong> {{daycare.location.address}}<br>
+    <strong>Town:</strong> {{daycare.location.town}}<br>
+    <strong>State:</strong> {{daycare.location.state}}<br>
+    <strong>ZIP Code:</strong> {{daycare.location.zipcode}}
+        </p>
+    </div>
+
+    <h2>Contact Information</h2>
+    <div class="contact-info-container">
+        <p>
+      <strong>Email:</strong> {{daycare.contactInfo.email}}<br>
+      <strong>Phone:</strong> {{daycare.contactInfo.phone}}<br>
+      <strong>Website:</strong> {{daycare.contactInfo.website}}
+        </p>
+    </div>
+
+    <h2>Business Hours</h2>
+    <p>{{daycare.businessHours}}</p>    
+
+    <h2>Tuition Range</h2>
+    <p>{{daycare.tuitionRange}}</p>
+
+    <h2>Availability</h2>
+    <p>{{daycare.availability}}</p>
+
+    <h2>Years in Business</h2>
+    <p>{{daycare.yearsInBusiness}}</p>
+
+    <h2>Lunch Choices</h2>
+    <ul>
+      {{#each daycare.lunchChoices}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+
+    <h2>Duration</h2>
+    <p>{{daycare.duration}}</p>
+
+    <h2>Rating</h2>
+    <p>{{daycare.rating}}</p>
+
+    <h2>Reviews</h2>
+    <ul>
+      {{#each daycare.reviews}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+</section>
+
+
+
+
