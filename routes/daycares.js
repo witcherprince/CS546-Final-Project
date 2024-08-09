@@ -13,9 +13,9 @@ import {
   isValidWebsite,
   checkBusinessHour,
   checkBoolean,
+  isValidPassword,
 } from "../helpers.js";
 import express from "express";
-import authMiddleware from "../auth/auth.js";
 
 const router = express.Router();
 
@@ -24,9 +24,9 @@ const router = express.Router();
 
 router.route("/").get(async (req, res) => {
   try {
-    res.render("daycares/home");
+    return res.render("daycares/home");
   } catch (e) {
-    res.status(500).render("error", { error: e });
+    return res.status(500).render("error", { error: e });
   }
 });
 
@@ -34,14 +34,13 @@ router
   .route("/login")
   .get(async (req, res) => {
     try {
-      res.render("daycares/login");
+      return res.render("daycares/login");
     } catch (e) {
-      res.status(500).render("daycares/error", { error: e });
+      return res.status(500).render("daycares/error", { error: e });
     }
   })
   .post(async (req, res) => {
-    let loginInfo = req.body;
-
+    const loginInfo = req.body;
     try {
       if (!loginInfo.emailAddress || !loginInfo.password) {
         return res.status(400).render("daycares/login", {
@@ -64,10 +63,10 @@ router
         role: user.role,
       };
 
-      res.render("daycares/welcome", { name: user.name });
+      return res.render("daycares/welcome", { name: user.name });
     } catch (error) {
       console.error("Error during login:", error);
-      res
+      return res
         .status(500)
         .render("daycares/login", { error: "Invalid email or password" });
     }
@@ -76,7 +75,7 @@ router
 router
   .route("/addDaycare")
   .get(async (req, res) => {
-    res.render("daycares/addDayCare");
+    return res.render("daycares/addDayCare");
   })
   .post(async (req, res) => {
     const dayCarePostData = req.body;
@@ -125,10 +124,10 @@ router
         tuitionRange
       );
 
-      res.redirect("/daycares/welcome");
+      return res.redirect("/daycares/welcome");
     } catch (error) {
       console.error(error);
-      res
+      return res
         .status(500)
         .json({ error: "An error occurred while adding the daycare" });
     }
@@ -137,26 +136,24 @@ router
 router.get("/dayCareList", async (req, res) => {
   try {
     const dayCares = await daycareFun.getAll();
-    console.log("daycare from daycare List");
-    console.log(dayCares);
-    res.render("daycares/dayCareList", { dayCares });
+    return res.render("daycares/dayCareList", { dayCares });
   } catch (e) {
-    res.status(500).render("error", { error: e });
+    return res.status(500).render("error", { error: e });
   }
 });
 
-router.get("/welcome", authMiddleware, (req, res) => {
-  res.render("daycares/welcome", { name: req.session.daycare.name });
+router.get("/welcome", (req, res) => {
+  return res.render("daycares/welcome", { name: req.session.daycare.name });
 });
 
 router.route("/error").get(async (req, res) => {
-  res.status(400).render("daycares/error", { errorMessage: "Error!" });
+  return res.status(400).render("daycares/error", { errorMessage: "Error!" });
 });
 
 router.route("/logout").get(async (req, res) => {
   res.clearCookie("AuthCookie");
   req.session.destroy();
-  res.render("daycares/logout", { title: "Logout" });
+  return res.render("daycares/logout", { title: "Logout" });
 });
 
 router.get("/delete", async (req, res) => {
@@ -167,13 +164,13 @@ router.get("/delete", async (req, res) => {
   }
 
   try {
-    res.render("daycares/delete", { id: req.session.daycare._id });
+    return res.render("daycares/delete", { id: req.session.daycare._id });
   } catch (e) {
-    res.status(500).render("daycares/error", { error: e });
+    return res.status(500).render("daycares/error", { error: e });
   }
 });
 
-router.post("/delete", authMiddleware, async (req, res) => {
+router.post("/delete", async (req, res) => {
   if (!req.session.daycare || !req.session.daycare._id) {
     return res.status(403).render("daycares/error", {
       error: "You must be logged in to delete your daycare.",
@@ -190,11 +187,11 @@ router.post("/delete", authMiddleware, async (req, res) => {
           error: "Failed to log out after deleting daycare",
         });
       }
-      res.redirect("/");
+      return res.redirect("/");
     });
   } catch (error) {
     console.error("Error deleting daycare:", error);
-    res.status(500).render("daycares/delete", {
+    return res.status(500).render("daycares/delete", {
       error: "Could not delete daycare.",
       id: daycareId,
     });
@@ -272,9 +269,7 @@ router
         reviewStarsToInt,
         reviewComment
       );
-      return res.json(
-        `Review to be posted\nYou gave it ${reviewStarsToInt} stars\nComment: ${reviewComment}`
-      );
+      return res.redirect(`/daycares/daycareReviews/${daycareId}`);
     } catch (error) {
       return res.status(400).render("error", { error: error });
     }

@@ -68,6 +68,24 @@ app.use("/daycares/updateDaycareReview", (req, res, next) => {
   next();
 });
 
+app.use("/daycares/welcome", (req, res, next) => {
+  if (!req.session.daycare) {
+    console.log("Must be logged in to access welcome page for daycare.");
+    return res.redirect("/daycares/login");
+  }
+
+  next();
+});
+
+app.use("/daycares/delete", (req, res, next) => {
+  if (!req.session.daycare) {
+    console.log("Must be logged in to delete daycare");
+    return res.redirect("/daycares/login");
+  }
+
+  next();
+});
+
 configRoutesFunction(app);
 
 app.listen(PORT, () => {
