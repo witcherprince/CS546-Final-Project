@@ -5,8 +5,7 @@ import authMiddleware from '../auth/auth.js';
 
 const router = express.Router();
 
-//just for daycare role (update daycare, update available, update password, delete daycare)
-// when user click a daycare, _id pass to this route and show details of clicked daycare.
+//just for daycare role (update daycare, update available, update password)
 
 router.route("/")
   .get(async (req, res) => { 
@@ -152,6 +151,53 @@ router.post('/delete', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Error deleting daycare:', error);
     res.status(500).render('daycares/delete', { error: 'Could not delete daycare.', id: daycareId });
+  }
+});
+
+router.route("/state")
+  .get(async (req, res) => { 
+    try {
+      res.render("daycares/list");
+    } catch (e) {
+      res.status(500).render("error", { error: e });
+    }
+})
+.post(async (req, res) => {
+  try {
+    let state = req.body.state;
+
+    if (!state) {
+      throw new Error('Provide state parameter');
+    }
+
+    state = checkState(state);
+
+    const daycares = await daycareFun.getState(state);
+
+    res.render('daycares/list', { state: state, daycares });
+  } catch (e) {
+    res.status(400).render('daycares/error', { error: e.message });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try {
+    const daycareId = req.params.id;
+
+    if (!daycareId) {
+      return res.status(400).render('daycares/error', { error: 'Invalid daycare ID.' });
+    }
+
+    const daycare = await daycareFun.getOrg(daycareId);
+
+    if (!daycare) {
+      return res.status(404).render('daycares/error', { error: 'Daycare not found.' });
+    }
+
+    res.render('daycares/details', { daycare });
+  } catch (e) {
+    console.error('Error fetching daycare details:', e);
+    res.status(500).render('daycares/error', { error: 'Failed to load daycare details.' });
   }
 });
 
