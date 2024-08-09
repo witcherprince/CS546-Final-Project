@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+<li><a href="/daycares">Daycares home page</a></li>
+
+<h1>Find Daycares by State</h1>
+
+<form action="/daycares/state" method="post">
+  <label for="state">Enter State:</label>
+  <input type="text" id="state" name="state" placeholder="e.g., NY, CA" required>
+  <button type="submit">Search</button>
+</form>
+
+{{#if daycares}}
+  <h1>Daycares in {{state}}</h1>
+  <ul>
+    {{#each daycares}}
+      <li><a href="/daycares/{{this._id}}">{{this.name}}</a></li>
+    {{/each}}
+  </ul>
+{{/if}}
+
+
+
