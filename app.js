@@ -34,10 +34,55 @@ app.use("/login", (req, res, next) => {
   // const expiresAt = new Date();
   // expiresAt.setHours(expiresAt.getHours() + 1);
   // res.cookie("loginCookie", "testValue", { expires: expiresAt });
+
+  // redirect if already logged in
   if (req.session.user) {
-    console.log("GOING TO USERS");
     return res.redirect("/users/userPage");
   }
+  next();
+});
+
+app.use("/users", (req, res, next) => {
+  // if user is not logged in we need to have them login first and then they can access user functionality
+  if (!req.session.user) {
+    return res.redirect("/login/userLogin");
+  }
+  next();
+});
+
+app.use("/daycares/addDaycareReview", (req, res, next) => {
+  if (!req.session.user) {
+    console.log("Must be logged in to leave a review.");
+    return res.redirect("/login/userLogin");
+  }
+
+  next();
+});
+
+app.use("/daycares/updateDaycareReview", (req, res, next) => {
+  if (!req.session.user) {
+    console.log("Must be logged in to update a review.");
+    return res.redirect("/login/userLogin");
+  }
+
+  next();
+});
+
+app.use("/daycares/welcome", (req, res, next) => {
+  if (!req.session.daycare) {
+    console.log("Must be logged in to access welcome page for daycare.");
+    return res.redirect("/daycares/login");
+  }
+
+  next();
+});
+
+app.use("/daycares/delete", (req, res, next) => {
+  if (!req.session.daycare) {
+    console.log("Must be logged in to delete daycare");
+    return res.redirect("/daycares/login");
+  }
+
   next();
 });
 
