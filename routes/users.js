@@ -19,9 +19,10 @@ router.route("/userPage").get(async (req, res) => {
       email: user.email,
       town: user.location.town,
       zipcode: user.location.zipcode,
+      kids: user.kids,
     });
   } catch (error) {
-    res.status(500).render("layouts/error", { error: "Something went wrong." });
+    res.status(500).render("error", { error: "Something went wrong." });
   }
 });
 
@@ -42,15 +43,46 @@ router
       );
       return res.redirect("/users/userPage");
     } catch (error) {
-      res
-        .status(500)
-        .render("layouts/error", { error: "Something went wrong." });
+      res.status(500).render("error", { error: "Something went wrong." });
     }
   });
 
-router.route("/editUserPage").get(async (req, res) => {
-  return res.render("users/editUserPage");
-});
+router
+  .route("/editUserPage")
+  .get(async (req, res) => {
+    return res.render("users/editUserPage");
+  })
+  .patch(async (req, res) => {
+    console.log("PATCH request received");
+    let userData = req.body;
+
+    // Make sure the req.body is not empty -- checking if it's either undefined or if there isn't at least one key
+    if (!userData || Object.keys(userData).length === 0) {
+      return res.status(400).render("layouts/error", {
+        error: "There are no fields in the request body.",
+      });
+    }
+
+    try {
+      const updatedFields = {};
+      if (userData.firstnameInput)
+        updatedFields.firstname = userData.firstnameInput;
+      if (userData.lastnameInput)
+        updatedFields.lastname = userData.lastnameInput;
+      if (userData.emailaddress) updatedFields.email = userData.emailaddress;
+      if (userData.townInput) updatedFields.town = userData.townInput;
+      if (userData.zipcodeInput) updatedFields.zipcode = userData.zipcodeInput;
+
+      let updateUser = await userValidations.changeInfo(
+        req.session.user.userId,
+        updatedFields
+      );
+      return res.redirect("/users/userPage");
+    } catch (error) {
+      console.log(error);
+      res.status(500).render("error", { error: "Something went wrong." });
+    }
+  });
 
 router.route("/logout").get(async (req, res) => {
   req.session.destroy();
