@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+<article class="update-daycare">
+<<<<<<< HEAD
+    <h1>Update your daycare!</h1>
+    <p>Plesase enter the updated information in the corresponding fields. Thank you.</p>
+    <form method="POST" action="/daycares/update?_method=PUT">
+      <label for="name">Daycare Name:</label>
+      <input type="text" id="name" name="name" value="{{daycare.name}}" required>
+      
+      <label for="introduction">Introduction:</label>
+      <textarea id="introduction" name="introduction" required>{{daycare.introduction}}</textarea>
+      
+      <label for="address">Address:</label>
+      <input type="text" id="address" name="address" value="{{daycare.location.address}}" required>
+      
+      <label for="town">Town:</label>
+      <input type="text" id="town" name="town" value="{{daycare.location.town}}" required>
+      
+      <label for="state">State:</label>
+      <input type="text" id="state" name="state" value="{{daycare.location.state}}" required>
+      
+      <label for="zipcode">Zipcode:</label>
+      <input type="text" id="zipcode" name="zipcode" value="{{daycare.location.zipcode}}" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="{{daycare.contactInfo.email}}" required>
+
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" name="phone" value="{{daycare.contactInfo.phone}}" required>
+      
+      <label for="website">Website:</label>
+      <input type="url" id="website" name="website" value="{{daycare.contactInfo.website}}">
+
+      <label for="businessHours">Business Hours:</label>
+      <input type="text" id="businessHours" name="businessHours" value="{{daycare.businessHours}}">
+      
+      <!-- Tuition Range (Required) -->
+      <label for="tuitionRange">Tuition Range:</label>
+      <input type="text" id="tuitionRange" name="tuitionRange" value="{{daycare.tuitionRange}}">
+      
+      <!-- Availability (Required) -->
+      <label for="availability">Availability:</label>
+      <input type="text" id="availability" name="availability" value="{{daycare.availability}}">
+      
+      <!-- Years in Business (Required) -->
+      <label for="yearsInBusiness">Years in Business:</label>
+      <input type="number" id="yearsInBusiness" name="yearsInBusiness" value="{{daycare.yearsInBusiness}}">
+      
+      <!-- Lunch Choices (Required) -->
+      <label for="lunchChoices">Lunch Choices:</label>
+      <input type="text" id="lunchChoices" name="lunchChoices" value="{{daycare.lunchChoices}}">
+      
+      <!-- Duration (Required) -->
+      <label for="duration">Duration:</label>
+      <input type="text" id="duration" name="duration" value="{{daycare.duration}}">
+      
+      <!-- Submit Button -->
+      <button type="submit">submit</button>
+    </form>
+=======
+    
+>>>>>>> main
+</article>

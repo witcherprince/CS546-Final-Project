@@ -227,5 +227,87 @@ export function checkState(state) {
     } 
 }
 
+//Check if input is a string:
+export function isString(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "string") throw `${valName} must be a string`;
+    val = val.trim();
+    if (val.length === 0)
+      throw `${valName} cannot be an empty string or just spaces`;
+    if (!isNaN(val))
+      throw `${val} is not a valid value for ${valName} as it only contains digits`;
 
+    return val;
+  }
+
+//Check if the input is 12345, or 12345-1234, return valid trim() zipcode
+export function checkZipcode(zipcode) {
+    const zipcodeForm = /^\d{5}(-\d{4})?$/;
+    zipcode = zipcode.trim();
+    if (!zipcodeForm.test(zipcode)) {
+      throw "Error: Not a valid zip code!";
+    }
+    return zipcode;
+  }
+
+//Check and return a trim email
+export function checkEmail(email) {
+    const emailForm = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    email = email.trim();
+    if (!emailForm.test(email)) {
+      throw "Error: Not a valid email!";
+    }
+    return email;
+  }
+
+//Check if the phone is 1-123-456-7890 or 123-456-7890
+export function checkPhone(num) {
+    const phoneForm = /^(1-)?\d{3}-\d{3}-\d{4}$/;
+    num = num.trim();
+    if (!phoneForm.test(num)) {
+      throw "Error: Not a valid phone number!";
+    }
+    return num;
+  }
+
+//Check and return a trim valid website
+export function checkWebsite(web) {
+    const webForm = /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/;
+    web = web.trim();
+    if (!webForm.test(web)) {
+      throw "Error: Not a valid website!";
+    }
+    return web;
+  }
+
+//Check and return num
+export function checkNumber(num, numName) {
+    // num = num.trim(); cannot trim type of number
+    let number = Number(num);
+    if (!Number.isInteger(number) || number < 0) {
+      throw `${numName} has to be a positive integer!`;
+    }
+    return num;
+  }
+
+export function checkPassword(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "string") throw `${valName} must be a string`;
+    val = val.trim();
+    if (val.length === 0)
+      throw `${valName} cannot be an empty string or just spaces`;
+    if (val.length < 8)
+      throw `${valName} should be at least 8 characters long.`;
+
+    // Other types of checks
+    if (!/[A-Z]/.test(val))
+      throw `${valName} should have at least one uppercase letter.`;
+
+    if (!/[0-9]/.test(val)) throw `${valName} should have at least one number.`;
+
+    if (!/[^a-zA-Z0-9]/.test(val))
+      throw `${valName} should have at least one special character.`;
+
+    return val;
+  }
 

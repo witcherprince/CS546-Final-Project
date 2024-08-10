@@ -54,25 +54,10 @@ const exportMethod = {
     return user;
   },
 
-  // Delete user
-  async deleteuser(id) {
-    id = id.toString();
-    id = validation.checkId(id);
-
-    const userCollection = await users();
-    const deletion = await userCollection.findOneAndDelete({
-      _id: new ObjectId(id),
-    });
-
-    if (!deletion) {
-      throw "Could not delete user with specified ID.";
-    }
-
-    return `${deletion.firstName} has been successfully deleted!`;
-  },
-
   // Change user information -- only generic info
   async changeInfo(id, userInfo) {
+    console.log("changeInfo called with:", id, userInfo);
+
     id = id.toString();
 
     // Checking stuff
@@ -81,16 +66,16 @@ const exportMethod = {
 
     const updateUser = {};
 
-    if (userInfo.firstName) {
+    if (userInfo.firstname) {
       updateUser.firstName = validation.checkString(
         userInfo.firstname,
         "First name"
       );
     }
 
-    if (userInfo.lastName) {
+    if (userInfo.lastname) {
       updateUser.lastName = validation.checkString(
-        userInfo.lastName,
+        userInfo.lastname,
         "Last name"
       );
     }
@@ -99,33 +84,36 @@ const exportMethod = {
       updateUser.email = validation.checkEmail(userInfo.email, "Email");
     }
 
-    // No change password here, because change password should have its own function
-
-    // might need to do a deeper search?
-    if (userInfo.location.town && typeof userInfo.location === "object") {
-      updateUser.location.town = validation.checkString(
-        userInfo.location.town,
-        "Town"
-      );
+    if (userInfo.location) {
+      if (userInfo.location.town) {
+        updateUser.location.town = validation.checkString(
+          userInfo.location.town,
+          "Town"
+        );
+      }
     }
 
-    if (userInfo.location.zipcode && typeof userInfo.location === "object") {
-      updateUser.location.zipcode = validation.checkZipcode(
-        userInfo.location.zipcode,
-        "Zipcode"
-      );
+    if (userInfo.location) {
+      if (userInfo.location.zipcode) {
+        updateUser.location.zipcode = validation.checkZipcode(
+          userInfo.location.zipcode,
+          "Zipcode"
+        );
+      }
     }
+
+    console.log(updateUser);
 
     const userCollection = await users();
     const updateInfo = await userCollection.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: updateUser }
+      { $set: updateUser },
+      { returnOriginal: false }
     );
-    if (!updateInfo) {
-      throw "Error: Update failed, could not find user with specified ID.";
-    }
 
-    return updateInfo;
+    console.log("Need to add proper error handling here");
+
+    return updateInfo.value;
   },
 
   // Delete user
