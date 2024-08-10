@@ -32,7 +32,11 @@
   </div>
   <div>
     <p>Children</p>
-    <ul id="childrens"></ul>
+    <ul id="childrens">
+      {{#each kids}}
+        <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
+      {{/each}}
+    </ul>
     <div class="button-container">
       <a class="nav-link" href="/users/addChildren">
         <button>Add Child</button>

@@ -4,7 +4,7 @@
   <nav class="nav-test carrot">
     <ul>
       <li><a href="/">Home</a></li>
-      <li><a href="/">Search for Daycares</a></li>
+      <li><a href="/daycares/dayCareList">Search for Daycares</a></li>
       <li><a href="/users/logout">Logout</a></li>
     </ul>
   </nav>
@@ -13,7 +13,8 @@
 <title>User Profile</title>
 
 <div class="table-form2">
-  <form id="addChildForm" method="POST" action="/users/editUserPage">
+  <form id="editUserForm" method="POST" action="/users/editUserPage">
+    <input type="hidden" name="_method" value="PATCH" />
     <p>User Information</p>
     <table>
       <tr><th>First Name</th><td>
@@ -57,11 +58,12 @@
           />
         </td></tr>
     </table>
+    <button type="submit">Save</button>
   </form>
   <div class="button-container">
     <a class="nav-link" href="/users/userPage">
-      <button>Go Back</button>
+      <button>Cancel</button>
     </a>
-    <button type="submit">Make Changes</button>
   </div>
 </div>
+{{!<script src="../../public/js/editUser.js"></script>}}
