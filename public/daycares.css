@@ -1,5 +1,5 @@
 body {
-  background: #f0f1f1;
+  background: #F5F5DC;
   font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
   margin: 0;
   padding: 0;
@@ -15,9 +15,31 @@ main {
   flex: 1;
 }
 
+.image-container {
+  width: 100%;
+  height: 35rem;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  padding-top: 3rem; 
+  background: url("../public/images/daycare_home.jpg") no-repeat 25% 70%;
+  background-size: cover;
+  margin: 0;
+}
+
+.image-container h1 {
+  font-family: "Roboto", sans-serif;
+  color: #fff;
+  text-shadow: 2px 2px 2px rgba(1, 96, 116, 1);
+  font-size: 2rem;
+  margin-top: -2rem;
+}
+
+
 header {
-  border-bottom: 5px solid #13abe7;
-  background-color: #d5f2f2;
+  border-bottom: 5px solid #f4f476;
+  background-color: #F5F5DC;
 }
 
 p {
@@ -30,10 +52,6 @@ p {
 
 label {
   font-weight: bold;
-}
-
-html, body {
-  font-size: 14pt;
 }
 
 h1 {
@@ -124,26 +142,6 @@ footer {
   margin-left: 10px;
 }
 
-.login-link {
-  position: fixed; 
-  right: 20px;
-  top: 80px; 
-  background: #f8f9fa;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  z-index: 1000;
-}
-
-.login-link a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
-}
-
 section {
   margin-top: 20px;
 }
@@ -152,7 +150,6 @@ section {
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  background-color: #e9f5f9;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -164,14 +161,13 @@ section {
 }
 
 .location-container strong {
-  color: #007bff;
+  color: #131310;
 }
 
 .contact-info-container {
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f9f9f9;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -183,5 +179,6 @@ section {
 }
 
 .contact-info-container strong {
-  color: #007bff;
+  color: #141617;
 }
+
