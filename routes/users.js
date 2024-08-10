@@ -53,6 +53,7 @@ router.route("/editUserPage").get(async (req, res) => {
 });
 
 router.route("/logout").get(async (req, res) => {
+  req.session.destroy();
   return res.render("users/logout");
 });
 

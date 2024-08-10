@@ -143,3 +143,45 @@ footer {
 .login-link a:hover {
   text-decoration: underline;
 }
+
+section {
+  margin-top: 20px;
+}
+
+.location-container {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #e9f5f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.location-container p {
+  margin: 0;
+  line-height: 1.6;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.location-container strong {
+  color: #007bff;
+}
+
+.contact-info-container {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info-container p {
+  margin: 0;
+  line-height: 1.6;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.contact-info-container strong {
+  color: #007bff;
+}
