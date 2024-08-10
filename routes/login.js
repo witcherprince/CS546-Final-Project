@@ -77,7 +77,7 @@ router.route("/logout").get(async (req, res) => {
 });
 
 router.route("/orgLogin").get(async (req, res) => {
-  return res.json("Login page for orgs");
+  return res.redirect('/daycares');
 });
 
 export default router;

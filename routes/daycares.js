@@ -1,17 +1,10 @@
 import daycareFun from "../data/daycares.js";
-import { checkNumber, checkWebsite, checkPhone, checkEmail, checkZipcode, isString, isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean, checkZipcode} from '../helpers.js';
+import { checkPassword, checkNumber, checkWebsite, checkPhone, checkEmail, checkZipcode, isString, isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean} from '../helpers.js';
 import express from "express";
-import authMiddleware from '../auth/auth.js';
+import {authMiddleware, passwordMatch} from '../auth/auth.js';
 
 const router = express.Router();
-/*
-function isAuthenticated(req, res, next) { //I don't know where to put middleware function
-  if (req.session.userId) {
-    return next();
-  }
-  res.redirect('/login');
-}
-*/
+
 //just for daycare role (update daycare, update available, update password, delete daycare)
 // when user click a daycare, _id pass to this route and show details of clicked daycare.
 
@@ -45,14 +38,14 @@ router.route('/login')
 
       const user = await daycareFun.loginDaycare(loginInfo.emailAddress, loginInfo.password);
 
-      req.session.daycare = { // You store daycare_id in session?
+      req.session.daycare = { 
         _id: user._id,
         name: user.name,
         emailAddress: user.contactInfo.email,
         role: user.role
       };
 
-      res.render('daycares/welcome', { name: user.name });
+      res.render('daycares/welcome', { daycare: user });
     } catch (error) {
       console.error('Error during login:', error);
       res.status(500).render('daycares/login', { error: 'Invalid email or password' });
@@ -171,12 +164,13 @@ router.route('/update')
     }
   
     try {
-      res.render('daycares/updateDaycare');
+      const daycare = daycareFun.getOrg(req.session.daycare._id);
+      res.render('daycares/updateDaycare', {daycare: daycare});
     } catch (e) {
       res.status(500).render('daycares/errorDaycare', { error: e });
     }
   })
-  .put(async (req, res) => {
+  .post(async (req, res) => {
     const daycareData = req.body;
     if (!daycareData || Object.keys(daycareData).length === 0) {
       return res.redirect('/welcome'); 
@@ -226,7 +220,7 @@ router.route('/update')
       if (daycareData.lunchChoices) {
         lunchChoices = daycareData.lunchChoices
           .split(",")
-          .map((choice) => isString(choice.trim(), "lunch choice"));
+          .map((choice) => isString(choice, "lunch choice"));
       } else {
         lunchChoices = [];
       }
@@ -234,7 +228,7 @@ router.route('/update')
       if (daycareData.duration) {
         duration = daycareData.duration
           .split(",")
-          .map((dur) => isString(dur.trim(), "duration"));
+          .map((dur) => isString(dur, "duration"));
       } else {
         duration = [];
       }
@@ -267,7 +261,7 @@ router.route('/update')
       };
       
       const result = await daycareFun.updateDaycare(req.session.daycare._id, newDaycare);
-      res.render('daycares/welcome', { result });
+      res.render('daycares/welcome', { daycare: result });
     } catch (e) {
       res.status(400).render('daycares/error', { error: e.message });
     }
@@ -286,8 +280,15 @@ router.route('/availability')
       res.status(500).render('daycares/errorDaycare', { error: e });
     }
   })
-  .patch(async (req, res) => {
-
+  .post(async (req, res) => {
+    try {
+      const availability = req.body.availability;
+      availability = checkBoolean(availability, 'Availability');
+      const updated = await daycareFun.updateAvailability(req.session.daycare._id, availability);
+      res.render('daycares/welcome', { daycare: updated }); //back to welcome page to show updated daycare
+    } catch (e) {
+      res.status(400).render('daycares/errorDaycare', { error: e.message });
+    }
   })
 
 //Update the password:
@@ -302,7 +303,15 @@ router.route('/password')
       res.status(500).render('daycares/errorDaycare', { error: e });
     }
   })
-  .patch(async (req, res) => {
-
+  .post(passwordMatch, async (req, res) => {
+    try {
+      console.log("in .patch /password");
+      let { newpassword } = req.body;
+      newpassword = checkPassword(newpassword);
+      const updatedDaycare = await updatePassword(req.session.daycare._id, newpassword);
+      res.render('daycares/welcome', { daycare: updatedDaycare });
+    } catch (e) {
+      res.status(500).render('daycares/password', { error: e.message });
+    }
   })
 export default router;

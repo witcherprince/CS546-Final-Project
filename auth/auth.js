@@ -17,5 +17,18 @@ const authMiddleware = (req, res, next) => {
       return res.redirect('daycares/login'); 
     }
   };
+//passwordMatch is used to check if new password and confirm password are matching:
+  const passwordMatch = (req, res, next) => {
+    const { newpassword, confirmedpassword } = req.body;
   
-export default authMiddleware;
+    if (newpassword !== confirmedpassword) {
+      return res.status(400).render('daycares/password', {
+        error: 'Passwords do not match.',
+        daycare: req.session.daycare
+      });
+    }
+  
+    next();
+  };
+  
+export {authMiddleware, passwordMatch};

@@ -290,3 +290,24 @@ export function checkNumber(num, numName) {
     return num;
   }
 
+export function checkPassword(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "string") throw `${valName} must be a string`;
+    val = val.trim();
+    if (val.length === 0)
+      throw `${valName} cannot be an empty string or just spaces`;
+    if (val.length < 8)
+      throw `${valName} should be at least 8 characters long.`;
+
+    // Other types of checks
+    if (!/[A-Z]/.test(val))
+      throw `${valName} should have at least one uppercase letter.`;
+
+    if (!/[0-9]/.test(val)) throw `${valName} should have at least one number.`;
+
+    if (!/[^a-zA-Z0-9]/.test(val))
+      throw `${valName} should have at least one special character.`;
+
+    return val;
+  }
+
