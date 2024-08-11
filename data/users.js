@@ -235,10 +235,13 @@ const exportMethod = {
       throw "Daycare could not be found or removed";
     }
 
-    const newId = daycareId.toString();
-    const favDaycare = await this.getFavDayCare(newId);
+    // The below is causing some type of race condition when you try to favorite and unfavorite a few times
+    // Given that nothing depends on the return for this, I think it can be removed since commenting it out fixes the issue
 
-    return favDaycare;
+    // const newId = daycareId.toString();
+    // const favDaycare = await this.getFavDayCare(newId);
+
+    return "daycare successfully added to favorites!";
   },
 
   // Get favorite daycares of user
