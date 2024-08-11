@@ -2,6 +2,7 @@ import daycareFun from "../data/daycares.js";
 import { checkPassword, checkNumber, checkWebsite, checkPhone, checkEmail, checkZipcode, isString, isValidString, isValidArray, isProperId, isValidWebsite, isValidBoolean, isValidDate, isValidObject, isValidNumber, isValidZip, isValidPhone, isValidEmail, isValidPassword, checkState, checkBusinessHour, checkBoolean} from '../helpers.js';
 import express from "express";
 import {authMiddleware, passwordMatch} from '../auth/auth.js';
+import calculator from "../data/costCalculator.js";
 
 const router = express.Router();
 /*
@@ -517,9 +518,9 @@ router.route('/password')
     } catch (e) {
       res.status(500).render('daycares/password', { error: e.message });
     }
-  })
+  });
 
-  router.route("/state")
+router.route("/state")
   .get(async (req, res) => { 
     try {
       res.render("daycares/list");
@@ -545,6 +546,47 @@ router.route('/password')
   }
 });
 
+router.get('/calculator', async (req, res) => { 
+  try {
+    res.render("daycares/costCalculator");
+  } catch (e) {
+    res.status(500).render("error", { error: e });
+  }
+});
+
+
+router.post('/calculator', async (req, res) => {
+  try {
+    let state = req.body.state;
+    let duration = req.body.duration;
+    let includeLunch = req.body.includeLunch;
+    let selectedDaycareId = req.body.selectedDaycareId;
+
+    if (state && !selectedDaycareId) {
+        state = checkState(state);
+        const daycares = await daycareFun.getState(state);
+        
+        if (!daycares || daycares.length === 0) {
+            throw new Error('No daycares found in this state');
+        }
+
+        res.render("daycares/costCalculator", { daycares, state });
+        return;
+    }
+
+    if (!state || !duration || !includeLunch || !selectedDaycareId) {
+        throw new Error('Provide all inputs');
+    }
+
+    state = checkState(state);
+    const result = await calculator.calculateCost(state, duration, includeLunch, selectedDaycareId);
+    
+    res.render("daycares/costCalculator", { result });
+} catch (e) {
+    res.status(400).render('daycares/error', { error: e.message });
+}
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const daycareId = req.params.id;
@@ -561,7 +603,6 @@ router.get('/:id', async (req, res) => {
 
     res.render('daycares/details', { daycare });
   } catch (e) {
-    console.error('Error fetching daycare details:', e);
     res.status(500).render('daycares/error', { error: 'Failed to load daycare details.' });
   }
 });

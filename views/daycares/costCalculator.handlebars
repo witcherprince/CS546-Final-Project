@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+
+<title>Cost Calculator</title>
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares">Daycares home page</a></li>
+    </ul>
+  </nav>
+</div>
+
+<article class="calculate-cost-form">
+    <h1>Calculate Daycare Cost</h1>
+
+    {{#unless daycares}}
+        <form method="POST" action="/daycares/calculator">
+            <div>
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" placeholder="Enter state abbreviation (e.g., NY)" required>
+            </div>
+
+            <button type="submit">Find Daycares</button>
+        </form>
+    {{/unless}}
+
+    {{#if daycares}}
+        <form method="POST" action="/daycares/calculator">
+            <input type="hidden" name="state" value="{{state}}">
+            
+            <div>
+                <label for="selectedDaycare">Select Daycare:</label>
+                <select id="selectedDaycare" name="selectedDaycareId" required>
+                    {{#each daycares}}
+                        <option value="{{this._id}}">{{this.name}}</option>
+                    {{/each}}
+                </select>
+            </div>
+
+            <div>
+                <label for="duration">Duration:</label>
+                <select id="duration" name="duration" required>
+                    <option value="Full Day">Full Day</option>
+                    <option value="Half Day">Half Day</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="includeLunch">Include Lunch:</label>
+                <select id="includeLunch" name="includeLunch" required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <button type="submit">Calculate Cost</button>
+        </form>
+    {{/if}}
+
+    {{#if result}}
+        <section>
+            <h2>Cost Results</h2>
+            <p>The estimated cost for {{result.daycareName}} is: ${{result.cost}}</p>
+        </section>
+    {{/if}}
+</article>
+
+
