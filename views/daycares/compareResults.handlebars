@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="../public/daycares.css" />
+<title>Daycare Comparison Results</title>
+<article class="compare-results">
+    <h1>Comparison Results</h1>
+
+    <section>
+        <h2>Daycare 1: {{daycare1.name}}</h2>
+        <p><strong>Location:</strong> {{daycare1.location.address}}, {{daycare1.location.town}}, {{daycare1.location.state}} {{daycare1.location.zipcode}}</p>
+        <p><strong>Business Hours:</strong> {{daycare1.businessHours}}</p>
+        <p><strong>Tuition Range:</strong> {{daycare1.tuitionRange}}</p>
+        <p><strong>Years in Business:</strong> {{daycare1.yearsInBusiness}}</p>
+        <p><strong>Availability:</strong> {{daycare1.availability}}</p>
+        <p><strong>Lunch Choices:</strong> {{#each daycare1.lunchChoices}}{{this}} {{/each}}</p>
+        <p><strong>Rating:</strong> {{daycare1.rating}}</p>
+        <p><strong>Reviews:</strong> {{#each daycare1.reviews}}{{this}} {{/each}}</p>
+    </section>
+
+    <section>
+        <h2>Daycare 2: {{daycare2.name}}</h2>
+        <p><strong>Location:</strong> {{daycare2.location.address}}, {{daycare2.location.town}}, {{daycare2.location.state}} {{daycare2.location.zipcode}}</p>
+        <p><strong>Business Hours:</strong> {{daycare2.businessHours}}</p>
+        <p><strong>Tuition Range:</strong> {{daycare2.tuitionRange}}</p>
+        <p><strong>Years in Business:</strong> {{daycare2.yearsInBusiness}}</p>
+        <p><strong>Availability:</strong> {{daycare2.availability}}</p>
+        <p><strong>Lunch Choices:</strong> {{#each daycare2.lunchChoices}}{{this}} {{/each}}</p>
+        <p><strong>Rating:</strong> {{daycare2.rating}}</p>
+        <p><strong>Reviews:</strong> {{#each daycare2.reviews}}{{this}} {{/each}}</p>
+    </section>
+</article>
+
+
+
