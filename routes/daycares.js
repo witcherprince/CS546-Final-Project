@@ -587,6 +587,38 @@ router.post('/calculator', async (req, res) => {
 }
 });
 
+router.get('/compare', async (req, res) => {
+  try {
+      const daycares = await daycareFun.getAll(); 
+      res.render('daycares/compare', { daycares });
+  } catch (e) {
+      res.status(500).render('error', { error: e.message });
+  }
+})
+
+.post('/compare', async (req, res) => {
+  try {
+      const { daycare1Name, daycare2Name } = req.body;
+
+      if (!daycare1Name || !daycare2Name) {
+          throw new Error('Both daycare names must be provided.');
+      }
+
+      const daycares = await daycareFun.getAll(); 
+
+      const daycare1 = daycares.find(daycare => daycare.name === daycare1Name);
+      const daycare2 = daycares.find(daycare => daycare.name === daycare2Name);
+
+      if (!daycare1 || !daycare2) {
+          throw new Error('One or both of the selected daycares could not be found.');
+      }
+
+      res.render('daycares/compareResults', { daycare1, daycare2 });
+  } catch (e) {
+      res.status(500).render('error', { error: e.message });
+  }
+});
+
 router.get('/:id', async (req, res) => {
   try {
     const daycareId = req.params.id;
