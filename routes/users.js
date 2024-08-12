@@ -84,6 +84,46 @@ router
     }
   });
 
+router.route("/addToFavorites/:daycareId").get(async (req, res) => {
+  try {
+    const daycareId = req.params["daycareId"];
+    const userId = req.session.user["userId"];
+    // check that current daycare isnt already in favorites
+    const userInfo = await userValidations.getUserById(userId);
+    const userFavorites = userInfo["favorites"];
+
+    for (const currFavDaycareId of userFavorites) {
+      if (currFavDaycareId.toString() === daycareId) {
+        return res.json("already favorited this daycare");
+      }
+    }
+    const addToFavorite = await userValidations.addFavDaycare(
+      userId,
+      daycareId
+    );
+
+    return res.redirect("/daycares/daycareList");
+  } catch (error) {
+    return res.status(400).render("error", { error: error });
+  }
+});
+
+router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
+  try {
+    const daycareId = req.params["daycareId"];
+    const userId = req.session.user["userId"];
+    // check that current daycare isnt already in favorites
+    const removeDaycare = await userValidations.removeFavDaycare(
+      userId,
+      daycareId
+    );
+
+    return res.redirect("/daycares/daycareList");
+  } catch (error) {
+    return res.status(400).render("error", { error: error });
+  }
+});
+
 router.route("/logout").get(async (req, res) => {
   req.session.destroy();
   return res.render("users/logout");
