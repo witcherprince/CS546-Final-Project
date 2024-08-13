@@ -1,5 +1,6 @@
 import daycareFun from "../data/daycares.js";
 import userUtils from "../data/users.js";
+import reviewUtils from "../data/reviews.js";
 import {
   checkPassword,
   checkNumber,
@@ -153,9 +154,18 @@ router
   });
 
 router.get("/dayCareList", async (req, res) => {
+
+  if(!req.session.user){
+    try{
+      const dayCares = await daycareFun.getAll();
+      return res.render("daycares/daycareListGeneric", {dayCares});
+    } catch(e){
+      return res.status(500).render("error", { error: e });
+    }
+    
+  }
   try {
     const userId = req.session.user["userId"];
-
     const userInfo = await userUtils.getUserById(userId);
     const userFavDaycares = userInfo["favorites"];
     const dayCares = await daycareFun.getAll();

@@ -10,6 +10,19 @@
   align-items: center;
 }
 
+.image-container-2 {
+  height: 40rem;
+  max-height: 500px;
+  display: flex;
+  justify-content: center;
+  background-image: url("../public/images/crayons.jpg");
+  background-size: contain;
+  background-position: 2% 70%;
+  background-repeat: no-repeat;
+  align-items: center;
+  border-radius: 25px;
+}
+
 .image-container h1 {
   font-family: "Bubblegum Sans", sans-serif;
   color: white;
@@ -26,16 +39,17 @@
 #infoBox2,
 #infoBox3 {
   color: black;
-  border: 1px solid red;
+  /* border: 1px solid red; */
   height: 10rem;
-}
-
-#footer {
-  color: black;
-  border: 1px solid red;
-  height: 5rem;
+  font-family: "Bubblegum Sans", sans-serif;
 }
 
 .nav-link {
   font-family: "Bubblegum Sans", sans-serif;
+}
+
+.carousel-caption {
+  top: 50%;
+  transform: translateY(-50%);
+  bottom: initial;
 }
