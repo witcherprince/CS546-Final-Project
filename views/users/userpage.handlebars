@@ -12,41 +12,50 @@
 
 <title>User Profile</title>
 
-<div class="table-form">
-  <div>
-    <p>User Information</p>
-    <table>
-      <tr><th>First Name</th><td>{{firstName}}</td></tr>
-      <tr><th>Last Name</th><td>{{lastName}}</td></tr>
-      <tr><th>Email</th><td>{{email}}</td></tr>
-      <tr><th>Town</th><td>{{town}}</td></tr>
-      <tr><th>Zipcode</th><td>{{zipcode}}</td></tr>
-    </table>
-    <div class="button-container">
-      <a class="nav-link" href="/users/editUserPage">
-        <button>Edit Info</button>
-      </a>
-      <button>Change Password</button>
-      <button>Delete Account</button>
+<div class="profile-container">
+  <div class="table-form user-info">
+    <div>
+      <p>User Information</p>
+      <table>
+        <tr><th>First Name</th><td>{{firstName}}</td></tr>
+        <tr><th>Last Name</th><td>{{lastName}}</td></tr>
+        <tr><th>Email</th><td>{{email}}</td></tr>
+        <tr><th>Town</th><td>{{town}}</td></tr>
+        <tr><th>Zipcode</th><td>{{zipcode}}</td></tr>
+      </table>
+      <div class="button-container">
+        <a class="nav-link" href="/users/editUserPage">
+          <button>Edit Info</button>
+        </a>
+        <a class="nav-link" href="/users/changePassword">
+          <button>Change Password</button>
+        </a>
+        <a class="nav-link" href="/users/deleteUser">
+          <button>Delete Account</button>
+        </a>
+      </div>
+    </div>
+    <div>
+      <p>Children</p>
+      <ul>
+        {{#each kids}}
+          <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
+        {{/each}}
+      </ul>
+      <div class="button-container">
+        <a class="nav-link" href="/users/addChildren">
+          <button>Add Child</button>
+        </a>
+        <button>Remove Child</button>
+      </div>
     </div>
   </div>
-  <div>
-    <p>Children</p>
-    <ul id="childrens">
-      {{#each kids}}
-        <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
-      {{/each}}
-    </ul>
-    <div class="button-container">
-      <a class="nav-link" href="/users/addChildren">
-        <button>Add Child</button>
-      </a>
-      <button>Remove Child</button>
-    </div>
-  </div>
-  <div>
+  <div class="fav-daycare">
     <p>Favorite Daycares</p>
-    <ul id="daycares"></ul>
+    <ul></ul>
+    {{#each favorites}}
+      <li>{{this.name}}</li>
+    {{/each}}
     <button>Remove Daycare</button>
   </div>
 </div>

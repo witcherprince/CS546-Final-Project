@@ -56,13 +56,15 @@ const exportMethod = {
 
   // Change user information -- only generic info
   async changeInfo(id, userInfo) {
-    console.log("changeInfo called with:", id, userInfo);
-
     id = id.toString();
 
     // Checking stuff
     id = validation.checkId(id);
     userInfo = validation.isValidObject(userInfo);
+
+    // Fetch current user data
+    const userCollection = await users();
+    const currentUser = await userCollection.findOne({ _id: new ObjectId(id) });
 
     const updateUser = {};
 
@@ -85,15 +87,14 @@ const exportMethod = {
     }
 
     if (userInfo.location) {
+      updateUser.location = currentUser.location || {};
       if (userInfo.location.town) {
         updateUser.location.town = validation.checkString(
           userInfo.location.town,
           "Town"
         );
       }
-    }
 
-    if (userInfo.location) {
       if (userInfo.location.zipcode) {
         updateUser.location.zipcode = validation.checkZipcode(
           userInfo.location.zipcode,
@@ -102,9 +103,6 @@ const exportMethod = {
       }
     }
 
-    console.log(updateUser);
-
-    const userCollection = await users();
     const updateInfo = await userCollection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { $set: updateUser },
@@ -133,10 +131,35 @@ const exportMethod = {
     return `${deletion.firstName} has been successfully deleted!`;
   },
 
-  async changePassword() {},
+  async changePassword(id, password) {
+    id = validation.checkId(id);
 
-  // Get user by their username
-  async getUser(username) {},
+    // Check Password
+    password = validation.checkPassword(password, "Password");
+
+    const userCollection = await users();
+    const currentUser = await userCollection.findOne({ _id: new ObjectId(id) });
+
+    let comparing = await bcryptjs.compare(password, currentUser.password);
+
+    if (comparing) {
+      throw "This password is already in use. Please input something else.";
+    }
+
+    // Now, if the new password is indeed different, we can change it here
+    const hash = await bcryptjs.hash(password, 16);
+
+    const newPass = {
+      password: hash,
+    };
+
+    const result = await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: newPass }
+    );
+
+    return "Your password has been successfully changed.";
+  },
 
   // Get user by their ID
   async getUserById(id) {

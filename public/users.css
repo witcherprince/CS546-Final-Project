@@ -21,6 +21,14 @@ h2 {
   text-align: center;
 }
 
+.profile-container {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
 table {
   border-radius: 15px;
   width: 100%;
@@ -46,7 +54,7 @@ table {
   gap: 5px;
 }
 
-.table-form2 {
+v .table-form2 {
   gap: 10px;
   width: 50%;
   border-collapse: separate;
@@ -56,6 +64,20 @@ table {
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(45%);
+}
+
+.fav-daycare {
+  position: absolute;
+  right: 0px;
+  gap: 10px;
+  width: 25%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(145%);
 }
 
 .table-form2 .button-container {
