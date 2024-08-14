@@ -71,7 +71,6 @@ app.use("/daycares/addDaycareReview", (req, res, next) => {
 
   next();
 });
-
 app.use("/daycares/updateDaycareReview", (req, res, next) => {
   if (!req.session.user) {
     console.log("Must be logged in to update a review.");
