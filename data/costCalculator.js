@@ -1,78 +1,58 @@
 import daycareFun from "../data/daycares.js";
-import {ObjectId} from 'mongodb';
+import validation from '../validation.js';
 
-import {
-  isValidString,
-  isValidArray,
-  checkState
-} from "../helpers.js";
 
 const exportedMethods = {
-    async calculateCost (state, duration, includeLunch,daycareId) {
-
-        state = checkState(state);
-        duration = Array.isArray(duration) ? duration[0] : duration;
+    async calculateCost (state, duration, includeLunch,id) {
+        let durations = ['half day', 'full day'];
+        let cost;
+        state = validation.checkState(state);
+        if (Array.isArray(duration)) {
+            duration = duration[0];
+        }
+        includeLunch = validation.checkString(includeLunch);
         duration = duration.trim().toLowerCase();
-        includeLunch = includeLunch.toLowerCase();
-
-        const validDurations = ['half day', 'full day'];
-        if (!validDurations.includes(duration)) {
-            throw new Error(`Invalid duration option: ${duration}. Valid options are 'Half Day' or 'Full Day'.`);
+        includeLunch = includeLunch.trim().toLowerCase();
+        if (!durations.includes(duration)) {
+            throw 'Choose from Half Day or Full Day';
         }
-
         const daycares = await daycareFun.getState(state);
-        console.log('Daycares:', daycares);
-
-        if (!daycares || daycares.length === 0) {
-            throw new Error('No daycares found in this state');
-        }
-
-        if (!daycareId) {
+        if (!id) {
             return daycares;
         }
-
-        const selectedDaycare = daycares.find(daycare => daycare._id.toString() === daycareId);
-
-        if (!selectedDaycare) {
-            throw new Error('Selected daycare not found');
+        if (!daycares || daycares.length === 0) {
+            throw 'No daycares for given state';
         }
-
-        console.log('Processing Daycare:', selectedDaycare);
-
-        let daycareOrg = await daycareFun.getOrg(selectedDaycare._id.toString());
-        console.log('DaycareOrg:', daycareOrg);
-
-        const daycareName = daycareOrg.name;
+        const pickedOne = daycares.find(daycare => daycare._id.toString() === id);
+        if (!pickedOne) {
+            throw 'No daycare not found';
+        }
+        let daycareOrg = await daycareFun.getOrg(pickedOne._id.toString());
+        const name = daycareOrg.name;
         const tuitionRange = daycareOrg.tuitionRange;
         const [minTuition, maxTuition] = tuitionRange.split('-').map(Number);
-
-        let cost;
-        const availableDurations = daycareOrg.duration.map(d => d.trim().toLowerCase());
-
+        const availableDurations = daycareOrg.duration.map(elem => elem.trim().toLowerCase());
         if (!availableDurations.includes(duration)) {
-            throw new Error(`${daycareName} does not offer ${duration.charAt(0).toUpperCase() + duration.slice(1)} options.`);
+            throw 'No such duration for given daycare';
         }
-
         if (!daycareOrg.lunchChoices || daycareOrg.lunchChoices.length === 0) {
-            throw new Error(`${daycareName} does not provide lunch information.`);
+            throw 'No lunch info for given daycare';
         }
-
-        if (duration === 'half day' && includeLunch === 'no') {
+        
+        if (duration === 'full day' && includeLunch === 'yes') {
+            cost = maxTuition;
+        } else if (duration === 'full day' && includeLunch === 'no') {
+            cost = maxTuition * 0.9;
+        } else if (duration === 'half day' && includeLunch === 'no') {
             cost = minTuition;
         } else if (duration === 'half day') {
             cost = maxTuition * 0.7;
-        } else if (duration === 'full day' && includeLunch === 'no') {
-            cost = maxTuition * 0.9; 
-        } else if (includeLunch === 'no') {
-            cost = minTuition;
-        } else if (duration === 'full day' && includeLunch === 'yes') {
-            cost = maxTuition;
         } else {
-            cost = maxTuition
+            cost = maxTuition;
         }
 
         return {
-            daycareName,
+            name,
             cost
         };
     }
