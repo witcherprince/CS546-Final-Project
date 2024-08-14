@@ -1,0 +1,26 @@
+<section>
+    <h2>List of Day Care Organizations</h2>
+    {{#each dayCares}}
+
+    <div class="card text-center">
+        <div class="card-header">
+            <b>Daycare Name:</b><br />
+            <h2>{{this.name}}</h2>
+
+        </div>
+        <div class="card-body">
+            <p><b>Introduction:</b> {{this.introduction}}</p>
+            <p><b>Average Rating:</b> {{this.rating}} stars</p>
+            <a href="/daycares/{{this._id}}" class="btn btn-primary">View Details</a>
+            <a href="/daycares/daycareReviews/{{this._id}}" class="btn btn-primary">See reviews</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            <b>Address:</b><br />
+            {{this.location.address}},
+            {{this.location.town}},
+            {{this.location.state}}
+            {{this.location.zipcode}}
+        </div>
+    </div><br />
+    {{/each}}
+</section>

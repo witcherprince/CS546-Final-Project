@@ -1,0 +1,11 @@
+<link rel="stylesheet" href="../public/users.css" />
+{{#if error}}
+  <p class="error">{{error}}</p>
+{{/if}}
+<p>Are you sure you want to delete your account? This action cannot be undone.</p>
+<form id="deleteUser" method="POST" action="/users/deleteUser">
+  <input type="hidden" name="_method" value="DELETE" />
+  <div>
+    <input class="button" type="submit" value="Delete User" />
+  </div>
+</form>
