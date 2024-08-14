@@ -18,7 +18,7 @@
         <form method="POST" action="/daycares/calculator">
             <div>
                 <label for="state">State:</label>
-                <input type="text" id="state" name="state" placeholder="Enter state abbreviation (e.g., NY)" required>
+                <input type="text" id="state" name="state" placeholder="Enter state (NY, CA ...)" required>
             </div>
 
             <button type="submit">Find Daycares</button>
@@ -30,8 +30,8 @@
             <input type="hidden" name="state" value="{{state}}">
             
             <div>
-                <label for="selectedDaycare">Select Daycare:</label>
-                <select id="selectedDaycare" name="selectedDaycareId" required>
+                <label for="pickedOne">Select Daycare:</label>
+                <select id="pickedOne" name="id" required>
                     {{#each daycares}}
                         <option value="{{this._id}}">{{this.name}}</option>
                     {{/each}}
@@ -61,7 +61,7 @@
     {{#if result}}
         <section>
             <h2>Cost Results</h2>
-            <p>The estimated cost for {{result.daycareName}} is: ${{result.cost}}</p>
+            <p>The estimated cost for {{result.name}} is: ${{result.cost}}</p>
         </section>
     {{/if}}
 </article>
