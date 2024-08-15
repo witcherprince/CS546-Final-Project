@@ -1,0 +1,56 @@
+<head>
+    <title>Daycare List</title>
+    <link rel="stylesheet" href="../../public/daycareList.css" />
+</head>
+
+<section>
+    <div class="header">
+    <h2>List of Day Care Organizations</h2>
+    <a href="/daycares/daycareList">See full list of daycares</a>
+    <br />
+    <a href="/">Back to Home</a>
+    </div>
+    <br />
+    <form id="search_box_form" method="POST" action="/daycares/daycareListFiltered">
+        <div class="search_box">
+            <h3>Search daycares by...</h3>
+            <select class="form-select search_select" aria-label="Default select example" form="search_box_form" name="select_options">
+                <option value="daycare_name" name="daycare_name">Daycare Name</option>
+                <option value="food_preference" name="food_preference">Food Preferences</option>
+                <option value="availability" name="availability">Availability</option>
+                <option value="duration" name="duration">Duration</option>
+                <option value="rating" name="rating">Rating of at least</option>
+            </select>
+            <div class="input-group mb-3 search_input_box">
+                <input type="text" class="form-control" placeholder="Enter data" aria-label="Username"
+                    aria-describedby="basic-addon1" name="user_input">
+            </div>
+            <button class="btn btn-primary" form="search_box_form" type="submit">Search</button>
+        </div>
+    </form>
+
+    <br />
+
+    {{#each dayCares}}
+
+    <div class="card text-center">
+        <div class="card-header">
+            <b>Daycare Name:</b><br />
+            <h2>{{this.name}}</h2>
+        </div>
+        <div class="card-body">
+            <p><b>Introduction:</b> {{this.introduction}}</p>
+            <p><b>Average Rating:</b> {{this.rating}} stars</p>
+            <a href="/daycares/{{this._id}}" class="btn btn-primary">View Details</a>
+            <a href="/daycares/daycareReviews/{{this._id}}" class="btn btn-primary">See reviews</a>
+        </div>
+        <div class="card-footer text-body-secondary">
+            <b>Address:</b><br />
+            {{this.location.address}},
+            {{this.location.town}},
+            {{this.location.state}}
+            {{this.location.zipcode}}
+        </div>
+    </div><br />
+    {{/each}}
+</section>
