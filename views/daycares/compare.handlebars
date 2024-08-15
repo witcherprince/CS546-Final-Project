@@ -1,28 +1,33 @@
 <link rel="stylesheet" href="../public/daycares.css" />
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares">Daycares home page</a></li>
+    </ul>
+  </nav>
+</div>
 
 <title>Compare Daycares</title>
 <article class="compare-form">
-    <h1>Compare Daycares</h1>
-
+    <h1>Choose daycares from the list to compare it</h1>
     <form method="POST" action="/daycares/compare">
         <div>
-            <label for="daycare1">Select First Daycare:</label>
-            <select id="daycare1" name="daycare1Name" required>
+            <label for="daycare1">Select first daycare:</label>
+            <select id="daycare1" name="name1" required>
                 {{#each daycares}}
                     <option value="{{this.name}}">{{this.name}}</option>
                 {{/each}}
             </select>
         </div>
-
         <div>
-            <label for="daycare2">Select Second Daycare:</label>
-            <select id="daycare2" name="daycare2Name" required>
+            <label for="daycare2">Select second daycare:</label>
+            <select id="daycare2" name="name2" required>
                 {{#each daycares}}
                     <option value="{{this.name}}">{{this.name}}</option>
                 {{/each}}
             </select>
         </div>
-
         <button type="submit">Compare</button>
     </form>
 </article>

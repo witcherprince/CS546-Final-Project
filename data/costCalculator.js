@@ -50,7 +50,6 @@ const exportedMethods = {
         } else {
             cost = maxTuition;
         }
-
         return {
             name,
             cost

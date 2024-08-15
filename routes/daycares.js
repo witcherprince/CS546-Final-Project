@@ -134,41 +134,43 @@ router.route("/addDaycare")
       email = checkEmail(email);
       phone = checkPhone(phone);
 
-      if (website) {
-        website = checkWebsite(website);
-      } else {
-        website = null;
-      }
+      // This validation method causes error
+      
+      // if (website) {
+      //   website = checkWebsite(website);
+      // } else {
+      //   website = null;
+      // }
   
-      if (yearsInBusiness) {
-        yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
-      } else {
-        yearsInBusiness = null;
-      }
+      // if (yearsInBusiness) {
+      //   yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
+      // } else {
+      //   yearsInBusiness = null;
+      // }
   
-      if (availability) {
-        availability = checkBoolean(availability,"availability");
-      } else {
-        availability = null;
-      }
+      // if (availability) {
+      //   availability = checkBoolean(availability,"availability");
+      // } else {
+      //   availability = null;
+      // }
   
-      if (lunchChoices) {
-        lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
-      } else {
-        lunchChoices = [];
-      }
+      // if (lunchChoices) {
+      //   lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
+      // } else {
+      //   lunchChoices = [];
+      // }
   
-      if (duration) {
-        duration = duration.split(",").map((dur) => isString(dur, "duration"));
-      } else {
-        duration = [];
-      }
+      // if (duration) {
+      //   duration = duration.split(",").map((dur) => isString(dur, "duration"));
+      // } else {
+      //   duration = [];
+      // }
   
-      if (tuitionRange) {
-        tuitionRange = isString(tuitionRange,"tuition range");
-      } else {
-        tuitionRange = null;
-      }
+      // if (tuitionRange) {
+      //   tuitionRange = isString(tuitionRange,"tuition range");
+      // } else {
+      //   tuitionRange = null;
+      // }
 
 
       if (password !== confirmPassword) {
@@ -623,31 +625,27 @@ router
 .post(async (req, res) => {
   try {
     let state = req.body.state;
-
     if (!state) {
-      throw new Error('Provide state parameter');
+      throw 'Provide state parameter';
     }
-
     state = checkState(state);
-
     const daycares = await daycareFun.getState(state);
-
     res.render('daycares/list', { state: state, daycares });
   } catch (e) {
     res.status(400).render('daycares/error', { error: e.message });
   }
 });
 
-router.get('/calculator', async (req, res) => { 
-  try {
-    res.render("daycares/costCalculator");
-  } catch (e) {
-    res.status(500).render("error", { error: e });
-  }
-});
-
-
-router.post('/calculator', async (req, res) => {
+router
+  .route("/calculator")
+  .get(async (req, res) => {
+    try {
+      res.render("daycares/costCalculator");
+    } catch (e) {
+      res.status(500).render("error", { error: e });
+    }
+})
+.post(async (req, res) => {
   try {
     let state = req.body.state;
     let duration = req.body.duration;
@@ -688,9 +686,6 @@ router.route("/compare")
   try {
       let name1 = req.body.name1;
       let name2 = req.body.name2;
-
-      name1 = name1.trim().toLowerCase();
-      name2 = name2.trim().toLowerCase();
       if (!name1 || !name2) {
           throw 'Provide names for daycare.';
       }
