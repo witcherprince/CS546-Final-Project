@@ -57,6 +57,31 @@ router
     }
   });
 
+router.route("/editChildren").get(async (req, res) => {
+  return res.render("users/editChildren");
+});
+
+// Need to make this work so when the user clicks delete child, they delete that specific child with their name
+router
+  .route("/deleteChild")
+  .get(async (req, res) => {
+    return res.render("users/deleteChild");
+  })
+  .delete(async (req, res) => {
+    const userId = req.session.user.userId;
+
+    if (!userId) {
+      return res.status(500).render("error", { error: "No user ID exists" });
+    }
+
+    try {
+      const deleteChild = await userValidations.removeChild(userId);
+      return res.redirect("/users/userPage");
+    } catch (error) {
+      res.status(500).render("error", { error: "Something went wrong." });
+    }
+  });
+
 router
   .route("/editUserPage")
   .get(async (req, res) => {
@@ -197,6 +222,58 @@ router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
     return res.redirect("/daycares/daycareList");
   } catch (error) {
     return res.status(400).render("error", { error: error });
+  }
+});
+
+router.route("/favoriteDaycares").get(async (req, res) => {
+  const userId = req.session.user.userId;
+
+  if (!userId) {
+    return res.status(500).render("error", { error: "No user ID exists" });
+  }
+
+  try {
+    const user = await userValidations.getUserById(userId);
+
+    // get favorite daycares
+    const userFavorites = user.favorites || [];
+    const favoriteDaycares = await Promise.all(
+      userFavorites.map(async (daycareId) => {
+        return await daycareValidations.getOrg(daycareId);
+      })
+    );
+
+    return res.render("users/favoriteDaycares", {
+      favorites: favoriteDaycares,
+    });
+  } catch (error) {
+    res.status(500).render("error", { error: "Something went wrong." });
+  }
+});
+
+router.route("/userReviews").get(async (req, res) => {
+  const userId = req.session.user.userId;
+
+  if (!userId) {
+    return res.status(500).render("error", { error: "No user ID exists" });
+  }
+
+  try {
+    const user = await userValidations.getUserById(userId);
+
+    // get favorite daycares
+    const userFavorites = user.favorites || [];
+    const favoriteDaycares = await Promise.all(
+      userFavorites.map(async (daycareId) => {
+        return await daycareValidations.getOrg(daycareId);
+      })
+    );
+
+    return res.render("users/userReviews", {
+      favorites: favoriteDaycares,
+    });
+  } catch (error) {
+    res.status(500).render("error", { error: "Something went wrong." });
   }
 });
 

@@ -33,13 +33,21 @@
         <a class="nav-link" href="/users/deleteUser">
           <button>Delete Account</button>
         </a>
+        <a class="nav-link" href="/users/favoriteDaycares">
+          <button>Favorites</button>
+        </a>
+        <a class="nav-link" href="/users/userReviews">
+          <button>Reviews</button>
+        </a>
       </div>
     </div>
     <div>
       <p>Children</p>
       <ul>
         {{#each kids}}
-          <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
+          <a href="/users/editChildren">
+            <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
+          </a>
         {{/each}}
       </ul>
       <div class="button-container">
@@ -49,13 +57,5 @@
         <button>Remove Child</button>
       </div>
     </div>
-  </div>
-  <div class="fav-daycare">
-    <p>Favorite Daycares</p>
-    <ul></ul>
-    {{#each favorites}}
-      <li>{{this.name}}</li>
-    {{/each}}
-    <button>Remove Daycare</button>
   </div>
 </div>
