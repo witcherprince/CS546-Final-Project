@@ -49,7 +49,8 @@ router.route("/").get(async (req, res) => {
   }
 });
 
-router.route("/login")
+router
+  .route("/login")
   .get(async (req, res) => {
     try {
       return res.render("daycares/login");
@@ -90,14 +91,17 @@ router.route("/login")
     }
   });
 
-router.route("/addDaycare")
+router
+  .route("/addDaycare")
   .get(async (req, res) => {
     return res.render("daycares/addDayCare");
   })
   .post(async (req, res) => {
     let dayCarePostData = req.body;
     if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
-      return res.status(400).render("error", { error: "There are no fields in the request body" });
+      return res
+        .status(400)
+        .render("error", { error: "There are no fields in the request body" });
     }
     try {
       let {
@@ -120,14 +124,27 @@ router.route("/addDaycare")
         tuitionRange,
       } = req.body;
 
-      if (!name || !password || !introduction || !address || !town || !state || !zipcode || !businessHours || !email || !phone) {
-        return res.status(400).render("daycares/addDayCare", { error: 'All fields are required' });
+      if (
+        !name ||
+        !password ||
+        !introduction ||
+        !address ||
+        !town ||
+        !state ||
+        !zipcode ||
+        !businessHours ||
+        !email ||
+        !phone
+      ) {
+        return res
+          .status(400)
+          .render("daycares/addDayCare", { error: "All fields are required" });
       }
 
-      name = isString(name, 'Name');
-      introduction = isString(introduction, 'Introduction');
-      address = isString(address, 'Address');
-      town = isString(town, 'Town');
+      name = isString(name, "Name");
+      introduction = isString(introduction, "Introduction");
+      address = isString(address, "Address");
+      town = isString(town, "Town");
       state = checkState(state);
       zipcode = checkZipcode(zipcode);
       businessHours = checkBusinessHour(businessHours);
@@ -135,46 +152,47 @@ router.route("/addDaycare")
       phone = checkPhone(phone);
 
       // This validation method causes error
-      
+
       // if (website) {
       //   website = checkWebsite(website);
       // } else {
       //   website = null;
       // }
-  
+
       // if (yearsInBusiness) {
       //   yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
       // } else {
       //   yearsInBusiness = null;
       // }
-  
+
       // if (availability) {
       //   availability = checkBoolean(availability,"availability");
       // } else {
       //   availability = null;
       // }
-  
+
       // if (lunchChoices) {
       //   lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
       // } else {
       //   lunchChoices = [];
       // }
-  
+
       // if (duration) {
       //   duration = duration.split(",").map((dur) => isString(dur, "duration"));
       // } else {
       //   duration = [];
       // }
-  
+
       // if (tuitionRange) {
       //   tuitionRange = isString(tuitionRange,"tuition range");
       // } else {
       //   tuitionRange = null;
       // }
 
-
       if (password !== confirmPassword) {
-        return res.status(400).render("daycares/addDayCare", { error: 'Passwords do not match' });
+        return res
+          .status(400)
+          .render("daycares/addDayCare", { error: "Passwords do not match" });
       }
 
       let newDaycare = await daycareFun.addDaycare(
@@ -198,12 +216,25 @@ router.route("/addDaycare")
 
       return res.redirect("/daycares/welcome");
     } catch (error) {
-      return res.status(500).json({ error: "An error occurred while adding the daycare" });
+      return res
+        .status(500)
+        .json({ error: "An error occurred while adding the daycare" });
     }
   });
 
 router.get("/dayCareList", async (req, res) => {
+  if (!req.session.user) {
+    try {
+      const dayCares = await daycareFun.getAll();
+      return res.render("daycares/daycareListGeneric", { dayCares });
+    } catch (e) {
+      return res.status(500).render("error", { error: e });
+    }
+  }
   try {
+    const userId = req.session.user["userId"];
+    const userInfo = await userUtils.getUserById(userId);
+    const userFavDaycares = userInfo["favorites"];
     const dayCares = await daycareFun.getAll();
 
     for (let daycare of dayCares) {
@@ -621,20 +652,20 @@ router
     } catch (e) {
       res.status(500).render("error", { error: e });
     }
-})
-.post(async (req, res) => {
-  try {
-    let state = req.body.state;
-    if (!state) {
-      throw 'Provide state parameter';
+  })
+  .post(async (req, res) => {
+    try {
+      let state = req.body.state;
+      if (!state) {
+        throw "Provide state parameter";
+      }
+      state = checkState(state);
+      const daycares = await daycareFun.getState(state);
+      res.render("daycares/list", { state: state, daycares });
+    } catch (e) {
+      res.status(400).render("daycares/error", { error: e.message });
     }
-    state = checkState(state);
-    const daycares = await daycareFun.getState(state);
-    res.render('daycares/list', { state: state, daycares });
-  } catch (e) {
-    res.status(400).render('daycares/error', { error: e.message });
-  }
-});
+  });
 
 router
   .route("/calculator")
@@ -644,66 +675,72 @@ router
     } catch (e) {
       res.status(500).render("error", { error: e });
     }
-})
-.post(async (req, res) => {
-  try {
-    let state = req.body.state;
-    let duration = req.body.duration;
-    let includeLunch = req.body.includeLunch;
-    let id = req.body.id;
-    if (!state) {
-      throw 'Provide state input';
-    }
-    state = checkState(state);
-    if (state && !id) {
-      const daycares = await daycareFun.getState(state);
-      if (!daycares || daycares.length === 0) {
-        throw 'No daycares for given state';
+  })
+  .post(async (req, res) => {
+    try {
+      let state = req.body.state;
+      let duration = req.body.duration;
+      let includeLunch = req.body.includeLunch;
+      let id = req.body.id;
+      if (!state) {
+        throw "Provide state input";
       }
-      res.render("daycares/costCalculator", { daycares, state });
-      return;
+      state = checkState(state);
+      if (state && !id) {
+        const daycares = await daycareFun.getState(state);
+        if (!daycares || daycares.length === 0) {
+          throw "No daycares for given state";
+        }
+        res.render("daycares/costCalculator", { daycares, state });
+        return;
+      }
+      if (!state || !duration || !includeLunch || !id) {
+        throw "Provide all inputs";
+      }
+      const result = await calculator.calculateCost(
+        state,
+        duration,
+        includeLunch,
+        id
+      );
+      res.render("daycares/costCalculator", { result });
+    } catch (e) {
+      res.status(400).render("daycares/error", { error: e.message });
     }
-    if (!state || !duration || !includeLunch || !id) {
-        throw 'Provide all inputs';
-    }
-    const result = await calculator.calculateCost(state, duration, includeLunch, id);
-    res.render("daycares/costCalculator", { result });
-} catch (e) {
-    res.status(400).render('daycares/error', { error: e.message });
-}
-});
+  });
 
-router.route("/compare")
+router
+  .route("/compare")
   .get(async (req, res) => {
     try {
-      const daycares = await daycareFun.getAll(); 
-      res.render('daycares/compare', { daycares });
+      const daycares = await daycareFun.getAll();
+      res.render("daycares/compare", { daycares });
     } catch (e) {
-      res.status(500).render('error', { error: e.message });
+      res.status(500).render("error", { error: e.message });
     }
-})
-.post(async (req, res) => {
-  try {
+  })
+  .post(async (req, res) => {
+    try {
       let name1 = req.body.name1;
       let name2 = req.body.name2;
       if (!name1 || !name2) {
-          throw 'Provide names for daycare.';
+        throw "Provide names for daycare.";
       }
       name1 = isString(name1);
       name2 = isString(name2);
-      const daycares = await daycareFun.getAll(); 
-      let daycare1 = daycares.find(daycare => daycare.name === name1);
-      let daycare2 = daycares.find(daycare => daycare.name === name2);
+      const daycares = await daycareFun.getAll();
+      let daycare1 = daycares.find((daycare) => daycare.name === name1);
+      let daycare2 = daycares.find((daycare) => daycare.name === name2);
       if (!daycare1 || !daycare2) {
-          throw 'Daycares could not be found.';
+        throw "Daycares could not be found.";
       }
-      res.render('daycares/compareResults', { daycare1, daycare2 });
-  } catch (e) {
-      res.status(500).render('error', { error: e.message });
-  }
-});
+      res.render("daycares/compareResults", { daycare1, daycare2 });
+    } catch (e) {
+      res.status(500).render("error", { error: e.message });
+    }
+  });
 
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const daycareId = req.params.id;
     if (!daycareId) {
@@ -718,7 +755,7 @@ router.get('/:id', async (req, res) => {
         .render("daycares/error", { error: "Daycare not found." });
     }
 
-    res.render('daycares/details', { daycare });
+    res.render("daycares/details", { daycare });
   } catch (e) {
     console.error("Error fetching daycare details:", e);
     res

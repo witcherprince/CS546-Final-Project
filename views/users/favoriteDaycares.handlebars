@@ -13,13 +13,18 @@
 <title>Your Favorite Daycares</title>
 
 <div class="table-form">
-  <div>
-    <p>Favorite Daycares</p>
-    <ul></ul>
-    {{#each favorites}}
-      <li>{{this.name}} <button>Remove Daycare</button></li>
-    {{/each}}
-  </div>
+  <form id="editFaves" method="POST" action="/users/favoriteDaycares">
+    <input type="hidden" name="_method" value="DELETE" />
+    <div>
+      <p>Favorite Daycares</p>
+      <ul></ul>
+      {{#each favorites}}
+        <li><a href="/daycares/{{this._id}}">{{this.name}}</a><button
+            type="submit"
+          >Remove Daycare</button></li>
+      {{/each}}
+    </div>
+  </form>
   <div class="button-container">
     <a class="nav-link" href="/users/userPage">
       <button>Go Back</button>

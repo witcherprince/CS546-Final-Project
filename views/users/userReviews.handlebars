@@ -16,8 +16,13 @@
   <div>
     <p>Reviews</p>
     <ul></ul>
-    {{#each favorites}}
-      <li>{{this.name}} <button>Remove Daycare</button></li>
+    {{#each reviews}}
+      <li>Daycare:
+        {{this.daycareName}}
+        Review:
+        {{this.review}}
+        Rating:
+        {{this.rating}}</li>
     {{/each}}
   </div>
   <div class="button-container">
