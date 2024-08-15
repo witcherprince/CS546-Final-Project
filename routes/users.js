@@ -1,6 +1,7 @@
 import express from "express";
 import userValidations from "../data/users.js";
 import daycareValidations from "../data/daycares.js";
+import reviewValidations from "../data/reviews.js ";
 
 const router = express.Router();
 
@@ -225,31 +226,39 @@ router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
   }
 });
 
-router.route("/favoriteDaycares").get(async (req, res) => {
-  const userId = req.session.user.userId;
+router
+  .route("/favoriteDaycares")
+  .get(async (req, res) => {
+    const userId = req.session.user.userId;
 
-  if (!userId) {
-    return res.status(500).render("error", { error: "No user ID exists" });
-  }
+    if (!userId) {
+      return res.status(500).render("error", { error: "No user ID exists" });
+    }
 
-  try {
-    const user = await userValidations.getUserById(userId);
+    try {
+      const user = await userValidations.getUserById(userId);
 
-    // get favorite daycares
-    const userFavorites = user.favorites || [];
-    const favoriteDaycares = await Promise.all(
-      userFavorites.map(async (daycareId) => {
-        return await daycareValidations.getOrg(daycareId);
-      })
-    );
+      // get favorite daycares
+      const userFavorites = user.favorites || [];
+      const favoriteDaycares = await Promise.all(
+        userFavorites.map(async (daycareId) => {
+          return await daycareValidations.getOrg(daycareId);
+        })
+      );
 
-    return res.render("users/favoriteDaycares", {
-      favorites: favoriteDaycares,
-    });
-  } catch (error) {
-    res.status(500).render("error", { error: "Something went wrong." });
-  }
-});
+      return res.render("users/favoriteDaycares", {
+        favorites: favoriteDaycares,
+      });
+    } catch (error) {
+      res.status(500).render("error", { error: "Something went wrong." });
+    }
+  })
+  .delete(async (req, res) => {
+    // don't know if this will work. we shall see
+    const userId = req.session.user.userId;
+
+    const deleteFav = userValidations.removeFavDaycare(req.session.user.userId);
+  });
 
 router.route("/userReviews").get(async (req, res) => {
   const userId = req.session.user.userId;
@@ -262,15 +271,33 @@ router.route("/userReviews").get(async (req, res) => {
     const user = await userValidations.getUserById(userId);
 
     // get favorite daycares
-    const userFavorites = user.favorites || [];
-    const favoriteDaycares = await Promise.all(
-      userFavorites.map(async (daycareId) => {
-        return await daycareValidations.getOrg(daycareId);
+    const userReviews = user.reviews || [];
+    const theReview = await Promise.all(
+      userReviews.map(async (reviewId) => {
+        return await reviewValidations.getReviewById(reviewId);
       })
     );
 
+    // trying to get daycare name
+    let daycareID;
+
+    for (let d of theReview) {
+      daycareID = d.daycareId;
+    }
+
+    daycareID = daycareID.toString();
+    const theDaycare = await daycareValidations.getOrg(daycareID);
+    const dayCareName = theDaycare.name;
+
+    for (let d of theReview) {
+      d.daycareName = dayCareName;
+    }
+
+    console.log(theReview);
+
     return res.render("users/userReviews", {
-      favorites: favoriteDaycares,
+      reviews: theReview,
+      daycare: dayCareName,
     });
   } catch (error) {
     res.status(500).render("error", { error: "Something went wrong." });
