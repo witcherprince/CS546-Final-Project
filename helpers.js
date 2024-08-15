@@ -114,7 +114,7 @@ export function isValidPhone(input) {
     }
 };
 
-export function isValidEmail(email) {
+export function isValidEmail(email) { //what if the email ends with .edu?
 
     let regex = /^[^\s@]+@[^\s@]+\.(com)$/;
     if (!regex.test(email)) {
@@ -251,7 +251,7 @@ export function checkZipcode(zipcode) {
   }
 
 //Check and return a trim email
-export function checkEmail(email) {
+export function checkEmail(email) { 
     const emailForm = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     email = email.trim();
     if (!emailForm.test(email)) {
