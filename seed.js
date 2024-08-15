@@ -11,7 +11,7 @@ try {
     "Katherine",
     "Rijo",
     "loveGenshin@gmail.com",
-    "Ilikecheese1",
+    "Ilikecheese1@",
     "queens",
     1111
   );
@@ -47,12 +47,13 @@ try {
   const five = await userData.createUser(
     "Hawkeye",
     "Lionheart",
-    "dffrfvvf##221",
+    "hhlookies411@yahoo.com",
+    "dffrfvF##221",
     "brooklyn",
-    "55555"
+    55555
   );
 } catch (e) {
-  console.log("Seeding users went wrong.");
+  console.log("Seeding users went wrong. " + e);
 }
 
 console.log("Done seeding.");
