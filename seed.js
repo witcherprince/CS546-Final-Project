@@ -150,15 +150,10 @@ try {
   );
 } catch (e) {
   console.log("Seeding users went wrong. " + e);
-<<<<<<< HEAD
 }
 
 console.log("Done seeding.");
-=======
-  console.log("Seeding users went wrong.");
-  console.log(e);
-}
-*/
+
 //Part two: daycare organization
 try {
   const daycare1 = await dayCareData.addDaycare(
@@ -269,4 +264,3 @@ try {
 console.log("Done seeding.");
 
 await closeConnection();
->>>>>>> d3d96ea (Fix daycares route)
