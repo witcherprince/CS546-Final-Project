@@ -32,16 +32,6 @@ import calculator from "../data/costCalculator.js";
 import { daycares } from "../config/mongoCollections.js";
 
 const router = express.Router();
-/*
-function isAuthenticated(req, res, next) { //I don't know where to put middleware function
-  if (req.session.userId) {
-    return next();
-  }
-  res.redirect('/login');
-}
-*/
-//just for daycare role (update daycare, update available, update password, delete daycare)
-// when user click a daycare, _id pass to this route and show details of clicked daycare.
 
 router.route("/").get(async (req, res) => {
   try {
@@ -404,25 +394,24 @@ router
     }
   });
 
-//Do we render the error to errorDaycare? so we can redirect in errorDaycare to give user the second chance
 //update the daycare
 router
   .route("/update")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
 
     try {
-      const daycare = daycareFun.getOrg(req.session.daycare._id);
+      const daycare = await daycareFun.getOrg(req.session.daycare._id);
       res.render("daycares/updateDaycare", { daycare: daycare });
     } catch {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
-  .post(async (req, res) => {
+  .put(async (req, res) => {
     const daycareData = req.body;
     if (!daycareData || Object.keys(daycareData).length === 0) {
       return res.redirect("/welcome");
@@ -467,20 +456,15 @@ router
       }
 
       if (daycareData.lunchChoices) {
-        lunchChoices = daycareData.lunchChoices
-          .split(",")
-
-          .map((choice) => isString(choice, "lunch choice"));
+        lunchChoices = daycareData.lunchChoices;
       } else {
-        lunchChoices = [];
+        lunchChoices = null;
       }
 
       if (daycareData.duration) {
-        duration = daycareData.duration
-          .split(",")
-          .map((dur) => isString(dur, "duration"));
+        duration = daycareData.duration;
       } else {
-        duration = [];
+        duration = null;
       }
 
       if (daycareData.tuitionRange) {
@@ -522,20 +506,20 @@ router
   .route("/availability")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
     try {
-      res.render("daycares/availability");
+      const daycare = await daycareFun.getOrg(req.session.daycare._id);
+      res.render("daycares/availability", {daycare: daycare});
     } catch (e) {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
-
-  .post(async (req, res) => {
+  .patch(async (req, res) => {
     try {
-      const availability = req.body.availability;
+      let availability = req.body.availability;
       availability = checkBoolean(availability, "Availability");
       const updated = await daycareFun.updateAvailability(
         req.session.daycare._id,
@@ -543,7 +527,7 @@ router
       );
       res.render("daycares/welcome", { daycare: updated }); //back to welcome page to show updated daycare
     } catch (e) {
-      res.status(400).render("daycares/errorDaycare", { error: e.message });
+      res.status(400).render("daycares/error", { error: e.message });
     }
   });
 
@@ -552,22 +536,21 @@ router
   .route("/password")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
     try {
       res.render("daycares/password");
     } catch (e) {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
-  .post(passwordMatch, async (req, res) => {
+  .patch(passwordMatch, async (req, res) => {
     try {
-      console.log("in .patch /password");
       let { newpassword } = req.body;
       newpassword = checkPassword(newpassword);
-      const updatedDaycare = await updatePassword(
+      const updatedDaycare = await daycareFun.updatePassword(
         req.session.daycare._id,
         newpassword
       );

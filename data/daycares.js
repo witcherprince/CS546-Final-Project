@@ -313,7 +313,7 @@ const exportedMethods = {
       throw "The new password must be different from the previous one.";
     }
 
-    return "Password has been changed!";
+    return await this.getOrg(id);
   },
 
   // 4. Get all daycares from database
