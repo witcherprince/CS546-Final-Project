@@ -13,12 +13,6 @@ import {
   isValidArray,
   isProperId,
   isValidWebsite,
-  isValidBoolean,
-  isValidDate,
-  isValidObject,
-  isValidNumber,
-  isValidZip,
-  isValidPhone,
   isValidEmail,
   isValidPassword,
   checkState,
@@ -117,7 +111,61 @@ router
         tuitionRange,
       } = req.body;
 
-      const newDaycare = await daycareFun.addDaycare(
+      if (!name || !password || !introduction || !address || !town || !state || !zipcode || !businessHours || !email || !phone) {
+        return res.status(400).render("daycares/addDayCare", { error: 'All fields are required' });
+      }
+
+      name = isString(name, 'Name');
+      introduction = isString(introduction, 'Introduction');
+      address = isString(address, 'Address');
+      town = isString(town, 'Town');
+      state = checkState(state);
+      zipcode = checkZipcode(zipcode);
+      businessHours = checkBusinessHour(businessHours);
+      email = checkEmail(email);
+      phone = checkPhone(phone);
+
+      if (website) {
+        isValidWebsite(website);
+      } else {
+        website = null;
+      }
+      
+      if (yearsInBusiness) {
+        yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
+      } else {
+        yearsInBusiness = null;
+      }
+  
+      if (availability) {
+        availability = checkBoolean(availability,"availability");
+      } else {
+        availability = null;
+      }
+  
+      if (lunchChoices) {
+        lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
+      } else {
+        lunchChoices = [];
+      }
+  
+      if (duration) {
+        duration = duration.split(",").map((dur) => isString(dur, "duration"));
+      } else {
+        duration = [];
+      }
+  
+      if (tuitionRange) {
+        tuitionRange = isString(tuitionRange,"tuition range");
+      } else {
+        tuitionRange = null;
+      }
+
+      if (password !== confirmPassword) {
+        return res.status(400).render("daycares/addDayCare", { error: 'Passwords do not match' });
+      }
+
+      let newDaycare = await daycareFun.addDaycare(
         name,
         password,
         introduction,
