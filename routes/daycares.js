@@ -745,89 +745,73 @@ router.route("/daycareListFiltered").post(async (req, res) => {
   }
 });
 
-router.get("/calculator", async (req, res) => {
-  try {
-    res.render("daycares/costCalculator");
-  } catch (e) {
-    res.status(500).render("error", { error: e });
-  }
-});
-
-router.post("/calculator", async (req, res) => {
+router
+  .route("/calculator")
+  .get(async (req, res) => {
+    try {
+      res.render("daycares/costCalculator");
+    } catch (e) {
+      res.status(500).render("error", { error: e });
+    }
+})
+.post(async (req, res) => {
   try {
     let state = req.body.state;
     let duration = req.body.duration;
     let includeLunch = req.body.includeLunch;
-    let selectedDaycareId = req.body.selectedDaycareId;
-
-    if (state && !selectedDaycareId) {
-      state = checkState(state);
+    let id = req.body.id;
+    if (!state) {
+      throw 'Provide state input';
+    }
+    state = checkState(state);
+    if (state && !id) {
       const daycares = await daycareFun.getState(state);
-
       if (!daycares || daycares.length === 0) {
-        throw new Error("No daycares found in this state");
+        throw 'No daycares for given state';
       }
-
       res.render("daycares/costCalculator", { daycares, state });
       return;
     }
-
-    if (!state || !duration || !includeLunch || !selectedDaycareId) {
-      throw new Error("Provide all inputs");
+    if (!state || !duration || !includeLunch || !id) {
+        throw 'Provide all inputs';
     }
-
-    state = checkState(state);
-    const result = await calculator.calculateCost(
-      state,
-      duration,
-      includeLunch,
-      selectedDaycareId
-    );
-
+    const result = await calculator.calculateCost(state, duration, includeLunch, id);
     res.render("daycares/costCalculator", { result });
-  } catch (e) {
-    res.status(400).render("daycares/error", { error: e.message });
-  }
+} catch (e) {
+    res.status(400).render('daycares/error', { error: e.message });
+}
 });
 
-router
-  .get("/compare", async (req, res) => {
+
+router.route("/compare")
+  .get(async (req, res) => {
     try {
-      const daycares = await daycareFun.getAll();
-      res.render("daycares/compare", { daycares });
+      const daycares = await daycareFun.getAll(); 
+      res.render('daycares/compare', { daycares });
     } catch (e) {
-      res.status(500).render("error", { error: e.message });
+      res.status(500).render('error', { error: e.message });
     }
-  })
-
-  .post("/compare", async (req, res) => {
-    try {
-      const { daycare1Name, daycare2Name } = req.body;
-
-      if (!daycare1Name || !daycare2Name) {
-        throw new Error("Both daycare names must be provided.");
+})
+.post(async (req, res) => {
+  try {
+      let name1 = req.body.name1;
+      let name2 = req.body.name2;
+      if (!name1 || !name2) {
+          throw 'Provide names for daycare.';
       }
-
-      const daycares = await daycareFun.getAll();
-
-      const daycare1 = daycares.find(
-        (daycare) => daycare.name === daycare1Name
-      );
-      const daycare2 = daycares.find(
-        (daycare) => daycare.name === daycare2Name
-      );
-
+      name1 = isString(name1);
+      name2 = isString(name2);
+      const daycares = await daycareFun.getAll(); 
+      let daycare1 = daycares.find(daycare => daycare.name === name1);
+      let daycare2 = daycares.find(daycare => daycare.name === name2);
       if (!daycare1 || !daycare2) {
-        throw new Error(
-          "One or both of the selected daycares could not be found."
-        );
+          throw 'Daycares could not be found.';
       }
-
-      res.render("daycares/compareResults", { daycare1, daycare2 });
-    } catch (e) {
-      res.status(500).render("error", { error: e.message });
-    }
-  });
+      res.render('daycares/compareResults', { daycare1, daycare2 });
+  } catch (e) {
+      res.status(500).render('error', { error: e.message });
+  }
+});
 
 router.get("/:id", async (req, res) => {
   try {
