@@ -1,12 +1,13 @@
 <link rel="stylesheet" href="../public/daycares.css" />
 
-<article class="update-availability">
+<div class="update-availability">
     <h1>Update Availability</h1>
     <p>Please enter 'true' if there are openings at your daycare; otherwise, enter 'false':</p>
 
-    <form method="POST" action="/daycares/availability?_method=PATCH">
+    <form method="POST" action="/daycares/availability"> 
+      <input type="hidden" name="_method" value="PATCH" />
       <label for="availability">Availability:</label>
-      <input type="text" id="availability" name="availability" value="{{daycare.availability}}" required>
+      <input type="text" id="availability" name="availability" value="{{daycare.availability}}" required/>
       <button type="submit">Update Availability</button>
     </form>
-  </article>
+</div>

@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="../public/users.css" />
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares/dayCareList">Search for Daycares</a></li>
+      <li><a href="/users/logout">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<title>Your Daycare Reviews</title>
+
+<div class="table-form">
+  <div>
+    <p>Reviews</p>
+    <ul></ul>
+    {{#each reviews}}
+      <li>Daycare:
+        {{this.daycareName}}
+        Review:
+        {{this.review}}
+        Rating:
+        {{this.rating}}</li>
+    {{/each}}
+  </div>
+  <div class="button-container">
+    <a class="nav-link" href="/users/userPage">
+      <button>Go Back</button>
+    </a>
+  </div>
+</div>

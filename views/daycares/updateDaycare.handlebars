@@ -1,9 +1,10 @@
 <link rel="stylesheet" href="../public/daycares.css" />
-<article class="update-daycare">
-<<<<<<< HEAD
+
+<div class="update-daycare">
     <h1>Update your daycare!</h1>
     <p>Plesase enter the updated information in the corresponding fields. Thank you.</p>
-    <form method="POST" action="/daycares/update?_method=PUT">
+    <form method="POST" action="/daycares/update">
+      <input type="hidden" name="_method" value="PUT"/>
       <label for="name">Daycare Name:</label>
       <input type="text" id="name" name="name" value="{{daycare.name}}" required>
       
@@ -57,7 +58,4 @@
       <!-- Submit Button -->
       <button type="submit">submit</button>
     </form>
-=======
-    
->>>>>>> main
-</article>
+</div>

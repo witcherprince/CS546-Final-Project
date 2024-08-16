@@ -120,6 +120,7 @@ const exportedMethods = {
     const reviewsCollection = await reviews();
     const review = await reviewsCollection.findOne({ _id: id });
     const userId = review.userId;
+    const daycareId = review.daycareId;
     const usersCollection = await users(); //If this user already rated this daycare, throw:
     const userInfo = await usersCollection.findOne({ _id: userId });
     const userFirstName = userInfo["firstName"];
@@ -132,6 +133,7 @@ const exportedMethods = {
       createdAt: review.createdAt,
       userName: userFirstName,
       userId: userId,
+      daycareId: daycareId,
     };
 
     return reviewContent;

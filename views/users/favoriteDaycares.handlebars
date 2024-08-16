@@ -1,0 +1,33 @@
+<link rel="stylesheet" href="../public/users.css" />
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares/dayCareList">Search for Daycares</a></li>
+      <li><a href="/users/logout">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<title>Your Favorite Daycares</title>
+
+<div class="table-form">
+  <form id="editFaves" method="POST" action="/users/favoriteDaycares">
+    <input type="hidden" name="_method" value="DELETE" />
+    <div>
+      <p>Favorite Daycares</p>
+      <ul></ul>
+      {{#each favorites}}
+        <li><a href="/daycares/{{this._id}}">{{this.name}}</a><button
+            type="submit"
+          >Remove Daycare</button></li>
+      {{/each}}
+    </div>
+  </form>
+  <div class="button-container">
+    <a class="nav-link" href="/users/userPage">
+      <button>Go Back</button>
+    </a>
+  </div>
+</div>

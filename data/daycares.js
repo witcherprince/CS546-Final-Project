@@ -34,7 +34,12 @@ const exportedMethods = {
     state = validation.checkState(state);
     zipcode = validation.checkZipcode(zipcode);
     businessHours = validation.checkBusinessHour(businessHours);
-    email = validation.checkEmail(email);
+
+    email = validation.checkEmail(email).toLowerCase();
+    const dayCaresCollection = await daycares();
+    const existCheck = await dayCaresCollection.findOne({'contactInfo.email': email},);
+    if (existCheck) throw 'This daycare organization already exist!';
+
     phone = validation.checkPhone(phone);
 
     if (website) {
@@ -105,7 +110,6 @@ const exportedMethods = {
     } //revews to store review's id, and rating is the average rating
 
     // Inserting daycare into database
-    const dayCaresCollection = await daycares();
 
     const insertInfo = await dayCaresCollection.insertOne(newDaycare);
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
@@ -309,7 +313,7 @@ const exportedMethods = {
       throw "The new password must be different from the previous one.";
     }
 
-    return "Password has been changed!";
+    return await this.getOrg(id);
   },
 
   // 4. Get all daycares from database
@@ -365,7 +369,7 @@ const exportedMethods = {
 
   //7. log in function
   async loginDaycare(email, password) {
-    email = validation.checkEmail(email);
+    email = validation.checkEmail(email).toLowerCase();
     password = validation.checkPassword(password, 'Password');
 
     const dayCaresCollection = await daycares();

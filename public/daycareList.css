@@ -1,0 +1,19 @@
+.search_select, .search_input_box{
+    width: 25%;
+}
+
+.search_box{
+    align-items: center;
+    width: 25%;
+}
+.search_button{
+    align-items: center;
+}
+
+.search_select, .search_input_box{
+    width: 100%;
+}
+
+.header{
+    text-align: center;
+}

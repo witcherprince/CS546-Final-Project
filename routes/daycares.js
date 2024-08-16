@@ -18,22 +18,14 @@ import {
   checkState,
   checkBusinessHour,
   checkBoolean,
+  hasSpecialCharacters,
 } from "../helpers.js";
 import express from "express";
 import { authMiddleware, passwordMatch } from "../auth/auth.js";
 import calculator from "../data/costCalculator.js";
+import { daycares } from "../config/mongoCollections.js";
 
 const router = express.Router();
-/*
-function isAuthenticated(req, res, next) { //I don't know where to put middleware function
-  if (req.session.userId) {
-    return next();
-  }
-  res.redirect('/login');
-}
-*/
-//just for daycare role (update daycare, update available, update password, delete daycare)
-// when user click a daycare, _id pass to this route and show details of clicked daycare.
 
 router.route("/").get(async (req, res) => {
   try {
@@ -43,7 +35,8 @@ router.route("/").get(async (req, res) => {
   }
 });
 
-router.route("/login")
+router
+  .route("/login")
   .get(async (req, res) => {
     try {
       return res.render("daycares/login");
@@ -53,6 +46,7 @@ router.route("/login")
   })
   .post(async (req, res) => {
     let loginInfo = req.body;
+
     try {
       if (!loginInfo.emailAddress || !loginInfo.password) {
         return res.status(400).render("daycares/login", {
@@ -84,20 +78,23 @@ router.route("/login")
     }
   });
 
-router.route("/addDaycare")
+router
+  .route("/addDaycare")
   .get(async (req, res) => {
     return res.render("daycares/addDayCare");
   })
   .post(async (req, res) => {
-    let dayCarePostData = req.body;
+    const dayCarePostData = req.body;
     if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
-      return res.status(400).render("error", { error: "There are no fields in the request body" });
+      return res
+        .status(400)
+        .render("error", { error: "There are no fields in the request body" });
     }
+
     try {
-      let {
+      const {
         name,
         password,
-        confirmPassword,
         introduction,
         address,
         town,
@@ -189,12 +186,26 @@ router.route("/addDaycare")
 
       return res.redirect("/daycares/welcome");
     } catch (error) {
-      return res.status(500).json({ error: "An error occurred while adding the daycare" });
+      console.error(error);
+      return res
+        .status(500)
+        .json({ error: "An error occurred while adding the daycare" });
     }
   });
 
 router.get("/dayCareList", async (req, res) => {
+  if (!req.session.user) {
+    try {
+      const dayCares = await daycareFun.getAll();
+      return res.render("daycares/daycareListGeneric", { dayCares });
+    } catch (e) {
+      return res.status(500).render("error", { error: e });
+    }
+  }
   try {
+    const userId = req.session.user["userId"];
+    const userInfo = await userUtils.getUserById(userId);
+    const userFavDaycares = userInfo["favorites"];
     const dayCares = await daycareFun.getAll();
 
     for (let daycare of dayCares) {
@@ -431,25 +442,24 @@ router
     }
   });
 
-//Do we render the error to errorDaycare? so we can redirect in errorDaycare to give user the second chance
 //update the daycare
 router
   .route("/update")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
 
     try {
-      const daycare = daycareFun.getOrg(req.session.daycare._id);
+      const daycare = await daycareFun.getOrg(req.session.daycare._id);
       res.render("daycares/updateDaycare", { daycare: daycare });
     } catch {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
-  .post(async (req, res) => {
+  .put(async (req, res) => {
     const daycareData = req.body;
     if (!daycareData || Object.keys(daycareData).length === 0) {
       return res.redirect("/welcome");
@@ -494,20 +504,15 @@ router
       }
 
       if (daycareData.lunchChoices) {
-        lunchChoices = daycareData.lunchChoices
-          .split(",")
-
-          .map((choice) => isString(choice, "lunch choice"));
+        lunchChoices = daycareData.lunchChoices;
       } else {
-        lunchChoices = [];
+        lunchChoices = null;
       }
 
       if (daycareData.duration) {
-        duration = daycareData.duration
-          .split(",")
-          .map((dur) => isString(dur, "duration"));
+        duration = daycareData.duration;
       } else {
-        duration = [];
+        duration = null;
       }
 
       if (daycareData.tuitionRange) {
@@ -549,19 +554,20 @@ router
   .route("/availability")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
     try {
-      res.render("daycares/availability");
+      const daycare = await daycareFun.getOrg(req.session.daycare._id);
+      res.render("daycares/availability", {daycare: daycare});
     } catch (e) {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
   .patch(async (req, res) => {
     try {
-      const availability = req.body.availability;
+      let availability = req.body.availability;
       availability = checkBoolean(availability, "Availability");
       const updated = await daycareFun.updateAvailability(
         req.session.daycare._id,
@@ -569,7 +575,7 @@ router
       );
       res.render("daycares/welcome", { daycare: updated }); //back to welcome page to show updated daycare
     } catch (e) {
-      res.status(400).render("daycares/errorDaycare", { error: e.message });
+      res.status(400).render("daycares/error", { error: e.message });
     }
   });
 
@@ -578,22 +584,21 @@ router
   .route("/password")
   .get(async (req, res) => {
     if (!req.session.daycare || !req.session.daycare._id) {
-      return res.status(403).render("daycares/errorDaycare", {
+      return res.status(403).render("daycares/error", {
         error: "Log in to update your daycare.",
       });
     }
     try {
       res.render("daycares/password");
     } catch (e) {
-      res.status(500).render("daycares/errorDaycare", { error: e });
+      res.status(500).render("daycares/error", { error: e });
     }
   })
-  .post(passwordMatch, async (req, res) => {
+  .patch(passwordMatch, async (req, res) => {
     try {
-      console.log("in .patch /password");
       let { newpassword } = req.body;
       newpassword = checkPassword(newpassword);
-      const updatedDaycare = await updatePassword(
+      const updatedDaycare = await daycareFun.updatePassword(
         req.session.daycare._id,
         newpassword
       );
@@ -611,104 +616,238 @@ router
     } catch (e) {
       res.status(500).render("error", { error: e });
     }
-})
-.post(async (req, res) => {
-  try {
-    let state = req.body.state;
-    if (!state) {
-      throw 'Provide state parameter';
+  })
+  .post(async (req, res) => {
+    try {
+      let state = req.body.state;
+
+      if (!state) {
+        throw new Error("Provide state parameter");
+      }
+
+      state = checkState(state);
+
+      const daycares = await daycareFun.getState(state);
+
+      res.render("daycares/list", { state: state, daycares });
+    } catch (e) {
+      res.status(400).render("daycares/error", { error: e.message });
     }
-    state = checkState(state);
-    const daycares = await daycareFun.getState(state);
-    res.render('daycares/list', { state: state, daycares });
+  });
+
+router.route("/daycareListFiltered").post(async (req, res) => {
+  const userInput = req.body["user_input"];
+
+  if (hasSpecialCharacters(userInput)) {
+    return res.status(400).render("daycares/error", {
+      error: "Search characters must only contain alphanumeric values!",
+    });
+  }
+
+  if (userInput.trim().length === 0) {
+    return res
+      .status(400)
+      .render("daycares/error", { error: "Cannot search on empty strings." });
+  }
+  try {
+    let filteredDaycareList = [];
+    const dayCares = await daycareFun.getAll();
+    const searchField = req.body["select_options"];
+
+    console.log(dayCares);
+    if (searchField === "daycare_name") {
+      // do daycare name search
+      for (const daycare of dayCares) {
+        let daycareName = daycare["name"].toLowerCase();
+        if (daycareName.includes(userInput.toLowerCase())) {
+          console.log("found a name match !");
+          filteredDaycareList.push(daycare);
+        }
+      }
+    } else if (searchField === "food_preference") {
+      for (const daycare of dayCares) {
+        let lunchChoices = daycare["lunchChoices"];
+        for (const _choiceArr of lunchChoices) {
+          for (const _choice of _choiceArr) {
+            console.log(_choice);
+            if (
+              _choice
+                .trim()
+                .toLowerCase()
+                .includes(userInput.trim().toLowerCase())
+            ) {
+              filteredDaycareList.push(daycare);
+              break;
+            }
+          }
+        }
+      }
+    } else if (searchField === "availability") {
+      for (const daycare of dayCares) {
+        let daycareAvailability = daycare["availability"].toLowerCase();
+        if (daycareAvailability.includes(userInput.toLowerCase())) {
+          filteredDaycareList.push(daycare);
+        }
+      }
+    } else if (searchField === "duration") {
+      for (const daycare of dayCares) {
+        let daycareDuration = daycare["duration"];
+        for (const avail of daycareDuration) {
+          if (
+            avail.trim().toLowerCase().includes(userInput.trim().toLowerCase())
+          ) {
+            filteredDaycareList.push(daycare);
+            break;
+          }
+        }
+      }
+    } else if (searchField === "rating") {
+      if (!/^\d+$/.test(userInput)) {
+        return res
+          .status(500)
+          .render("error", { error: "input for rating must be an int." });
+      }
+      for (const daycare of dayCares) {
+        let daycareRating = daycare["rating"];
+        let daycareRatingNum = Number(userInput);
+        if (daycareRating >= daycareRatingNum) {
+          filteredDaycareList.push(daycare);
+        }
+      }
+    }
+    if (req.session.user) {
+      const userId = req.session.user["userId"];
+      const userInfo = await userUtils.getUserById(userId);
+      const userFavDaycares = userInfo["favorites"];
+
+      for (let daycare of filteredDaycareList) {
+        const daycareId = daycare["_id"];
+        for (let userFav of userFavDaycares) {
+          const userFavId = userFav.toString();
+          if (userFavId === daycareId) {
+            daycare["isUserFav"] = true;
+            break;
+          } else {
+            daycare["isUserFav"] = false;
+          }
+        }
+      }
+      return res.render("daycares/daycareList", {
+        dayCares: filteredDaycareList,
+      });
+    } else {
+      return res.render("daycares/daycareListGeneric", {
+        dayCares: filteredDaycareList,
+      });
+    }
   } catch (e) {
-    res.status(400).render('daycares/error', { error: e.message });
+    return res.status(500).render("error", { error: e });
   }
 });
 
-router
-  .route("/calculator")
-  .get(async (req, res) => {
-    try {
-      res.render("daycares/costCalculator");
-    } catch (e) {
-      res.status(500).render("error", { error: e });
-    }
-})
-.post(async (req, res) => {
+router.get("/calculator", async (req, res) => {
+  try {
+    res.render("daycares/costCalculator");
+  } catch (e) {
+    res.status(500).render("error", { error: e });
+  }
+});
+
+router.post("/calculator", async (req, res) => {
   try {
     let state = req.body.state;
     let duration = req.body.duration;
     let includeLunch = req.body.includeLunch;
-    let id = req.body.id;
-    if (!state) {
-      throw 'Provide state input';
-    }
-    state = checkState(state);
-    if (state && !id) {
+    let selectedDaycareId = req.body.selectedDaycareId;
+
+    if (state && !selectedDaycareId) {
+      state = checkState(state);
       const daycares = await daycareFun.getState(state);
+
       if (!daycares || daycares.length === 0) {
-        throw 'No daycares for given state';
+        throw new Error("No daycares found in this state");
       }
+
       res.render("daycares/costCalculator", { daycares, state });
       return;
     }
-    if (!state || !duration || !includeLunch || !id) {
-        throw 'Provide all inputs';
-    }
-    const result = await calculator.calculateCost(state, duration, includeLunch, id);
-    res.render("daycares/costCalculator", { result });
-} catch (e) {
-    res.status(400).render('daycares/error', { error: e.message });
-}
-});
 
-router.route("/compare")
-  .get(async (req, res) => {
-    try {
-      const daycares = await daycareFun.getAll(); 
-      res.render('daycares/compare', { daycares });
-    } catch (e) {
-      res.status(500).render('error', { error: e.message });
+    if (!state || !duration || !includeLunch || !selectedDaycareId) {
+      throw new Error("Provide all inputs");
     }
-})
-.post(async (req, res) => {
-  try {
-      let name1 = req.body.name1;
-      let name2 = req.body.name2;
-      if (!name1 || !name2) {
-          throw 'Provide names for daycare.';
-      }
-      name1 = isString(name1);
-      name2 = isString(name2);
-      const daycares = await daycareFun.getAll(); 
-      let daycare1 = daycares.find(daycare => daycare.name === name1);
-      let daycare2 = daycares.find(daycare => daycare.name === name2);
-      if (!daycare1 || !daycare2) {
-          throw 'Daycares could not be found.';
-      }
-      res.render('daycares/compareResults', { daycare1, daycare2 });
+
+    state = checkState(state);
+    const result = await calculator.calculateCost(
+      state,
+      duration,
+      includeLunch,
+      selectedDaycareId
+    );
+
+    res.render("daycares/costCalculator", { result });
   } catch (e) {
-      res.status(500).render('error', { error: e.message });
+    res.status(400).render("daycares/error", { error: e.message });
   }
 });
 
-router.get('/:id', async (req, res) => {
+router
+  .get("/compare", async (req, res) => {
+    try {
+      const daycares = await daycareFun.getAll();
+      res.render("daycares/compare", { daycares });
+    } catch (e) {
+      res.status(500).render("error", { error: e.message });
+    }
+  })
+
+  .post("/compare", async (req, res) => {
+    try {
+      const { daycare1Name, daycare2Name } = req.body;
+
+      if (!daycare1Name || !daycare2Name) {
+        throw new Error("Both daycare names must be provided.");
+      }
+
+      const daycares = await daycareFun.getAll();
+
+      const daycare1 = daycares.find(
+        (daycare) => daycare.name === daycare1Name
+      );
+      const daycare2 = daycares.find(
+        (daycare) => daycare.name === daycare2Name
+      );
+
+      if (!daycare1 || !daycare2) {
+        throw new Error(
+          "One or both of the selected daycares could not be found."
+        );
+      }
+
+      res.render("daycares/compareResults", { daycare1, daycare2 });
+    } catch (e) {
+      res.status(500).render("error", { error: e.message });
+    }
+  });
+
+router.get("/:id", async (req, res) => {
   try {
     const daycareId = req.params.id;
+
     if (!daycareId) {
       return res
         .status(400)
         .render("daycares/error", { error: "Invalid daycare ID." });
     }
+
     const daycare = await daycareFun.getOrg(daycareId);
+
     if (!daycare) {
       return res
         .status(404)
         .render("daycares/error", { error: "Daycare not found." });
     }
 
-    res.render('daycares/details', { daycare });
+    res.render("daycares/details", { daycare });
   } catch (e) {
     console.error("Error fetching daycare details:", e);
     res
