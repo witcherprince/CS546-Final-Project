@@ -13,12 +13,6 @@ import {
   isValidArray,
   isProperId,
   isValidWebsite,
-  isValidBoolean,
-  isValidDate,
-  isValidObject,
-  isValidNumber,
-  isValidZip,
-  isValidPhone,
   isValidEmail,
   isValidPassword,
   checkState,
@@ -134,44 +128,41 @@ router.route("/addDaycare")
       email = checkEmail(email);
       phone = checkPhone(phone);
 
-      // This validation method causes error
+      if (website) {
+        isValidWebsite(website);
+      } else {
+        website = null;
+      }
       
-      // if (website) {
-      //   website = checkWebsite(website);
-      // } else {
-      //   website = null;
-      // }
+      if (yearsInBusiness) {
+        yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
+      } else {
+        yearsInBusiness = null;
+      }
   
-      // if (yearsInBusiness) {
-      //   yearsInBusiness = checkNumber(yearsInBusiness,"years in business");
-      // } else {
-      //   yearsInBusiness = null;
-      // }
+      if (availability) {
+        availability = checkBoolean(availability,"availability");
+      } else {
+        availability = null;
+      }
   
-      // if (availability) {
-      //   availability = checkBoolean(availability,"availability");
-      // } else {
-      //   availability = null;
-      // }
+      if (lunchChoices) {
+        lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
+      } else {
+        lunchChoices = [];
+      }
   
-      // if (lunchChoices) {
-      //   lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
-      // } else {
-      //   lunchChoices = [];
-      // }
+      if (duration) {
+        duration = duration.split(",").map((dur) => isString(dur, "duration"));
+      } else {
+        duration = [];
+      }
   
-      // if (duration) {
-      //   duration = duration.split(",").map((dur) => isString(dur, "duration"));
-      // } else {
-      //   duration = [];
-      // }
-  
-      // if (tuitionRange) {
-      //   tuitionRange = isString(tuitionRange,"tuition range");
-      // } else {
-      //   tuitionRange = null;
-      // }
-
+      if (tuitionRange) {
+        tuitionRange = isString(tuitionRange,"tuition range");
+      } else {
+        tuitionRange = null;
+      }
 
       if (password !== confirmPassword) {
         return res.status(400).render("daycares/addDayCare", { error: 'Passwords do not match' });
@@ -568,8 +559,7 @@ router
       res.status(500).render("daycares/errorDaycare", { error: e });
     }
   })
-
-  .post(async (req, res) => {
+  .patch(async (req, res) => {
     try {
       const availability = req.body.availability;
       availability = checkBoolean(availability, "Availability");
