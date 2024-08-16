@@ -15,15 +15,22 @@
 <div class="table-form">
   <div>
     <p>Reviews</p>
-    <ul></ul>
-    {{#each reviews}}
-      <li>Daycare:
-        {{this.daycareName}}
-        Review:
-        {{this.review}}
-        Rating:
-        {{this.rating}}</li>
-    {{/each}}
+    <ul>
+      {{#each reviews}}
+        <li>Daycare:
+          {{this.daycareName}}
+          Review:
+          {{this.review}}
+          Rating:
+          {{this.rating}}</li>
+        <div class="button-container">
+          <a href="/users/userRemoveFromFavorites/{{this.reviewId}}">
+            <button>Edit Review</button></a>
+          <a href="/users/removeReview/{{this.reviewId}}">
+            <button>Remove Review</button></a>
+        </div>
+      {{/each}}
+    </ul>
   </div>
   <div class="button-container">
     <a class="nav-link" href="/users/userPage">

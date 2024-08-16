@@ -15,14 +15,6 @@ router.route("/userPage").get(async (req, res) => {
   try {
     const user = await userValidations.getUserById(userId);
 
-    // get favorite daycares
-    const userFavorites = user.favorites || [];
-    const favoriteDaycares = await Promise.all(
-      userFavorites.map(async (daycareId) => {
-        return await daycareValidations.getOrg(daycareId);
-      })
-    );
-
     return res.render("users/userPage", {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -30,7 +22,6 @@ router.route("/userPage").get(async (req, res) => {
       town: user.location.town,
       zipcode: user.location.zipcode,
       kids: user.kids,
-      favorites: favoriteDaycares,
     });
   } catch (error) {
     res.status(500).render("error", { error: "Something went wrong." });
@@ -63,25 +54,21 @@ router.route("/editChildren").get(async (req, res) => {
 });
 
 // Need to make this work so when the user clicks delete child, they delete that specific child with their name
-router
-  .route("/deleteChild")
-  .get(async (req, res) => {
-    return res.render("users/deleteChild");
-  })
-  .delete(async (req, res) => {
-    const userId = req.session.user.userId;
+router.route("/deleteChild/:firstname").get(async (req, res) => {
+  const userId = req.session.user.userId;
+  const firstName = req.params.firstname;
 
-    if (!userId) {
-      return res.status(500).render("error", { error: "No user ID exists" });
-    }
+  if (!userId) {
+    return res.status(500).render("error", { error: "No user ID exists" });
+  }
 
-    try {
-      const deleteChild = await userValidations.removeChild(userId);
-      return res.redirect("/users/userPage");
-    } catch (error) {
-      res.status(500).render("error", { error: "Something went wrong." });
-    }
-  });
+  try {
+    const deleteChild = await userValidations.removeChild(userId, firstName);
+    return res.redirect("/users/userPage");
+  } catch (error) {
+    res.status(500).render("error", { error: "Something went wrong." });
+  }
+});
 
 router
   .route("/editUserPage")
@@ -114,15 +101,6 @@ router
         if (userData.zipcodeInput)
           updatedFields.location.zipcode = userData.zipcodeInput;
       }
-
-      //if (userData.townInput || userData.zipcodeInput) {
-      //  updatedFields.location = {};
-
-      //  if (userData.townInput)
-      //    updatedFields.location.town = userData.townInput;
-      //  if (userData.zipcodeInput)
-      //    updatedFields.location.zipcode = userData.zipcodeInput;
-      //}
 
       let updateUser = await userValidations.changeInfo(
         req.session.user.userId,
@@ -215,6 +193,7 @@ router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
     const daycareId = req.params["daycareId"];
     const userId = req.session.user["userId"];
     // check that current daycare isnt already in favorites
+    console.log(daycareId);
     const removeDaycare = await userValidations.removeFavDaycare(
       userId,
       daycareId
@@ -226,39 +205,45 @@ router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
   }
 });
 
-router
-  .route("/favoriteDaycares")
-  .get(async (req, res) => {
-    const userId = req.session.user.userId;
+router.route("/favoriteDaycares").get(async (req, res) => {
+  const userId = req.session.user.userId;
 
-    if (!userId) {
-      return res.status(500).render("error", { error: "No user ID exists" });
-    }
+  if (!userId) {
+    return res.status(500).render("error", { error: "No user ID exists" });
+  }
 
-    try {
-      const user = await userValidations.getUserById(userId);
+  try {
+    const favoritesId = await userValidations.getAllDaycares(userId);
+    const favoriteDaycares = await Promise.all(
+      favoritesId.map(async (daycareId) => {
+        return await daycareValidations.getOrg(daycareId);
+      })
+    );
 
-      // get favorite daycares
-      const userFavorites = user.favorites || [];
-      const favoriteDaycares = await Promise.all(
-        userFavorites.map(async (daycareId) => {
-          return await daycareValidations.getOrg(daycareId);
-        })
-      );
+    return res.render("users/favoriteDaycares", {
+      favorites: favoriteDaycares,
+    });
+  } catch (error) {
+    res.status(500).render("error", { error: "Something went wrong." });
+  }
+});
 
-      return res.render("users/favoriteDaycares", {
-        favorites: favoriteDaycares,
-      });
-    } catch (error) {
-      res.status(500).render("error", { error: "Something went wrong." });
-    }
-  })
-  .delete(async (req, res) => {
-    // don't know if this will work. we shall see
-    const userId = req.session.user.userId;
+router.route("/userRemoveFromFavorites/:daycareId").get(async (req, res) => {
+  try {
+    const daycareId = req.params["daycareId"];
+    const userId = req.session.user["userId"];
+    // check that current daycare isnt already in favorites
+    console.log(daycareId);
+    const removeDaycare = await userValidations.removeFavDaycare(
+      userId,
+      daycareId
+    );
 
-    const deleteFav = userValidations.removeFavDaycare(req.session.user.userId);
-  });
+    return res.redirect("/users/favoriteDaycares");
+  } catch (error) {
+    return res.status(400).render("error", { error: error });
+  }
+});
 
 router.route("/userReviews").get(async (req, res) => {
   const userId = req.session.user.userId;
@@ -268,39 +253,33 @@ router.route("/userReviews").get(async (req, res) => {
   }
 
   try {
-    const user = await userValidations.getUserById(userId);
-
-    // get favorite daycares
-    const userReviews = user.reviews || [];
+    const reviewsId = await reviewValidations.getAllReviews(userId);
+    console.log(reviewsId);
     const theReview = await Promise.all(
-      userReviews.map(async (reviewId) => {
+      reviewsId.map(async (reviewId) => {
         return await reviewValidations.getReviewById(reviewId);
       })
     );
 
-    // trying to get daycare name
-    let daycareID;
-
-    for (let d of theReview) {
-      daycareID = d.daycareId;
-    }
-
-    daycareID = daycareID.toString();
-    const theDaycare = await daycareValidations.getOrg(daycareID);
-    const dayCareName = theDaycare.name;
-
-    for (let d of theReview) {
-      d.daycareName = dayCareName;
-    }
-
-    console.log(theReview);
-
     return res.render("users/userReviews", {
       reviews: theReview,
-      daycare: dayCareName,
     });
   } catch (error) {
-    res.status(500).render("error", { error: "Something went wrong." });
+    res.status(500).render("error", { error: error });
+  }
+});
+
+// Get rid of a user review
+router.route("/removeReview/:reviewId").get(async (req, res) => {
+  try {
+    const reviewId = req.params.reviewId;
+
+    console.log(reviewId);
+    const removeReview = await reviewValidations.removeReview(reviewId);
+
+    return res.redirect("/users/userReviews");
+  } catch (error) {
+    return res.status(400).render("error", { error: error });
   }
 });
 
