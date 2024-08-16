@@ -16,9 +16,7 @@ const app = express();
 
 const rewriteUnsupportedBrowserMethods = (req, res, next) => {
   if (req.body && req.body._method) {
-    console.log(`Original method: ${req.method}`);
-    req.method = req.body._method.toUpperCase();
-    console.log(`Rewritten method: ${req.method}`);
+    req.method = req.body._method;
     delete req.body._method;
   }
   next();

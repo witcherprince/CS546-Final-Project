@@ -46,16 +46,18 @@
         <p>Children</p>
         <ul>
           {{#each kids}}
-            <a href="/users/editChildren">
-              <li>{{this.firstName}} {{this.lastName}}, Age: {{this.age}}</li>
-            </a>
+            <li>{{this.firstName}}
+              {{this.lastName}}, Age:
+              {{this.age}}
+              <a href="/users/deleteChild/{{this.firstName}}">
+                <button>Delete Child</button>
+              </a></li>
           {{/each}}
         </ul>
         <div class="button-container">
           <a class="nav-link" href="/users/addChildren">
             <button>Add Child</button>
           </a>
-          <button>Remove Child</button>
         </div>
       </div>
     </div>

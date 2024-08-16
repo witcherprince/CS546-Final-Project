@@ -109,8 +109,6 @@ const exportMethod = {
       { returnOriginal: false }
     );
 
-    console.log("Need to add proper error handling here");
-
     return updateInfo.value;
   },
 
@@ -285,6 +283,20 @@ const exportMethod = {
     }
 
     return favDaycare;
+  },
+
+  // Getting all the daycares !!
+  async getAllDaycares(userId) {
+    // Just in case
+    userId = userId.toString();
+
+    // check ID
+    userId = validation.checkId(userId);
+
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    return user.favorites;
   },
 
   // Remove daycare

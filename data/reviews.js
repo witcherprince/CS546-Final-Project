@@ -112,18 +112,27 @@ const exportedMethods = {
 
   //2. Search a review by review's id
   async getReviewById(id) {
+    console.log(id + "this is right after getreview by ID");
+
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
       id = new ObjectId(id);
     }
 
     const reviewsCollection = await reviews();
+    const daycaresCollection = await daycares();
     const review = await reviewsCollection.findOne({ _id: id });
     const userId = review.userId;
     const daycareId = review.daycareId;
+    const reviewId = review._id;
+    const daycareInfo = await daycaresCollection.findOne({ _id: daycareId });
     const usersCollection = await users(); //If this user already rated this daycare, throw:
     const userInfo = await usersCollection.findOne({ _id: userId });
     const userFirstName = userInfo["firstName"];
+    const daycareName = daycareInfo["name"];
+
+    console.log(reviewId);
+
     if (review == null) {
       throw "Error: No review is fond!";
     }
@@ -134,6 +143,8 @@ const exportedMethods = {
       userName: userFirstName,
       userId: userId,
       daycareId: daycareId,
+      daycareName: daycareName,
+      reviewId: reviewId,
     };
 
     return reviewContent;
@@ -270,6 +281,20 @@ const exportedMethods = {
       }
     }
     return { reviewId: id.toString(), deleted: true };
+  },
+
+  // 5.Getting all the reviews !!
+  async getAllReviews(userId) {
+    // Just in case
+    userId = userId.toString();
+
+    // check ID
+    userId = validation.checkId(userId);
+
+    const usersCollection = await users();
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    return user.reviews;
   },
 };
 
