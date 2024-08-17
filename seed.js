@@ -16,7 +16,11 @@ try {
     "queens",
     1111
   );
+} catch (e) {
+  console.log("Seeding users went wrong. " + e);
+}
 
+try{
   const two = await userData.createUser(
     "Ren",
     "Kozaki",
@@ -25,7 +29,11 @@ try {
     "manhattan",
     10022
   );
+} catch (e) {
+  console.log("Seeding users went wrong. " + e);
+}
 
+try{
   const three = await userData.createUser(
     "Lian",
     "Jenova",
@@ -34,7 +42,11 @@ try {
     "gaia",
     45644
   );
+} catch (e) {
+  console.log("Seeding users went wrong. " + e);
+}
 
+try{
   const four = await userData.createUser(
     "Tifa",
     "Lockhart",
@@ -43,7 +55,11 @@ try {
     "thePlanet",
     12345
   );
+} catch (e) {
+  console.log("Seeding users went wrong. " + e);
+}
 
+try{
   const five = await userData.createUser(
     "Hawkeye",
     "Lionheart",
@@ -52,11 +68,15 @@ try {
     "brooklyn",
     55555
   );
+} catch (e) {
+  console.log("Seeding users went wrong. " + e);
+}
 
-  // Seed data
+// Seed daycare data
+try{
   const firstDaycare = await dayCareData.addDaycare(
     "Happy Kids", // name
-    "HorsePull748*% ", // password
+    "HorsePull748*%", // password
     "A great place for kids.", // introduction
     "123 Happy St", // address
     "Happyville", // town
@@ -72,7 +92,12 @@ try {
     "Full day, Half day", // duration (string, comma-separated)
     "2000-2500" // tuitionRange (optional, can be null or undefined if not provided)
   );
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
+try{
   const secondDaycare = await dayCareData.addDaycare(
     "Bright Future",
     "HorsePull748*%",
@@ -91,7 +116,12 @@ try {
     "Full day",
     "2500-3000"
   );
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
+try{
   const thirdDaycare = await dayCareData.addDaycare(
     "Little Learners",
     "SecurePass1!",
@@ -110,7 +140,12 @@ try {
     "Half day, Full day",
     "2200-2750"
   );
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
+try{
   const fourthDaycare = await dayCareData.addDaycare(
     "Sunshine Academy",
     "BrightDay2@",
@@ -129,7 +164,12 @@ try {
     "Full day",
     "3000-3200"
   );
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
+try{
   const fifthDaycare = await dayCareData.addDaycare(
     "Happy Feet",
     "HappyKids3#",
@@ -152,12 +192,9 @@ try {
   console.log("Seeding users went wrong. " + e);
 }
 
-console.log("Done seeding.");
-
-//Part two: daycare organization
 try {
-  const daycare1 = await dayCareData.addDaycare(
-    'Happy kids',
+  const sixthDaycare = await dayCareData.addDaycare(
+    'Happy Sun',
     'dayCare1@test1',
     'A safe place for kids to learn, to explore, to play and more!',
     '35 Kids Ave',
@@ -167,16 +204,20 @@ try {
     '7:30 - 5:30',
     'happyinfo@happy.com',
     '123-456-7890',
-    'www.happykids.com',
+    'www.happysun.com',
     '8',
     'true',
     'hot-lunch, veggie',
     'half day, full day',
     '$2200'
   );
-  console.log(daycare1);
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
-  const daycare2 = await dayCareData.addDaycare(
+try{ 
+  const seventhDaycare = await dayCareData.addDaycare(
     'Bright babies',
     'dayCare2@test2',
     'Our fabulous faculty will provide a lovely learning enviroment for your baby!',
@@ -194,9 +235,13 @@ try {
     'half day, full day',
     '$2500'
   );
-  console.log(daycare2);
-  
-  const daycare3 = await dayCareData.addDaycare(
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
+
+try{
+  const eighthDaycare = await dayCareData.addDaycare(
     'Love Center',
     'dayCare3@test3',
     'Love, enjoy and respect is our goal for teaching. Check out our center, a warm place for your little one to dream.',
@@ -214,9 +259,13 @@ try {
     'half day',
     '$1600'
   );
-  console.log(daycare3);
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
-  const daycare4 = await dayCareData.addDaycare(
+try{
+  const ninthDaycare = await dayCareData.addDaycare(
     'Future Kids Home',
     'dayCare4@test4',
     'A unique place for your unique little one.',
@@ -234,9 +283,13 @@ try {
     '',
     '$1800'
   );
-  console.log(daycare4);
+} catch (e) {
+  console.log('Daycare organization seeding went wrong.');
+  console.log(e);
+}
 
-  const daycare5 = await dayCareData.addDaycare(
+try{
+  const tenthDaycare = await dayCareData.addDaycare(
     'Magical School',
     'dayCare5@test5',
     'A magical place for kids to learn and build their imagination!',
@@ -254,10 +307,8 @@ try {
     '',
     '$2000'
   );
-  console.log(daycare5);
-
 } catch (e) {
-  console.log('Daycare organization went wrong.');
+  console.log('Daycare organization seeding went wrong.');
   console.log(e);
 }
 
