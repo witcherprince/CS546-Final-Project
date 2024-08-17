@@ -1,6 +1,7 @@
 import daycareFun from "../data/daycares.js";
 import userUtils from "../data/users.js";
 import reviewUtils from "../data/reviews.js";
+import xss from 'xss';
 import {
   checkPassword,
   checkNumber,
@@ -9,9 +10,6 @@ import {
   checkEmail,
   checkZipcode,
   isString,
-  isValidString,
-  isValidArray,
-  isProperId,
   isValidWebsite,
   isValidEmail,
   isValidPassword,
@@ -45,21 +43,22 @@ router
     }
   })
   .post(async (req, res) => {
-    let loginInfo = req.body;
+    let emailAddress = xss(req.body.emailAddress);
+    let password = xss(req.body.password);
 
     try {
-      if (!loginInfo.emailAddress || !loginInfo.password) {
+      if (!emailAddress || !password) {
         return res.status(400).render("daycares/login", {
           error: "Email and password are required",
         });
       }
 
-      isValidEmail(loginInfo.emailAddress);
-      isValidPassword(loginInfo.password);
+      isValidEmail(emailAddress);
+      isValidPassword(password);
 
       const user = await daycareFun.loginDaycare(
-        loginInfo.emailAddress,
-        loginInfo.password
+        emailAddress,
+        password
       );
 
       req.session.daycare = {
@@ -92,9 +91,10 @@ router
     }
 
     try {
-      const {
+      let {
         name,
         password,
+        confirmPassword,
         introduction,
         address,
         town,
@@ -109,9 +109,27 @@ router
         lunchChoices,
         duration,
         tuitionRange,
-      } = req.body;
+      } = {
+        name: xss(req.body.name),
+        password: xss(req.body.password),
+        confirmPassword: xss(req.body.confirmPassword),
+        introduction: xss(req.body.introduction),
+        address: xss(req.body.address),
+        town: xss(req.body.town),
+        state: xss(req.body.state),
+        zipcode: xss(req.body.zipcode),
+        businessHours: xss(req.body.businessHours),
+        email: xss(req.body.email),
+        phone: xss(req.body.phone),
+        website: xss(req.body.website),
+        yearsInBusiness: xss(req.body.yearsInBusiness),
+        availability: xss(req.body.availability),
+        lunchChoices: xss(req.body.lunchChoices),
+        duration: xss(req.body.duration),
+        tuitionRange: xss(req.body.tuitionRange)
+    };
 
-      if (!name || !password || !introduction || !address || !town || !state || !zipcode || !businessHours || !email || !phone) {
+      if (!name || !password || !confirmPassword || !introduction || !address || !town || !state || !zipcode || !businessHours || !email || !phone) {
         return res.status(400).render("daycares/addDayCare", { error: 'All fields are required' });
       }
 
@@ -144,15 +162,15 @@ router
       }
   
       if (lunchChoices) {
-        lunchChoices = lunchChoices.split(",").map((choice) => isString(choice, "lunch choice"));
+        lunchChoices = lunchChoices;
       } else {
-        lunchChoices = [];
+        lunchChoices = null;
       }
-  
+
       if (duration) {
-        duration = duration.split(",").map((dur) => isString(dur, "duration"));
+        duration = duration;
       } else {
-        duration = [];
+        duration = null;
       }
   
       if (tuitionRange) {
@@ -187,9 +205,7 @@ router
       return res.redirect("/daycares/welcome");
     } catch (error) {
       console.error(error);
-      return res
-        .status(500)
-        .json({ error: "An error occurred while adding the daycare" });
+      return res.status(500).json({ error: "An error occurred while adding the daycare" });
     }
   });
 
@@ -619,21 +635,18 @@ router
   })
   .post(async (req, res) => {
     try {
-      let state = req.body.state;
-
+      let state = xss(req.body.state);
       if (!state) {
-        throw new Error("Provide state parameter");
+        throw 'Provide state parameter';
       }
-
       state = checkState(state);
-
       const daycares = await daycareFun.getState(state);
-
-      res.render("daycares/list", { state: state, daycares });
+      res.render('daycares/list', { state: state, daycares });
     } catch (e) {
-      res.status(400).render("daycares/error", { error: e.message });
+      res.status(400).render('daycares/error', { error: e.message });
     }
   });
+  
 
 router.route("/daycareListFiltered").post(async (req, res) => {
   const userInput = req.body["user_input"];
@@ -756,10 +769,10 @@ router
 })
 .post(async (req, res) => {
   try {
-    let state = req.body.state;
-    let duration = req.body.duration;
-    let includeLunch = req.body.includeLunch;
-    let id = req.body.id;
+    let state = xss(req.body.state);
+    let duration = xss(req.body.duration);
+    let includeLunch = xss(req.body.includeLunch);
+    let id = xss(req.body.id);
     if (!state) {
       throw 'Provide state input';
     }
@@ -794,8 +807,8 @@ router.route("/compare")
 })
 .post(async (req, res) => {
   try {
-      let name1 = req.body.name1;
-      let name2 = req.body.name2;
+      let name1 = xss(req.body.name1);
+      let name2 = xss(req.body.name2);
       if (!name1 || !name2) {
           throw 'Provide names for daycare.';
       }
