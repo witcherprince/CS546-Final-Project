@@ -2,19 +2,39 @@ import express from "express";
 import userValidations from "../data/users.js";
 import daycareValidations from "../data/daycares.js";
 import reviewValidations from "../data/reviews.js ";
+import validation from "../validation.js";
 
 const router = express.Router();
 
 router.route("/userPage").get(async (req, res) => {
-  const userId = req.session.user.userId;
+  let userId = req.session.user.userId;
 
   if (!userId) {
-    return res.status(500).render("error", { error: "No user ID exists" });
+    throw "No user with that ID exists";
+  }
+
+  const user = await userValidations.getUserById(userId);
+
+  try {
+    // Some of the typical checks
+    userId = validation.checkId(userId);
+    user.firstName = validation.checkString(user.firstName, "First name");
+    user.lastName = validation.checkString(user.lastName, "Last name");
+    user.firstName = validation.checkNames(user.firstName, "First name");
+    user.lastName = validation.checkNames(user.lastName, "Last name");
+
+    user.email = validation.checkEmail(user.email, "Email");
+
+    user.location.town = validation.checkString(user.location.town, "Town");
+    user.location.zipcode = validation.checkNumberZipcode(
+      user.location.zipcode
+    );
+  } catch (error) {
+    return res.status(400).render("error", { error: error });
   }
 
   try {
-    const user = await userValidations.getUserById(userId);
-
+    //const user = await userValidations.getUserById(userId);
     return res.render("users/userPage", {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -24,7 +44,7 @@ router.route("/userPage").get(async (req, res) => {
       kids: user.kids,
     });
   } catch (error) {
-    res.status(500).render("error", { error: "Something went wrong." });
+    return res.status(500).render("error", { error: "Something went wrong." });
   }
 });
 
@@ -282,6 +302,46 @@ router.route("/removeReview/:reviewId").get(async (req, res) => {
     return res.status(400).render("error", { error: error });
   }
 });
+
+router
+  .route("/editReview/:reviewId")
+  .get(async (req, res) => {
+    const reviewId = req.params.reviewId;
+    return res.render("users/editReview", { reviewId: reviewId });
+  })
+  .patch(async (req, res) => {
+    let reviewData = req.body;
+    const reviewId = req.params.reviewId;
+    console.log(reviewId);
+
+    // Make sure the req.body is not empty -- checking if it's either undefined or if there isn't at least one key
+    if (!reviewData || Object.keys(reviewData).length === 0) {
+      return res.status(400).render("layouts/error", {
+        error: "There are no fields in the request body.",
+      });
+    }
+
+    try {
+      const updatedFields = {};
+      if (reviewData.reviewInput) {
+        updatedFields.reviewComment = reviewData.reviewInput;
+      }
+
+      if (reviewData.ratingInput) {
+        updatedFields.reviewRating = reviewData.ratingInput;
+      }
+
+      let updateReview = await reviewValidations.updateReview(
+        reviewId,
+        updatedFields.reviewRating,
+        updatedFields.reviewComment
+      );
+      return res.redirect("/users/userReviews");
+    } catch (error) {
+      console.log(error);
+      res.status(500).render("error", { error: "Something went wrong." });
+    }
+  });
 
 router
   .route("/deleteUser")

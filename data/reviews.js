@@ -112,8 +112,6 @@ const exportedMethods = {
 
   //2. Search a review by review's id
   async getReviewById(id) {
-    console.log(id + "this is right after getreview by ID");
-
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
       id = new ObjectId(id);
@@ -130,8 +128,6 @@ const exportedMethods = {
     const userInfo = await usersCollection.findOne({ _id: userId });
     const userFirstName = userInfo["firstName"];
     const daycareName = daycareInfo["name"];
-
-    console.log(reviewId);
 
     if (review == null) {
       throw "Error: No review is fond!";
@@ -283,7 +279,7 @@ const exportedMethods = {
     return { reviewId: id.toString(), deleted: true };
   },
 
-  // 5.Getting all the reviews !!
+  //5. Getting all the reviews !!
   async getAllReviews(userId) {
     // Just in case
     userId = userId.toString();

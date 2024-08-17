@@ -65,6 +65,30 @@ const exportedMethods = {
     return val;
   },
 
+  checkChildAge(val, valName) {
+    if (!val) throw `You must provide a ${valName}`;
+    if (typeof val !== "number" || isNaN(val))
+      throw `${valName} must be a number`;
+    if (val < 0) {
+      throw "Please input a correct age.";
+    }
+    if (val > 12) {
+      throw "Sorry, but our daycares do not accept children over the age of 12.";
+    }
+
+    return val;
+  },
+
+  checkNumberZipcode(zipcode) {
+    const zipcodeForm = /^\d{5}(-\d{4})?$/;
+    zipcode = zipcode.toString().trim();
+    if (!zipcodeForm.test(zipcode)) {
+      throw "Error: Not a valid zip code!";
+    }
+    zipcode = Number(zipcode);
+    return zipcode;
+  },
+
   //According to daycares.js, I add following validation functions:
   //1. State checking:
   checkState(state) {
