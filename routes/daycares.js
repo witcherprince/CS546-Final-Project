@@ -613,14 +613,14 @@ router
   .patch(passwordMatch, async (req, res) => {
     try {
       let { newpassword } = req.body;
-      newpassword = checkPassword(newpassword);
+      newpassword = checkPassword(newpassword, 'Password');
       const updatedDaycare = await daycareFun.updatePassword(
         req.session.daycare._id,
         newpassword
       );
       res.render("daycares/welcome", { daycare: updatedDaycare });
     } catch (e) {
-      res.status(500).render("daycares/password", { error: e.message });
+      res.status(500).render("daycares/password", { error: e });
     }
   });
 
