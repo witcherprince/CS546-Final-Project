@@ -78,6 +78,10 @@ const exportMethod = {
         userInfo.firstname,
         "First name"
       );
+      updateUser.firstName = validation.checkNames(
+        userInfo.firstname,
+        "First name"
+      );
     }
 
     if (userInfo.lastname) {
@@ -85,10 +89,24 @@ const exportMethod = {
         userInfo.lastname,
         "Last name"
       );
+      updateUser.lastName = validation.checkNames(
+        userInfo.lastname,
+        "Last name"
+      );
     }
 
     if (userInfo.email) {
       updateUser.email = validation.checkEmail(userInfo.email, "Email");
+      updateUser.email = updateUser.email.toLowerCase();
+      const userCollection = await users();
+
+      // Want to make sure we stop a user from changing to an already existing email
+      const existingEmail = await userCollection.findOne({
+        email: updateUser.email,
+      });
+      if (existingEmail) {
+        throw "Email already exists. Please pick something else.";
+      }
     }
 
     if (userInfo.location) {

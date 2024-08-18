@@ -66,13 +66,13 @@ const exportedMethods = {
   },
 
   checkChildAge(val, valName) {
-    if (!val) throw `You must provide a ${valName}`;
+    if (!val) throw `You must provide an ${valName}`;
     if (typeof val !== "number" || isNaN(val))
       throw `${valName} must be a number`;
     if (val < 0) {
       throw "Please input a correct age.";
     }
-    if (val > 12) {
+    if (val > 5) {
       throw "Sorry, but our daycares do not accept children over the age of 12.";
     }
 
