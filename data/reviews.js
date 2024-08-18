@@ -123,15 +123,15 @@ const exportedMethods = {
     let daycareId = review.daycareId;
     let reviewId = review._id;
     let daycareInfo = await daycaresCollection.findOne({ _id: daycareId });
-    const usersCollection = await users(); 
+    const usersCollection = await users();
     let userInfo = await usersCollection.findOne({ _id: userId });
-    let userFirstName
+    let userFirstName;
     if (!userInfo) {
       userFirstName = "Previous User";
     } else {
       userFirstName = userInfo["firstName"];
     }
-    
+
     let daycareName = daycareInfo["name"];
 
     if (review == null) {
@@ -153,6 +153,7 @@ const exportedMethods = {
 
   //3. Update a revew by review's id
   async updateReview(reviewId, rating, review) {
+    console.log(rating + review);
     if (!(reviewId instanceof ObjectId)) {
       reviewId = validation.checkId(reviewId);
       reviewId = new ObjectId(reviewId);

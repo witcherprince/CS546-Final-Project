@@ -22,7 +22,6 @@ body {
 }
 
 h2 {
-  color: pink;
   text-align: center;
 }
 
@@ -60,6 +59,11 @@ table {
 .table-form .button-container {
   display: flex;
   gap: 5px;
+}
+
+.button-container2 {
+  align-self: end;
+  transform: translateX(10%);
 }
 
 .table-form2 {
@@ -133,7 +137,7 @@ th {
 }
 
 button {
-  border-radius: 15px;
+  border-radius: 3px;
   border-style: none;
   background-color: #95ccf9;
 }
@@ -149,4 +153,19 @@ button:hover {
 
 .table-form input {
   border-style: none;
+}
+
+.link-button {
+  border: 1px;
+  padding: 4px;
+  background-color: #95ccf9;
+  color: black;
+  text-decoration: none;
+  border-radius: 3px;
+  list-style: none;
+}
+
+.link-button a:hover {
+  background-color: lightcoral;
+  color: white;
 }

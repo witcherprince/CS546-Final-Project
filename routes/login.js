@@ -1,6 +1,7 @@
 import express from "express";
 import userData from "../data/users.js";
 import userValidations from "../data/users.js";
+import validation from "../validation.js";
 
 const router = express.Router();
 router.route("/").get(async (req, res) => {
@@ -52,9 +53,40 @@ router
   })
   .post(async (req, res) => {
     const userInfo = req.body;
+    console.log(userInfo);
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      return res.status(400).render("error", { error: "Bad Request" });
+    try {
+      // Some of the typical checks
+      if (!userInfo || Object.keys(userInfo).length === 0) {
+        throw "Empty inputs.";
+      }
+
+      userInfo.firstnameInput = validation.checkString(
+        userInfo.firstnameInput,
+        "First name"
+      );
+      userInfo.lastnameInput = validation.checkString(
+        userInfo.lastnameInput,
+        "Last name"
+      );
+      userInfo.firstnameInput = validation.checkNames(
+        userInfo.firstnameInput,
+        "First name"
+      );
+      userInfo.lastnameInput = validation.checkNames(
+        userInfo.lastnameInput,
+        "Last name"
+      );
+
+      userInfo.emailaddress = validation.checkEmail(userInfo.emailaddress);
+
+      userInfo.townInput = validation.checkString(userInfo.townInput, "Town");
+      userInfo.zipcodeInput = validation.checkNumberZipcode(
+        userInfo.zipcodeInput,
+        "Zipcode"
+      );
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
     }
 
     try {
@@ -73,7 +105,7 @@ router
   });
 
 router.route("/orgLogin").get(async (req, res) => {
-  return res.redirect('/daycares');
+  return res.redirect("/daycares");
 });
 
 export default router;

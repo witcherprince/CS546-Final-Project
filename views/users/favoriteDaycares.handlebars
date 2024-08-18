@@ -10,22 +10,20 @@
   </nav>
 </div>
 
-<title>Your Favorite Daycares</title>
-
 <div class="table-form">
   <div>
     <p>Favorite Daycares</p>
-    <ul></ul>
-    {{#each favorites}}
-      <li><a href="/daycares/{{this._id}}">{{this.name}}</a>
-        <a href="/users/userRemoveFromFavorites/{{this._id}}"><button>Remove
-            Daycare</button>
-        </a></li>
-    {{/each}}
-  </div>
-  <div class="button-container">
-    <a class="nav-link" href="/users/userPage">
-      <button>Go Back</button>
-    </a>
+    <ul>
+      {{#each favorites}}
+        <li><a href="/daycares/{{this._id}}">{{this.name}}</a>
+          <a
+            href="/users/userRemoveFromFavorites/{{this._id}}"
+          >RemoveDaycare</a>
+        </li>
+      {{/each}}
+    </ul>
+    <div class="button-container">
+      <a class="link-button" href="/users/userPage">Go Back</a>
+    </div>
   </div>
 </div>

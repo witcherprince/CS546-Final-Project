@@ -10,8 +10,6 @@
   </nav>
 </div>
 
-<title>Your Daycare Reviews</title>
-
 <div class="table-form">
   <div>
     <p>Reviews</p>
@@ -22,19 +20,14 @@
           Review:
           {{this.review}}
           Rating:
-          {{this.rating}}</li>
-        <div class="button-container">
-          <a href="/users/editReview/{{this.reviewId}}">
-            <button>Edit Review</button></a>
-          <a href="/users/removeReview/{{this.reviewId}}">
-            <button>Remove Review</button></a>
-        </div>
+          {{this.rating}}
+          <a href="/users/editReview/{{this.reviewId}}">Edit Review</a>
+          <a href="/users/removeReview/{{this.reviewId}}">Remove Review</a>
+        </li>
       {{/each}}
     </ul>
-  </div>
-  <div class="button-container">
-    <a class="nav-link" href="/users/userPage">
-      <button>Go Back</button>
-    </a>
+    <div class="button-container">
+      <a class="link-button" href="/users/userPage">Go Back</a>
+    </div>
   </div>
 </div>
