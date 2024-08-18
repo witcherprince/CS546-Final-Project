@@ -5,7 +5,7 @@
 
 <form action="/daycares/state" method="post">
   <label for="state">Enter State:</label>
-  <input type="text" id="state" name="state" placeholder="e.g., NY, CA" required>
+  <input type="text" id="state" name="state" placeholder="examples NY, CA ..." required>
   <button type="submit">Search</button>
 </form>
 
@@ -16,10 +16,6 @@
       <li><a href="/daycares/{{this._id}}">{{this.name}}</a></li>
     {{/each}}
   </ul>
-{{else}}
-  {{#unless daycares}}
-    <h2>No daycares in given state</h2>
-  {{/unless}} 
 {{/if}}
 
  
