@@ -304,6 +304,10 @@ const exportedMethods = {
     const hashPassword = await bcryptjs.hash(password, 15);
 
     const dayCaresCollection = await daycares();
+    const targetDaycare = await dayCaresCollection.findOne({_id: id});
+    const oldPassword = targetDaycare.password;
+    let passwordCheck = await bcryptjs.compare (password, oldPassword);
+    if (passwordCheck) throw 'That password is already in use.'
     const updateResult = await dayCaresCollection.updateOne(
       { _id: id },
       { $set: { password: hashPassword } }

@@ -5,7 +5,7 @@ import { reviews } from "../config/mongoCollections.js";
 import validation from "../validation.js";
 import bcryptjs from "bcryptjs";
 
-// First, we want to create a user
+//1. Create a user
 const exportMethod = {
   async createUser(firstname, lastname, email, password, town, zipcode) {
     // Checking
@@ -22,8 +22,13 @@ const exportMethod = {
     email = validation.checkEmail(email, "Email");
     email = email.toLowerCase();
 
+    // Check town and zipcode
+    town = validation.checkString(town, "Town");
+    zipcode = validation.checkNumberZipcode(zipcode);
+
     const userCollection = await users();
 
+    // Want to make sure we stop a user from creating an account if the email exists already
     const existingUser = await userCollection.findOne({ email: email });
     if (existingUser) {
       throw "User already exists";
@@ -54,7 +59,7 @@ const exportMethod = {
     return user;
   },
 
-  // Change user information -- only generic info
+  //2. Change some user information
   async changeInfo(id, userInfo) {
     id = id.toString();
 
@@ -96,7 +101,7 @@ const exportMethod = {
       }
 
       if (userInfo.location.zipcode) {
-        updateUser.location.zipcode = validation.checkZipcode(
+        updateUser.location.zipcode = validation.checkNumberZipcode(
           userInfo.location.zipcode,
           "Zipcode"
         );
@@ -112,8 +117,9 @@ const exportMethod = {
     return updateInfo.value;
   },
 
-  // Delete user
+  //3. Delete user using ID
   async deleteuser(id) {
+    // Some checks
     id = id.toString();
     id = validation.checkId(id);
 
@@ -129,7 +135,10 @@ const exportMethod = {
     return `${deletion.firstName} has been successfully deleted!`;
   },
 
+  //4. Allow user to change their password
   async changePassword(id, password) {
+    // Check ID
+    id = id.toString();
     id = validation.checkId(id);
 
     // Check Password
@@ -140,6 +149,7 @@ const exportMethod = {
 
     let comparing = await bcryptjs.compare(password, currentUser.password);
 
+    // Want to throw if the password already exists
     if (comparing) {
       throw "This password is already in use. Please input something else.";
     }
@@ -159,8 +169,10 @@ const exportMethod = {
     return "Your password has been successfully changed.";
   },
 
-  // Get user by their ID
+  //5. Get user by their ID
   async getUserById(id) {
+    // Check ID
+    id = id.toString();
     id = validation.checkId(id);
 
     const usersCollection = await users();
@@ -173,12 +185,18 @@ const exportMethod = {
     return user;
   },
 
-  // If they want to add a child
+  //6. Allow user to add children
   async addChild(id, firstname, lastname, age) {
-    id = id.toString();
-
     // Check ID
+    id = id.toString();
     id = validation.checkId(id);
+
+    // Some checks
+    firstname = validation.checkString(firstname, "First name");
+    lastname = validation.checkString(lastname, "Last name");
+    firstname = validation.checkNames(firstname, "First name");
+    lastname = validation.checkNames(lastname, "Last name");
+    age = validation.checkChildAge(age, "Age");
 
     const usersCollection = await users();
 
@@ -199,8 +217,13 @@ const exportMethod = {
     return newKidInfo;
   },
 
-  // If they want to remove a child
+  //7. Remove a child
   async removeChild(id, name) {
+    // Some checks
+    id = validation.checkId(id);
+    name = validation.checkString(name, "Name");
+    name = validation.checkNames(name, "Name");
+
     const userCollection = await users();
     const byeChild = await userCollection.updateOne(
       { _id: new ObjectId(id) },
@@ -214,8 +237,7 @@ const exportMethod = {
     return `${byeChild.firstName} has been successfully deleted!`;
   },
 
-  // Add favorite daycare
-  // When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
+  //8. Add favorite daycare. When a user clicks on the heart on the daycare page, they will automatically have the daycare's id added to their favorite list
   async addFavDaycare(userId, daycareId) {
     userId = userId.toString();
     daycareId - daycareId.toString();
@@ -265,11 +287,10 @@ const exportMethod = {
     return "daycare successfully added to favorites!";
   },
 
-  // Get favorite daycares of user
+  //9. Get favorite daycares of user
   async getFavDayCare(id) {
-    id = id.toString();
-
     // Check ID
+    id = id.toString();
     id = validation.checkId(id);
 
     // Find the daycare through given ID
@@ -285,12 +306,10 @@ const exportMethod = {
     return favDaycare;
   },
 
-  // Getting all the daycares !!
+  //10. Getting all the daycares !!
   async getAllDaycares(userId) {
-    // Just in case
-    userId = userId.toString();
-
     // check ID
+    userId = userId.toString();
     userId = validation.checkId(userId);
 
     const usersCollection = await users();
@@ -299,7 +318,7 @@ const exportMethod = {
     return user.favorites;
   },
 
-  // Remove daycare
+  //11. Remove daycare
   async removeFavDaycare(userId, daycareId) {
     userId = userId.toString();
     daycareId = daycareId.toString();
@@ -322,6 +341,7 @@ const exportMethod = {
     return "Successfully deleted daycare!!";
   },
 
+  //12. Logging in user verification
   async loginUser(email, password) {
     if (!email) {
       throw new Error("Must provide an email.");

@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="../../public/users.css" />
+
+<div>
+  <nav class="nav-test carrot">
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="/daycares/dayCareList">Search for Daycares</a></li>
+      <li><a href="/users/logout">Logout</a></li>
+    </ul>
+  </nav>
+</div>
+
+<title>Edit Your Daycare Review</title>
+
+<div class="table-form">
+  <div>
+    <p>Reviews</p>
+    <form
+      id="editReviewForm"
+      method="POST"
+      action="/users/editReview/{{reviewId}}"
+    >
+      <input type="hidden" name="_method" value="PATCH" />
+      <input
+        type="text"
+        name="reviewInput"
+        id="reviewInput"
+        placeholder="New Review Comment"
+      />
+      <input
+        type="text"
+        name="ratingInput"
+        id="ratingInput"
+        placeholder="New Rating"
+      />
+      <button type="submit">Save</button>
+    </form>
+    <a class="nav-link" href="/users/userReviews">
+      <button>Cancel</button>
+    </a>
+  </div>
+</div>
