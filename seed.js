@@ -209,7 +209,7 @@ try {
     'true',
     'hot-lunch, veggie',
     'half day, full day',
-    '$2200'
+    '2800-2200'
   );
 } catch (e) {
   console.log('Daycare organization seeding went wrong.');
@@ -233,7 +233,7 @@ try{
     'true',
     '',
     'half day, full day',
-    '$2500'
+    '1900-2500'
   );
 } catch (e) {
   console.log('Daycare organization seeding went wrong.');
@@ -257,7 +257,7 @@ try{
     'false',
     'purchase-lunch, veggie',
     'half day',
-    '$1600'
+    '1200-2000'
   );
 } catch (e) {
   console.log('Daycare organization seeding went wrong.');
@@ -281,7 +281,7 @@ try{
     'true',
     '',
     '',
-    '$1800'
+    '1800-3250'
   );
 } catch (e) {
   console.log('Daycare organization seeding went wrong.');
@@ -305,7 +305,7 @@ try{
     'true',
     '',
     '',
-    '$2000'
+    '2100-3200'
   );
 } catch (e) {
   console.log('Daycare organization seeding went wrong.');

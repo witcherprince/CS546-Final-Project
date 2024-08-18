@@ -120,14 +120,20 @@ const exportedMethods = {
     const reviewsCollection = await reviews();
     const daycaresCollection = await daycares();
     const review = await reviewsCollection.findOne({ _id: id });
-    const userId = review.userId;
-    const daycareId = review.daycareId;
-    const reviewId = review._id;
-    const daycareInfo = await daycaresCollection.findOne({ _id: daycareId });
-    const usersCollection = await users(); //If this user already rated this daycare, throw:
-    const userInfo = await usersCollection.findOne({ _id: userId });
-    const userFirstName = userInfo["firstName"];
-    const daycareName = daycareInfo["name"];
+    let userId = review.userId;
+    let daycareId = review.daycareId;
+    let reviewId = review._id;
+    let daycareInfo = await daycaresCollection.findOne({ _id: daycareId });
+    const usersCollection = await users(); 
+    let userInfo = await usersCollection.findOne({ _id: userId });
+    let userFirstName
+    if (!userInfo) {
+      userFirstName = "Previous User";
+    } else {
+      userFirstName = userInfo["firstName"];
+    }
+    
+    let daycareName = daycareInfo["name"];
 
     if (review == null) {
       throw "Error: No review is fond!";
