@@ -14,7 +14,7 @@ const exportedMethods = {
         duration = duration.trim().toLowerCase();
         includeLunch = includeLunch.trim().toLowerCase();
         if (!durations.includes(duration)) {
-            throw 'Choose from Half Day or Full Day';
+            throw 'Choose from Half day or Full day';
         }
         const daycares = await daycareFun.getState(state);
         if (!id) {
@@ -29,14 +29,14 @@ const exportedMethods = {
         }
         let daycareOrg = await daycareFun.getOrg(pickedOne._id.toString());
         const name = daycareOrg.name;
-        const tuitionRange = daycareOrg.tuitionRange;
-        const [minTuition, maxTuition] = tuitionRange.split('-').map(Number);
-        const availableDurations = daycareOrg.duration.map(elem => elem.trim().toLowerCase());
+        let tuitionRange = daycareOrg.tuitionRange;
+        let [minTuition, maxTuition] = tuitionRange.split('-').map(Number);
+        let availableDurations = daycareOrg.duration.map(elem => elem.trim().toLowerCase());
         if (!availableDurations.includes(duration)) {
             throw 'No such duration for given daycare';
         }
         if (!daycareOrg.lunchChoices || daycareOrg.lunchChoices.length === 0) {
-            throw 'No lunch info for given daycare';
+            throw 'No lunch information for given daycare';
         }
         
         if (duration === 'full day' && includeLunch === 'yes') {
@@ -50,6 +50,7 @@ const exportedMethods = {
         } else {
             cost = maxTuition;
         }
+        cost = Math.round(cost);
         return {
             name,
             cost
