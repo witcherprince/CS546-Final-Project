@@ -27,14 +27,14 @@ router.route("/userPage").get(async (req, res) => {
 
     user.location.town = validation.checkString(user.location.town, "Town");
     user.location.zipcode = validation.checkNumberZipcode(
-      user.location.zipcode
+      user.location.zipcode,
+      "Zipcode"
     );
   } catch (error) {
     return res.status(400).render("error", { error: error });
   }
 
   try {
-    //const user = await userValidations.getUserById(userId);
     return res.render("users/userPage", {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -54,7 +54,20 @@ router
     return res.render("users/addChildren");
   })
   .post(async (req, res) => {
-    const { firstnameInput, lastnameInput, ageInput } = req.body;
+    let { firstnameInput, lastnameInput, ageInput } = req.body;
+
+    try {
+      // Some checks
+      firstnameInput = validation.checkString(firstnameInput, "First Name");
+      lastnameInput = validation.checkString(lastnameInput, "Last Name");
+      firstnameInput = validation.checkNames(firstnameInput, "First Name");
+      lastnameInput = validation.checkNames(lastnameInput, "Last Name");
+
+      ageInput = Number(ageInput);
+      ageInput = validation.checkChildAge(ageInput, "Age");
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
+    }
 
     try {
       const newKid = await userValidations.addChild(
@@ -65,28 +78,26 @@ router
       );
       return res.redirect("/users/userPage");
     } catch (error) {
-      res.status(500).render("error", { error: "Something went wrong." });
+      return res
+        .status(500)
+        .render("error", { error: "Something went wrong." });
     }
   });
 
-router.route("/editChildren").get(async (req, res) => {
-  return res.render("users/editChildren");
-});
-
 // Need to make this work so when the user clicks delete child, they delete that specific child with their name
 router.route("/deleteChild/:firstname").get(async (req, res) => {
-  const userId = req.session.user.userId;
-  const firstName = req.params.firstname;
-
-  if (!userId) {
-    return res.status(500).render("error", { error: "No user ID exists" });
-  }
-
   try {
+    const userId = req.session.user.userId;
+    const firstName = req.params.firstname;
+
+    if (!userId) {
+      throw "No user ID exists";
+    }
+
     const deleteChild = await userValidations.removeChild(userId, firstName);
     return res.redirect("/users/userPage");
   } catch (error) {
-    res.status(500).render("error", { error: "Something went wrong." });
+    return res.status(400).render("error", { error: error });
   }
 });
 
@@ -97,6 +108,7 @@ router
   })
   .patch(async (req, res) => {
     let userData = req.body;
+    const updatedFields = {};
 
     // Make sure the req.body is not empty -- checking if it's either undefined or if there isn't at least one key
     if (!userData || Object.keys(userData).length === 0) {
@@ -106,22 +118,62 @@ router
     }
 
     try {
-      const updatedFields = {};
-      if (userData.firstnameInput)
+      if (userData.firstnameInput) {
         updatedFields.firstname = userData.firstnameInput;
-      if (userData.lastnameInput)
+        updatedFields.firstname = validation.checkString(
+          updatedFields.firstname,
+          "First Name"
+        );
+        updatedFields.firstname = validation.checkNames(
+          updatedFields.firstname,
+          "First Name"
+        );
+      }
+
+      if (userData.lastnameInput) {
         updatedFields.lastname = userData.lastnameInput;
-      if (userData.emailaddress) updatedFields.email = userData.emailaddress;
+        updatedFields.lastname = validation.checkString(
+          updatedFields.lastname,
+          "Last Name"
+        );
+        updatedFields.lastname = validation.checkNames(
+          updatedFields.lastname,
+          "Last Name"
+        );
+      }
+
+      if (userData.emailaddress) {
+        updatedFields.email = userData.emailaddress;
+        updatedFields.email = validation.checkEmail(
+          updatedFields.email,
+          "Email"
+        );
+      }
 
       if (userData.townInput || userData.zipcodeInput) {
         updatedFields.location = updatedFields.location || {};
 
-        if (userData.townInput)
+        if (userData.townInput) {
           updatedFields.location.town = userData.townInput;
-        if (userData.zipcodeInput)
+          updatedFields.location.town = validation.checkString(
+            updatedFields.location.town
+          );
+        }
+        if (userData.zipcodeInput) {
           updatedFields.location.zipcode = userData.zipcodeInput;
+          updatedFields.location.zipcode = Number(
+            updatedFields.location.zipcode
+          );
+          updatedFields.location.zipcode = validation.checkNumberZipcode(
+            updatedFields.location.zipcode
+          );
+        }
       }
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
+    }
 
+    try {
       let updateUser = await userValidations.changeInfo(
         req.session.user.userId,
         updatedFields
@@ -129,7 +181,7 @@ router
       return res.redirect("/users/userPage");
     } catch (error) {
       console.log(error);
-      res.status(500).render("error", { error: "Something went wrong." });
+      return res.status(500).render("error", { error: error });
     }
   });
 
@@ -142,34 +194,35 @@ router
     const userId = req.session.user.userId;
     const userInfo = req.body;
 
-    if (!userId) {
-      return res.status(500).render("error", { error: "No user ID exists" });
-    }
+    try {
+      if (!userId) {
+        throw "No user ID exists.";
+      }
 
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      return res.status(400).render("error", { error: "Bad Request" });
-    }
+      if (!userInfo || Object.keys(userInfo).length === 0) {
+        throw "No data was entered.";
+      }
 
-    // Error checking
-    // This is to display all the errors later
-    let errorCollection = [];
+      // Error checking
+      // This is to display all the errors later
+      let errorCollection = [];
 
-    if (!userInfo.newPassword) {
-      //errorCollection.push("Password is required.");
-      throw "Password is required";
-    }
-    if (!userInfo.newPasswordCheck) {
-      //errorCollection.push("Password confirmation is required");
-      throw "Password confirmation is required";
-    }
+      if (!userInfo.newPassword) {
+        errorCollection.push("Password is required.");
+      }
+      if (!userInfo.newPasswordCheck) {
+        errorCollection.push("Password confirmation is required");
+      }
 
-    // Change this to match this page
-    //if (errorCollection.length > 0) {
-    ////  return res.status(400).render('register', {
-    //   title: "Register",
-    //   error: errorCollection
-    //});
-    //}
+      // Change this to match this page
+      if (errorCollection.length > 0) {
+        return res.status(400).render("users/changePassword", {
+          error: errorCollection,
+        });
+      }
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
+    }
 
     try {
       const newPassword = await userValidations.changePassword(
@@ -180,7 +233,9 @@ router
       return res.redirect("/users/userPage");
     } catch (error) {
       console.log(error);
-      res.status(500).render("error", { error: "Something went wrong." });
+      return res
+        .status(500)
+        .render("error", { error: "Something went wrong." });
     }
   });
 
@@ -228,11 +283,10 @@ router.route("/removeFromFavorites/:daycareId").get(async (req, res) => {
 router.route("/favoriteDaycares").get(async (req, res) => {
   const userId = req.session.user.userId;
 
-  if (!userId) {
-    return res.status(500).render("error", { error: "No user ID exists" });
-  }
-
   try {
+    if (!userId) {
+      throw "No user ID exists.";
+    }
     const favoritesId = await userValidations.getAllDaycares(userId);
     const favoriteDaycares = await Promise.all(
       favoritesId.map(async (daycareId) => {
@@ -244,7 +298,7 @@ router.route("/favoriteDaycares").get(async (req, res) => {
       favorites: favoriteDaycares,
     });
   } catch (error) {
-    res.status(500).render("error", { error: "Something went wrong." });
+    return res.status(400).render("error", { error: error });
   }
 });
 
@@ -268,11 +322,11 @@ router.route("/userRemoveFromFavorites/:daycareId").get(async (req, res) => {
 router.route("/userReviews").get(async (req, res) => {
   const userId = req.session.user.userId;
 
-  if (!userId) {
-    return res.status(500).render("error", { error: "No user ID exists" });
-  }
-
   try {
+    if (!userId) {
+      throw "No user ID exists.";
+    }
+
     const reviewsId = await reviewValidations.getAllReviews(userId);
     console.log(reviewsId);
     const theReview = await Promise.all(
@@ -285,7 +339,7 @@ router.route("/userReviews").get(async (req, res) => {
       reviews: theReview,
     });
   } catch (error) {
-    res.status(500).render("error", { error: error });
+    res.status(400).render("error", { error: error });
   }
 });
 
@@ -312,25 +366,33 @@ router
   .patch(async (req, res) => {
     let reviewData = req.body;
     const reviewId = req.params.reviewId;
-    console.log(reviewId);
-
-    // Make sure the req.body is not empty -- checking if it's either undefined or if there isn't at least one key
-    if (!reviewData || Object.keys(reviewData).length === 0) {
-      return res.status(400).render("layouts/error", {
-        error: "There are no fields in the request body.",
-      });
-    }
+    const updatedFields = {};
 
     try {
-      const updatedFields = {};
+      // Make sure the req.body is not empty -- checking if it's either undefined or if there isn't at least one key
+      if (!reviewData || Object.keys(reviewData).length === 0) {
+        throw "There are no fields in the request body.";
+      }
+
       if (reviewData.reviewInput) {
         updatedFields.reviewComment = reviewData.reviewInput;
       }
 
       if (reviewData.ratingInput) {
         updatedFields.reviewRating = reviewData.ratingInput;
+        updatedFields.reviewRating = validation.checkRating(
+          updatedFields.reviewRating
+        );
       }
 
+      if (!reviewData.reviewInput && !reviewData.ratingInput) {
+        throw "Please provide input for at least one section.";
+      }
+    } catch (error) {
+      return res.status(400).render("error", { error: error });
+    }
+
+    try {
       let updateReview = await reviewValidations.updateReview(
         reviewId,
         updatedFields.reviewRating,
@@ -339,7 +401,9 @@ router
       return res.redirect("/users/userReviews");
     } catch (error) {
       console.log(error);
-      res.status(500).render("error", { error: "Something went wrong." });
+      return res
+        .status(500)
+        .render("error", { error: "Something went wrong." });
     }
   });
 
@@ -351,16 +415,16 @@ router
   .delete(async (req, res) => {
     const userId = req.session.user.userId;
 
-    if (!userId) {
-      return res.status(500).render("error", { error: "No user ID exists" });
-    }
-
     try {
+      if (!userId) {
+        throw "No user ID exists.";
+      }
+
       const deleteUser = await userValidations.deleteuser(userId);
       req.session.destroy();
       return res.redirect("/");
     } catch (error) {
-      res.status(500).render("error", { error: "Something went wrong." });
+      res.status(400).render("error", { error: error });
     }
   });
 
