@@ -48,7 +48,7 @@ router
 
     try {
       if (!emailAddress || !password) {
-        return res.status(400).render("daycares/login", {
+        return res.status(500).render("daycares/login", {
           error: "Email and password are required",
         });
       }
@@ -86,7 +86,7 @@ router
     const dayCarePostData = req.body;
     if (!dayCarePostData || Object.keys(dayCarePostData).length === 0) {
       return res
-        .status(400)
+        .status(500)
         .render("error", { error: "There are no fields in the request body" });
     }
 
@@ -247,7 +247,7 @@ router.get("/welcome", (req, res) => {
 });
 
 router.route("/error").get(async (req, res) => {
-  return res.status(400).render("daycares/error", { errorMessage: "Error!" });
+  return res.status(400).render("daycares/error", { error: "Error!" });
 });
 
 router.route("/logout").get(async (req, res) => {
@@ -256,9 +256,9 @@ router.route("/logout").get(async (req, res) => {
   return res.render("daycares/logout", { title: "Logout" });
 });
 
-router.get("/delete", async (req, res) => {
+router.route("/delete").get(async (req, res) => {
   if (!req.session.daycare || !req.session.daycare._id) {
-    return res.status(403).render("daycares/error", {
+    return res.status(500).render("error", {
       error: "You must be logged in to delete your daycare.",
     });
   }
@@ -268,29 +268,25 @@ router.get("/delete", async (req, res) => {
   } catch (e) {
     return res.status(500).render("daycares/error", { error: e });
   }
-});
-
-router.post("/delete", authMiddleware, async (req, res) => {
+})
+.post(authMiddleware, async (req, res) => {
   if (!req.session.daycare || !req.session.daycare._id) {
-    return res.status(403).render("daycares/error", {
+    return res.status(500).render("error", {
       error: "You must be logged in to delete your daycare.",
     });
   }
-
   const daycareId = req.session.daycare._id;
-
   try {
     await daycareFun.removeDaycare(daycareId);
     req.session.destroy((err) => {
       if (err) {
-        return res.status(500).render("daycares/error", {
-          error: "Failed to log out after deleting daycare",
+        return res.status(500).render("error", {
+          err: "Failed to log out after deleting daycare",
         });
       }
       return res.redirect("/");
     });
   } catch (error) {
-    console.error("Error deleting daycare:", error);
     return res.status(500).render("daycares/delete", {
       error: "Could not delete daycare.",
       id: daycareId,
@@ -643,7 +639,7 @@ router
       const daycares = await daycareFun.getState(state);
       res.render('daycares/list', { state: state, daycares });
     } catch (e) {
-      res.status(400).render('daycares/error', { error: e.message });
+      res.status(500).render('daycares/error', { error: e.message });
     }
   });
   
@@ -780,18 +776,15 @@ router
     if (state && !id) {
       const daycares = await daycareFun.getState(state);
       if (!daycares || daycares.length === 0) {
-        throw 'No daycares for given state';
+        return res.status(500).render("error", { error: "No daycare for given state" });
       }
       res.render("daycares/costCalculator", { daycares, state });
       return;
     }
-    if (!state || !duration || !includeLunch || !id) {
-        throw 'Provide all inputs';
-    }
     const result = await calculator.calculateCost(state, duration, includeLunch, id);
     res.render("daycares/costCalculator", { result });
 } catch (e) {
-    res.status(400).render('daycares/error', { error: e.message });
+    res.status(500).render("error", { error: "Not able to calculate cost" });
 }
 });
 
@@ -800,9 +793,9 @@ router.route("/compare")
   .get(async (req, res) => {
     try {
       const daycares = await daycareFun.getAll(); 
-      res.render('daycares/compare', { daycares });
+      res.render("daycares/compare", { daycares });
     } catch (e) {
-      res.status(500).render('error', { error: e.message });
+      res.status(500).render("error", { error: "Error try again" });
     }
 })
 .post(async (req, res) => {
@@ -820,9 +813,9 @@ router.route("/compare")
       if (!daycare1 || !daycare2) {
           throw 'Daycares could not be found.';
       }
-      res.render('daycares/compareResults', { daycare1, daycare2 });
+      res.render("daycares/compareResults", { daycare1, daycare2 });
   } catch (e) {
-      res.status(500).render('error', { error: e.message });
+      res.status(500).render("error", { error: e.message });
   }
 });
 
@@ -833,7 +826,7 @@ router.get("/:id", async (req, res) => {
     if (!daycareId) {
       return res
         .status(400)
-        .render("daycares/error", { error: "Invalid daycare ID." });
+        .render("error", { error: "Invalid daycare ID." });
     }
 
     const daycare = await daycareFun.getOrg(daycareId);

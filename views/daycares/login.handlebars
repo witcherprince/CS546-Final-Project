@@ -14,13 +14,15 @@
 <p>Welcome to the Daycare Login Page! Please enter your credentials to log in.</p>
 <div class="table-form">
   <form id="login-form" action="/daycares/login" method="POST" class="form">
-    <div>
+    <div class="input-control">
       <label for="emailAddressInput">Email Address:</label>
-      <input name="emailAddress" id="emailAddressInput" type="email" placeholder="Enter your email" required>
+      <input name="emailAddress" id="emailAddressInput" type="text" placeholder="Enter your email" required>
+      <div class="error"></div>
     </div>
     <div>
       <label for="passwordInput">Password:</label>
-      <input name="password" id="passwordInput" type="password" placeholder="Enter your password" required>
+      <input name="password" id="passwordInput" type="text" placeholder="Enter your password" required>
+      <div class="error"></div>
     </div>
     <div>
       <input class="button" type="submit" value="LOGIN">
@@ -30,3 +32,4 @@
 </div>
 
 
+<script src="../../public/js/loginValidation.js"></script>
