@@ -14,7 +14,7 @@ try {
     "loveGenshin@gmail.com",
     "Ilikecheese1@",
     "queens",
-    1111
+    11110
   );
 } catch (e) {
   console.log("Seeding users went wrong. " + e);
