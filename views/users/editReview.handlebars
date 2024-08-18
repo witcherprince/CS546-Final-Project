@@ -10,8 +10,6 @@
   </nav>
 </div>
 
-<title>Edit Your Daycare Review</title>
-
 <div class="table-form">
   <div>
     <p>Reviews</p>
@@ -20,7 +18,7 @@
       method="POST"
       action="/users/editReview/{{reviewId}}"
     >
-      <input type="hidden" name="_method" value="PATCH" />
+      <input type="hidden" name="_method" value="PUT" />
       <input
         type="text"
         name="reviewInput"
@@ -35,8 +33,9 @@
       />
       <button type="submit">Save</button>
     </form>
-    <a class="nav-link" href="/users/userReviews">
-      <button>Cancel</button>
-    </a>
+    {{#if error}}
+      <p class="error">{{error}}</p>
+    {{/if}}
+    <a class="link-button" href="/users/userReviews">Cancel</a>
   </div>
 </div>

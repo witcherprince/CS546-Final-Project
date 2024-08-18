@@ -23,7 +23,7 @@ router.route("/userPage").get(async (req, res) => {
     user.firstName = validation.checkNames(user.firstName, "First name");
     user.lastName = validation.checkNames(user.lastName, "Last name");
 
-    user.email = validation.checkEmail(user.email, "Email");
+    user.email = validation.checkEmail(user.email);
 
     user.location.town = validation.checkString(user.location.town, "Town");
     user.location.zipcode = validation.checkNumberZipcode(
@@ -144,10 +144,7 @@ router
 
       if (userData.emailaddress) {
         updatedFields.email = userData.emailaddress;
-        updatedFields.email = validation.checkEmail(
-          updatedFields.email,
-          "Email"
-        );
+        updatedFields.email = validation.checkEmail(updatedFields.email);
       }
 
       if (userData.townInput || userData.zipcodeInput) {
@@ -170,7 +167,9 @@ router
         }
       }
     } catch (error) {
-      return res.status(400).render("error", { error: error });
+      return res.status(400).render("users/editUserPage", {
+        error: error,
+      });
     }
 
     try {
@@ -363,7 +362,7 @@ router
     const reviewId = req.params.reviewId;
     return res.render("users/editReview", { reviewId: reviewId });
   })
-  .patch(async (req, res) => {
+  .put(async (req, res) => {
     let reviewData = req.body;
     const reviewId = req.params.reviewId;
     const updatedFields = {};
@@ -385,11 +384,13 @@ router
         );
       }
 
-      if (!reviewData.reviewInput && !reviewData.ratingInput) {
-        throw "Please provide input for at least one section.";
+      if (!reviewData.reviewInput || !reviewData.ratingInput) {
+        throw "Please provide input for both.";
       }
     } catch (error) {
-      return res.status(400).render("error", { error: error });
+      return res.status(400).render("users/editReview", {
+        error: error,
+      });
     }
 
     try {

@@ -11,8 +11,6 @@
     </nav>
   </div>
 
-  <title>User Profile</title>
-
   <div class="profile-container">
     <div class="table-form user-info">
       <div>
@@ -25,21 +23,11 @@
           <tr><th>Zipcode</th><td>{{zipcode}}</td></tr>
         </table>
         <div class="button-container">
-          <a class="nav-link" href="/users/editUserPage">
-            <button>Edit Info</button>
-          </a>
-          <a class="nav-link" href="/users/changePassword">
-            <button>Change Password</button>
-          </a>
-          <a class="nav-link" href="/users/favoriteDaycares">
-            <button>Favorites</button>
-          </a>
-          <a class="nav-link" href="/users/userReviews">
-            <button>Reviews</button>
-          </a>
-          <a class="nav-link" href="/users/deleteUser">
-            <button>Delete Account</button>
-          </a>
+          <a class="link-button" href="/users/editUserPage">Edit Info</a>
+          <a class="link-button" href="/users/changePassword">Change Password</a>
+          <a class="link-button" href="/users/favoriteDaycares">Favorites</a>
+          <a class="link-button" href="/users/userReviews">Reviews</a>
+          <a class="link-button" href="/users/deleteUser">Delete Account</a>
         </div>
       </div>
       <div>
@@ -49,15 +37,11 @@
             <li>{{this.firstName}}
               {{this.lastName}}, Age:
               {{this.age}}
-              <a href="/users/deleteChild/{{this.firstName}}">
-                <button>Delete Child</button>
-              </a></li>
+              <a href="/users/deleteChild/{{this.firstName}}">Delete Child</a></li>
           {{/each}}
         </ul>
         <div class="button-container">
-          <a class="nav-link" href="/users/addChildren">
-            <button>Add Child</button>
-          </a>
+          <a class="link-button" href="/users/addChildren">Add Child</a>
         </div>
       </div>
     </div>
