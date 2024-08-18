@@ -300,3 +300,14 @@ export function checkPassword(val, valName) {
 export function hasSpecialCharacters(val) {
   return /[^a-zA-Z0-9]/.test(val);
 }
+
+export function checkRange(string) {
+  if (!string) throw `You must provide range`;
+  if (typeof string !== "string") throw `Range must be a string`;
+  string = string.trim();
+  const rangeForm = /^(\d{3}-\d{3,4}|\d{4}-\d{4})$/;
+  if (!rangeForm.test(string)){
+    throw 'The Tuition range must be in the form xxxx-xxxx.'
+  }
+  return string;
+}

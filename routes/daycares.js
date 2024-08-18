@@ -17,6 +17,7 @@ import {
   checkBusinessHour,
   checkBoolean,
   hasSpecialCharacters,
+  checkRange
 } from "../helpers.js";
 import express from "express";
 import { authMiddleware, passwordMatch } from "../auth/auth.js";
@@ -173,7 +174,7 @@ router
       }
   
       if (tuitionRange) {
-        tuitionRange = isString(tuitionRange,"tuition range");
+        tuitionRange = checkRange(tuitionRange);
       } else {
         tuitionRange = null;
       }
