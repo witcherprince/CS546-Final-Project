@@ -11,7 +11,6 @@ import {
   checkZipcode,
   isString,
   isValidWebsite,
-  isValidEmail,
   isValidPassword,
   checkState,
   checkBusinessHour,
@@ -53,8 +52,8 @@ router
         });
       }
 
-      isValidEmail(emailAddress);
-      isValidPassword(password);
+      checkEmail(emailAddress);
+      checkPassword(password, 'Password');
 
       const user = await daycareFun.loginDaycare(
         emailAddress,
