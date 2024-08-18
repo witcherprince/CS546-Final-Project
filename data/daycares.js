@@ -1,4 +1,3 @@
-//database of daycares: insert, delete and update
 import {daycares} from '../config/mongoCollections.js';
 import {ObjectId} from 'mongodb';
 import bcryptjs from 'bcryptjs';
@@ -107,10 +106,9 @@ const exportedMethods = {
         rating: 0,
         reviews: [],
         role: 'daycare'
-    } //revews to store review's id, and rating is the average rating
+    } //revews only store review's id, and rating is the average rating
 
-    // Inserting daycare into database
-
+    // Inserting daycare
     const insertInfo = await dayCaresCollection.insertOne(newDaycare);
     if (!insertInfo.acknowledged || !insertInfo.insertedId) {
       throw "Could not add day care organization";
@@ -145,7 +143,6 @@ const exportedMethods = {
   //3. Update:
   //a. update everything:
   async updateDaycare(id, updatedInfo) {
-    //Data checking:
     if (!(id instanceof ObjectId)) {
       id = validation.checkId(id);
       id = new ObjectId(id);

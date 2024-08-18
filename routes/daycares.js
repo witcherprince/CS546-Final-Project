@@ -21,7 +21,6 @@ import {
 import express from "express";
 import { authMiddleware, passwordMatch } from "../auth/auth.js";
 import calculator from "../data/costCalculator.js";
-import { daycares } from "../config/mongoCollections.js";
 
 const router = express.Router();
 

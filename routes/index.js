@@ -1,4 +1,3 @@
-//Here you will import route files and export them as used in previous labs
 import homeRoute from "./home.js";
 import loginRoutes from "./login.js";
 import userRoutes from "./users.js";

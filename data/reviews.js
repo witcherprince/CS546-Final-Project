@@ -21,7 +21,7 @@ const exportedMethods = {
       userId = validation.checkId(userId);
       userId = new ObjectId(userId);
     }
-    const usersCollection = await users(); //If this user already rated this daycare, throw:
+    const usersCollection = await users();
     const user = await usersCollection.findOne({ _id: userId });
     const reviewsCollection = await reviews();
     if (!user) {
@@ -54,7 +54,6 @@ const exportedMethods = {
     if (!newReviewId) throw "Error: Insert failed!";
 
     //Updating daycares and users database:
-    //Update daycares.reviews and calculate daycares.rating first:
     const daycaresCollection = await daycares();
     const daycare = await daycaresCollection.findOne({ _id: daycareId });
     if (!daycare) {
@@ -167,11 +166,10 @@ const exportedMethods = {
       throw "Error: The updated review is not fond!";
     }
 
-    //Calculate and update the new average rating if needed:
+    //Calculate and update the new average rating
     let oldRating = parseFloat(reviewInfo.rating);
     let average = rating;
     if (oldRating != rating) {
-      // Need to upadate the average rating:
       const daycaresCollection = await daycares();
       const daycare = await daycaresCollection.findOne({
         _id: reviewInfo.daycareId,
@@ -287,12 +285,8 @@ const exportedMethods = {
 
   //5. Getting all the reviews !!
   async getAllReviews(userId) {
-    // Just in case
     userId = userId.toString();
-
-    // check ID
     userId = validation.checkId(userId);
-
     const usersCollection = await users();
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
