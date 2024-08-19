@@ -527,7 +527,7 @@ router
       }
 
       if (daycareData.tuitionRange) {
-        tuitionRange = isString(daycareData.tuitionRange, "tuition range");
+        tuitionRange = checkRange(daycareData.tuitionRange);
       } else {
         tuitionRange = null;
       }
