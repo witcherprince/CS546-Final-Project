@@ -77,7 +77,7 @@ const exportedMethods = {
     }
 
     if (tuitionRange) {
-      tuitionRange = validation.isString(tuitionRange, "tuition range");
+      tuitionRange = validation.checkRange(tuitionRange);
     } else {
       tuitionRange = null;
     }
@@ -212,9 +212,8 @@ const exportedMethods = {
     }
 
     if (updatedInfo.tuitionRange) {
-      tuitionRange = validation.isString(
-        updatedInfo.tuitionRange,
-        "tuition range"
+      tuitionRange = validation.checkRange(
+        updatedInfo.tuitionRange
       );
     } else {
       tuitionRange = null;

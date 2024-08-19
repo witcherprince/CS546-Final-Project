@@ -260,6 +260,18 @@ const exportedMethods = {
     return val;
   },
 
+  //11.Check tuition range:
+  checkRange(string) {
+    if (!string) throw `You must provide range`;
+    if (typeof string !== "string") throw `Range must be a string`;
+    string = string.trim();
+    const rangeForm = /^(\d{3}-\d{3,4}|\d{4}-\d{4})$/;
+    if (!rangeForm.test(string)){
+      throw 'The Tuition range must be in the form xxxx-xxxx.'
+    }
+    return string;
+  },
+
   validateEmail(email) {
     return String(email)
       .toLowerCase()
